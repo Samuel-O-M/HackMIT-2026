@@ -3,7 +3,7 @@
 /* ===== LIVE BRAIN — a realtime call with 3 views (conversation · talker · brain) ===== */
 
 (function () {
-  const { $, showError, clearError, fetchJson, speak } = window.App;
+  const { $, showError, clearError, fetchJson } = window.App;
 
   let sessionId = null;
   let subjectId = null;
@@ -17,6 +17,8 @@
   let flushTimer = null;
   let queue = [];
   let turnBusy = false;
+  let agentSpeaking = false;
+  let currentAudio = null;
 
   const verbose = () => $('#liveVerbose').checked;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -60,11 +62,25 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
+  function notifyChannel(state) {
+    if (!sessionId) return;
+    fetch('/api/brain/channel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId, state }),
+    }).catch(() => {});
+  }
+
   function setCallStatus(s) {
     const pill = $('#liveCallStatus');
     pill.textContent = s;
-    pill.className = 'pill' + (s.startsWith('listening') ? ' ok' : s.startsWith('thinking') ? ' warn' : '');
+    const kind = s.startsWith('listening') ? 'listening' : s.startsWith('thinking') ? 'thinking' : s.startsWith('speaking') ? 'speaking' : 'idle';
+    pill.className = 'pill' + (kind === 'listening' ? ' ok' : kind === 'idle' ? '' : ' warn');
+    notifyChannel(kind);
   }
+
+  // How long to keep waiting for more speech after a non-final "final".
+  const fallbackMs = () => (Number($('#liveEndpointing').value) || 800) + 400;
 
   // ---------------------------------------------------------------- rendering
   let convSig = null;
@@ -139,6 +155,7 @@
         el('span', { class: 'pill ' + (planner.running ? 'warn' : 'ok'), text: planner.running ? '⏳ planning' : '✓ idle' }),
         el('span', { class: 'pill', text: planner.lastPlanModel || '—' }),
         planner.lastPlanAt ? el('span', { class: 'pill', text: planner.lastPlanAt.replace('T', ' ').slice(11, 19) }) : null,
+        data.channel ? el('span', { class: 'pill', text: 'channel: ' + data.channel.state }) : null,
       ])
     );
     if (planner.errors?.length) nodes.push(det('planner errors', [pre(planner.errors)], true));
@@ -214,6 +231,7 @@
         p: data.planner ?? null,
         lp: data.lastPlan ?? null,
         pt: data.patient ?? null,
+        ch: data.channel ?? null,
       });
       if (bSig !== brainSig) {
         brainSig = bSig;
@@ -275,8 +293,41 @@
     return sessionId;
   }
 
+  /** Speak via Deepgram TTS; resolves when playback ends. */
+  async function agentSpeak(text) {
+    const res = await fetch('/api/tts?model=aura-2-helena-en', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) throw new Error('TTS failed');
+    const blob = await res.blob();
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.src = '';
+      currentAudio = null;
+    }
+    return new Promise((resolve) => {
+      const audio = new Audio(URL.createObjectURL(blob));
+      currentAudio = audio;
+      agentSpeaking = true; // mic frames are dropped while this is true
+      setCallStatus('speaking…');
+      const done = () => {
+        agentSpeaking = false;
+        currentAudio = null;
+        if (call) setCallStatus('listening…');
+        resolve();
+      };
+      audio.onended = done;
+      audio.onerror = done;
+      audio.play().catch(done);
+    });
+  }
+
   /** One conversational turn: talker replies fast; planner runs after. */
   async function doTurn(text) {
+    // Never generate or speak over ourselves.
+    while (agentSpeaking) await sleep(100);
     setCallStatus('thinking…');
     try {
       await fetchJson('/api/brain/turn', {
@@ -287,7 +338,7 @@
       await refresh();
       if ($('#liveAutoSpeak').checked) {
         const lastAgent = [...currentConversation].reverse().find((t) => t.speaker === 'agent');
-        if (lastAgent?.transcript) await speak(lastAgent.transcript, { model: 'aura-2-helena-en' });
+        if (lastAgent?.transcript) await agentSpeak(lastAgent.transcript);
       }
       refreshUntilIdle(4, 1300);
     } catch (err) {
@@ -335,14 +386,18 @@
       if (msg.is_final) {
         pendingFinals.push(t);
         interim = '';
-        scheduleFlush(msg.speech_final ? 350 : 900);
+        // Only end the turn on a real end-of-speech; otherwise keep waiting
+        // so we don't "pre-shoot" a reply mid-sentence.
+        scheduleFlush(msg.speech_final ? 150 : fallbackMs());
       } else {
         interim = t;
-        if (call) setCallStatus('listening…');
+        if (call && !agentSpeaking) setCallStatus('listening…');
       }
       renderConversation(currentConversation);
     } else if (msg.type === 'UtteranceEnd') {
-      scheduleFlush(250);
+      scheduleFlush(200);
+    } else if (msg.type === 'SpeechStarted') {
+      if (call && !agentSpeaking) setCallStatus('listening…');
     }
   }
 
@@ -366,8 +421,10 @@
       params.set('punctuate', 'true');
       params.set('interim_results', 'true');
       params.set('vad_events', 'true');
-      params.set('endpointing', '300');
-      params.set('utterance_end_ms', '1000');
+      // Higher endpointing = waits longer before deciding you've finished,
+      // so it's less likely to cut you off mid-thought.
+      params.set('endpointing', String(Number($('#liveEndpointing').value) || 800));
+      params.set('utterance_end_ms', String(Number($('#liveUtteranceEnd').value) || 1500));
 
       const proto = location.protocol === 'https:' ? 'wss' : 'ws';
       const ws = new WebSocket(`${proto}://${location.host}/ws/listen?${params}`);
@@ -391,6 +448,7 @@
       const processor = ctx.createScriptProcessor(4096, 1, 1);
       processor.onaudioprocess = (e) => {
         if (ws.readyState !== WebSocket.OPEN) return;
+        if (agentSpeaking) return; // half-duplex: never transcribe our own voice
         const f32 = e.inputBuffer.getChannelData(0);
         const i16 = new Int16Array(f32.length);
         for (let i = 0; i < f32.length; i++) {

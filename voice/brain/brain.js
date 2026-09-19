@@ -273,6 +273,7 @@ class Brain {
         planner: this.plannerStatus(sessionId),
         lastTurn: rt.lastTurn || null,
         lastPlan: rt.lastPlan || null,
+        channel: rt.channel || null,
         patient: null,
       };
     }
@@ -308,8 +309,16 @@ class Brain {
       planner: this.plannerStatus(sessionId),
       lastTurn: rt.lastTurn || null,
       lastPlan: rt.lastPlan || null,
+      channel: rt.channel || null,
       patient: patient_snapshot,
     };
+  }
+
+  /** Channel state reported by the voice client: idle | listening | thinking | speaking. */
+  setChannel(sessionId, state) {
+    const rt = this.runtime(sessionId);
+    rt.channel = { state: String(state || 'idle'), at: new Date().toISOString() };
+    return rt.channel;
   }
 
   listPatients() {
