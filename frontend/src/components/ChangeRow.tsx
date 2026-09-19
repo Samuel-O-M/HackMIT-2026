@@ -8,6 +8,7 @@ import { EntryCell } from './EntryCell';
 import { ToolTrace } from './ToolTrace';
 
 interface Props {
+  sessionId: string;
   change: ProposedChange;
   queries: DataQuery[];
   onAccept: () => void;
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function ChangeRow({
+  sessionId,
   change,
   queries,
   onAccept,
@@ -56,6 +58,7 @@ export function ChangeRow({
         <EntryCell
           entry={change.proposed}
           absentLabel="—"
+          source={{ sessionId, changeId: change.changeId }}
           atcClass={change.prohibitedHit?.className ?? null}
           editable={!locked}
           changed={changed}

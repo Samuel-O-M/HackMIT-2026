@@ -8,12 +8,14 @@ Legend: **[UI]** = exposed in the test area · **[brain]** = used by the two-age
 # Deepgram
 
 ## Auth
-- Header: `Authorization: Token <API_KEY>` (all calls over HTTPS).
+- Header: `Authorization: Token <API_KEY>` (all calls over HTTPS/WSS). Scheme is `Token`, not `Bearer`.
 - Key check: `GET https://api.deepgram.com/v1/auth/token`.
 - Temporary tokens: `POST https://api.deepgram.com/v1/auth/grant` (`{"ttl_seconds":30}`)
-  → `{ access_token, expires_in }`. Requires a Member+ key. Our key returns
-  `403 FORBIDDEN: Insufficient permissions`, so this UI proxies the WebSocket
-  **server-side** instead (`/ws/listen`).
+  → `{ access_token, expires_in }`. Default TTL 30 s; max 3600 s. Scope `usage::write`,
+  works for `/listen`, `/speak`, `/read`, `/agent` — **not** the Manage APIs. Requires a
+  Member+ key. Our key returns `403 FORBIDDEN: Insufficient permissions`, so this UI
+  proxies the WebSocket **server-side** instead (`/ws/listen`).
+- Browser alternative when headers are blocked: `Sec-WebSocket-Protocol: token, <KEY_OR_JWT>`.
 
 ## Endpoints
 
@@ -22,80 +24,167 @@ Legend: **[UI]** = exposed in the test area · **[brain]** = used by the two-age
 | Pre-recorded STT | POST | `https://api.deepgram.com/v1/listen` |
 | Streaming STT | WS | `wss://api.deepgram.com/v1/listen` |
 | Conversational STT (Flux) | WS | `wss://api.deepgram.com/v2/listen` |
-| TTS (one-shot) | POST | `https://api.deepgram.com/v1/speak` |
-| TTS (streaming) | WS | `wss://api.deepgram.com/v1/speak` |
-| Voice Agent | WS | see `/docs/voice-agent` |
+| TTS (one-shot, Aura) | POST | `https://api.deepgram.com/v1/speak` |
+| TTS (streaming, Aura) | WS | `wss://api.deepgram.com/v1/speak` |
+| Flux TTS (batch) | POST | `https://api.deepgram.com/v2/speak` |
+| Flux TTS (streaming) | WS | `wss://api.deepgram.com/v2/speak` |
+| Voice Agent | WS | `wss://agent.deepgram.com/v1/agent/converse` |
+| Text Intelligence | POST | `https://api.deepgram.com/v1/read` |
+| Models | GET | `https://api.deepgram.com/v1/models` · `/v1/models/{model_id}` |
+| Temporary token | POST | `https://api.deepgram.com/v1/auth/grant` |
+
+Regional: swap `api.deepgram.com` → `api.eu.deepgram.com` / `api.au.deepgram.com` /
+`api.in.deepgram.com` (Voice Agent: `api.<region>.deepgram.com/v1/agent/converse`).
+Whisper is unavailable in regional endpoints.
 
 ## Speech-to-text parameters
 
-Sent as query string. Streaming (`v1`) and Flux (`v2`) share many, not all.
+Sent as query string. Batch (`/v1/listen` POST) and streaming (`/v1/listen` WS) share
+many, not all. "B" = batch, "S" = streaming.
+
+| Param | Scope | Values / default | Notes |
+|-------|-------|------------------|-------|
+| `model` | B+S | `nova-3` (default here), `nova-3-general`, `nova-3-medical`, `nova-3-pharma`, `nova-2*`, `nova`, `enhanced`, `base`, `whisper-*` | **[UI]** model picker. Batch API default `base-general`; set explicitly |
+| `language` | B+S | `en` (default), `multi`, BCP-47 codes | **[UI]** |
+| `smart_format` | B+S | `true`/`false` (false) | formats dates, money, phone, etc. **[UI]** |
+| `punctuate` | B+S | `true`/`false` (false) | punctuation + capitalization; auto-on with `paragraphs`/`detect_entities` **[UI]** |
+| `diarize` | B+S | `true`/`false` (false) | **deprecated** — use `diarize_model` **[UI]** |
+| `diarize_model` | B+S | `latest`, `v1`, `v2` (batch); streaming only `latest`/`v1` | enables diarization; `words[].speaker`, `speaker_confidence` (batch) |
+| `numerals` | B+S | `true`/`false` (false) | numbers as digits **[UI]** |
+| `filler_words` | B | `true`/`false` (false) | keep "uh", "um" |
+| `profanity_filter` | B+S | `true`/`false` (false) | mask profanity |
+| `redact` | B+S | `pci`, `pii`, `phi`, `numbers`, `aggressive_numbers`, `ssn`, entity types | redaction **[UI]**; Nova streaming 2-phase |
+| `keyterm` | B+S | `term` (repeatable) | **Nova-3 + Flux only**; no weights; ≤500 tokens |
+| `keywords` | B+S | `word:intensifier` (repeatable) | not Nova-3; ≤100; negative suppresses (Base) |
+| `search` | B+S | `term` (repeatable) | hits in response; ≤50 |
+| `replace` | B+S | `term:replacement` | find/replace; suggested ≤200 |
+| `endpointing` | S | ms (10) | silence before a final result **[UI, live]** |
+| `interim_results` | S | `true`/`false` (false) | partial transcripts **[UI, live]** |
+| `vad_events` | S | `true`/`false` (false) | `SpeechStarted` events **[UI, live]** |
+| `utterance_end_ms` | S | ms 1000–5000 | needs `interim_results=true` + `vad_events=true` |
+| `encoding` | B+S | `linear16`, `linear32`, `flac`, `alaw`, `mulaw`, `amr-nb`, `amr-wb`, `opus`, `ogg-opus`, `speex`, `g729` | required for raw audio |
+| `sample_rate` | S | e.g. `8000`…`48000` | required for raw audio |
+| `channels` | S | int | channel count |
+| `multichannel` | B+S | `true`/`false` | transcribe each channel separately |
+| `dictation` | B+S | `true`/`false` | dictate mode |
+| `paragraphs` | B+S | `true`/`false` | paragraph segmentation; auto-enables punctuation |
+| `utterances` | B+S | `true`/`false` | semantic utterance units |
+| `utt_split` | B | double (0.8) | pause seconds for a new utterance |
+| `measurements` | B | `true`/`false` | spoken units → abbreviations |
+| `detect_entities` | B+S | `true`/`false` | entity extraction (final results) |
+| `detect_language` | B | `true`/`false`/list | dominant language |
+| `sentiment`, `topics`, `intents`, `summarize` | B | bool / enum | Audio Intelligence (§ below) |
+| `custom_topic`, `custom_intent` | B | repeatable (≤100) | with `_mode` `extended`/`strict` |
+| `callback`, `callback_method` | B+S | URL / `POST`\|`PUT` | async delivery (S: http(s)/ws(s)) |
+| `tag` | B+S | string (repeatable) | usage label; ≤128 chars, ≤500 unique/day |
+| `extra` | B+S | string(s) | arbitrary metadata in response |
+| `version` | B+S | `latest` | model version |
+| `mip_opt_out` | B+S | `true`/`false` | opt out of model improvement |
+
+**Streaming client → server messages:** binary audio frames, plus JSON
+`{"type":"Finalize"}`, `{"type":"CloseStream"}`, `{"type":"KeepAlive"}`.
+**Streaming server → client:** `Results` (`is_final`, `speech_final`, `channel.alternatives[0]`),
+`Metadata`, `UtteranceEnd`, `SpeechStarted`.
+
+## Flux (conversational STT) parameters
+
+`wss://api.deepgram.com/v2/listen`, models `flux-general-en` / `flux-general-multi`.
+Use `/v2/listen` — never `/v1/listen`.
 
 | Param | Values / default | Notes |
 |-------|------------------|-------|
-| `model` | `nova-3` (default here), `nova-3-general`, `nova-3-medical`, `nova-2*`, `nova`, `enhanced`, `base`, `whisper-*` | **[UI]** model picker |
-| `language` | `en` (default), `multi`, BCP-47 codes | **[UI]** |
-| `smart_format` | `true`/`false` (false) | formats dates, money, phone, etc. **[UI]** |
-| `punctuate` | `true`/`false` (false) | punctuation + capitalization **[UI]** |
-| `diarize` | `true`/`false` (false) | speaker labels; `diarize_model=latest|v1` **[UI]** |
-| `numerals` | `true`/`false` (false) | numbers as digits **[UI]** |
-| `profanity_filter` | `true`/`false` (false) | mask profanity |
-| `redact` | `pci`, `numbers`, `aggressive_numbers`, `ssn` | redaction **[UI]** |
-| `keywords` | `word:boost` (repeatable) | keyword boosting |
-| `keyterm` | `term` (repeatable) | nova-3 preferred boosting |
-| `search` | `term` (repeatable) | include hits in response |
-| `replace` | `term:replacement` | find/replace |
-| `endpointing` | ms (10) | silence before a final result **[UI, live]** |
-| `interim_results` | `true`/`false` (false) | partial transcripts **[UI, live]** |
-| `vad_events` | `true`/`false` (false) | `SpeechStarted` events **[UI, live]** |
-| `utterance_end_ms` | ms (1000) | needs `interim_results=true` + `vad_events=true` |
-| `encoding` | `linear16`, `linear32`, `flac`, `alaw`, `mulaw`, `amr-nb`, `amr-wb`, `opus`, `ogg-opus`, `speex`, `g729` | required for raw audio |
-| `sample_rate` | e.g. `8000`…`48000` | required for raw audio |
-| `channels` | int | channel count |
-| `multichannel` | `true`/`false` | transcribe each channel separately |
-| `dictation` | `true`/`false` | dictate mode |
-| `detect_entities` | `true`/`false` | entity extraction in final results |
-| `callback`, `callback_method` | URL / `POST` | async delivery (batch) |
-| `tag` | string (repeatable) | tag requests |
-| `version` | `latest` | model version |
-| `mip_opt_out` | `true`/`false` | opt out of model improvement |
+| `model` | `flux-general-en`, `flux-general-multi` | multi covers en/es/fr/de/hi/ru/pt/ja/it/nl |
+| `encoding` | `linear16`, `linear32`, `mulaw`, `alaw`, `opus`, `ogg-opus` | required for raw audio |
+| `sample_rate` | e.g. `16000` | required for raw audio |
+| `eot_threshold` | 0.5–1.0 (0.7) | confidence needed to end a turn |
+| `eager_eot_threshold` | 0.3–0.9 (optional) | enables early `EagerEndOfTurn` prep |
+| `eot_timeout_ms` | 500–60000 (5000) | force end-of-turn after silence |
+| `keyterm` | repeatable | Nova-3-style boosting; updatable via `Configure` |
+| `language_hint` | repeatable | flux-general-multi only; empty values rejected |
+| `redact` | `numbers`, `aggressive_numbers` | **only these two** on Flux |
+| `numerals`, `profanity_filter` | bool (false) | |
+| `tag`, `mip_opt_out` | | |
 
-**Streaming client → server messages:** binary audio frames, plus JSON control
-messages `{"type":"Finalize"}`, `{"type":"CloseStream"}`, `{"type":"KeepAlive"}`.
-**Server → client:** `Results` (`is_final`, `speech_final`, `channel.alternatives[0]`),
-`Metadata`, `UtteranceEnd`, `SpeechStarted`.
+**Client → server:** binary audio, `{"type":"CloseStream"}`,
+`{"type":"ForceEndTurn"}`, `{"type":"Configure"}`.
+**Server → client:** `Connected`, `TurnInfo`, `ConfigureSuccess`,
+`ConfigureFailure`, `Error`. `TurnInfo.event` ∈
+`Update` / `StartOfTurn` / `EagerEndOfTurn` / `TurnResumed` / `EndOfTurn`;
+`trigger` on EndOfTurn ∈ `model` / `manual` / `timeout`.
 
-## Text-to-speech parameters
+## Text-to-speech parameters (Aura, `/v1/speak`)
 
 | Param | Values / default | Notes |
 |-------|------------------|-------|
 | `model` | `aura-asteria-en` (API default); we default to `aura-2-thalia-en` | voice picker **[UI]** |
-| `encoding` | `mp3` (default), `linear16`, `mulaw`, `alaw`, `flac`, `opus`, `aac` | **[UI]** |
-| `container` | none/mp3, `wav`, `ogg` | pair `linear16`+`wav` for playable PCM **[UI]** |
-| `sample_rate` | e.g. `8000`…`48000` | |
-| `bit_rate` | e.g. `32000`…`128000` | for compressed formats |
-| `speed` | e.g. `0.7`–`1.5` | speaking rate |
-| `callback` | URL | async audio delivery |
-| `mip_opt_out` | `true`/`false` | |
+| `encoding` | REST `mp3` (default), `linear16`, `mulaw`, `alaw`, `flac`, `opus`, `aac`; WS `linear16` (default), `mulaw`, `alaw` | **[UI]** |
+| `container` | REST only: default `wav` | pair `linear16`+`wav` for playable PCM **[UI]** |
+| `sample_rate` | REST default `24000`; e.g. 8000–48000 | |
+| `bit_rate` | REST, default `48000` | compressed formats |
+| `speed` | `0.7`–`1.5` (1.0) | speaking rate |
+| `callback`, `callback_method` | URL / `POST` | async audio delivery |
+| `tag`, `mip_opt_out` | | |
+
+**WS client messages:** `Speak`, `Flush`, `Clear`, `Close`.
+**WS server events:** `Metadata`, `Flushed`, `Cleared`, `Warning`, binary audio.
+**Aura-2 extras:** inline IPA pronunciation overrides (≤500/request, ≤128 chars IPA, en/es);
+response headers `dg-pronunciations-applied`, `dg-speed-used`, `dg-pronunciation-warnings`.
+`expressivity` is Flux-only.
 
 **Limits:** 2000 chars/request (Aura); WS throughput 2400 chars/min; WS session
 60 min; max 20 `Flush`/60 s.
 
-## Voices (Aura-2, `[modelname]-[voice]-[lang]`)
+## Flux TTS parameters (`/v2/speak`)
+
+Newer, streaming-first, interruptible voice family. `model` is **required**
+(`flux-{voice}-en`). Same voices on REST and WS.
+
+| Param | Scope | Values / default | Notes |
+|-------|-------|------------------|-------|
+| `model` | REST+WS | `flux-{voice}-en` (required) | do not use Aura strings here |
+| `encoding` | WS: `linear16` (default), `mulaw`, `alaw`; REST adds `mp3` (default), `opus`, `flac`, `aac` | |
+| `sample_rate` | WS/REST | linear16 8000/16000/24000/32000/44100/48000; mulaw/alaw 8000/16000 | |
+| `speed` | REST+WS | 0.5–1.5 in 0.05 steps | mid-session via WS `Configure` |
+| `expressivity` | REST+WS | −2…2 whole numbers (0), **beta** | calm → animated |
+| `bit_rate` | REST | e.g. mp3 8000–48000 | |
+| `container` | REST | e.g. `wav`/`ogg` | |
+| `callback`, `callback_method`, `priority` | REST | URL / `POST` / `Low` | async |
+| `tag`, `mip_opt_out` | REST+WS | | |
+
+**WS client messages:** `Speak`, `Flush`, `Interrupt`, `Configure`, `Close`.
+**WS server events:** `Connected`, audio, `SpeechStarted`, `SpeechMetadata`,
+`SpeechInterrupted` (`text_spoken`, `text_remaining`), `Flushed`,
+`SessionMetadata`, `ConfigureSuccess`/`Failure`, `Warning`, `Error`.
+**Limits:** WS session 1 h; idle 60 s; one `Interrupt` at a time.
+
+## Voices (Aura-2, `[modelname]-[voice]-[language]`)
 Languages: **en, es, de, fr, nl, it, ja**. Examples —
 `aura-2-thalia-en`, `aura-2-helena-en` (caring), `aura-2-harmonia-en` (empathetic),
 `aura-2-andromeda-en`, `aura-2-apollo-en`, `aura-2-zeus-en`,
 `aura-2-estrella-es`, `aura-2-celeste-es`, `aura-2-draco-en` (British),
 `aura-2-hyperion-en` (Australian). Aura-1 also exists (`aura-asteria-en`, …).
+Flux voices are a **separate family** (`flux-haley-en`, `flux-kit-en`, …),
+English-only today.
 
-## Flux (conversational STT)
-`wss://api.deepgram.com/v2/listen`, models `flux-general-en` / `flux-general-multi`.
-~~Use `/v2/listen`, never `/v1/listen` for Flux.~~ Tuning: `eot_threshold`
-(0.5–1.0, 0.7), `eager_eot_threshold` (0.3–0.9), `eot_timeout_ms`
-(500–60000, 5000). Send ~80 ms chunks.
+## Voice Agent
+`wss://agent.deepgram.com/v1/agent/converse` — one socket for listen → think → speak.
+`Settings` message: `{ audio, agent, ... }`; `agent.listen` (Deepgram Nova/Flux,
+keyterms, EOT thresholds), `agent.think` (LLM provider/model/prompt/functions, object
+or fallback array), `agent.speak` (Deepgram Aura, ElevenLabs, Cartesia, OpenAI, Polly).
+Client control messages: `UpdateListen`/`UpdateThink`/`UpdateSpeak`/`UpdatePrompt`,
+`InjectUserMessage`, `InjectAgentMessage`, `FunctionCallResponse`, `ForceEndTurn`,
+`KeepAlive`. Server events include `ConversationText`, `UserStartedSpeaking`,
+`AgentThinking`, `FunctionCallRequest`, `LatencyReport`, `Error`/`Warning`.
+Sessions auto-close after 2 h. Function calls run client-side (no `endpoint`) or
+server-side (with `endpoint`).
 
 ## Deepgram limits
-Pre-recorded: max 2 GB/file, ~100 concurrent, >10 min (Nova) → `504`.
-Rate limit hits → `429`. See `/reference/api-rate-limits`.
+Pre-recorded: max ~2 GB/file, 50 concurrent (Nova-3, PAYG), >10 min processing →
+`504`. Streaming: 150 concurrent (Nova-3) / 50 with diarization. Whisper: 3 concurrent,
+NA only. TTS REST: 15 concurrent; TTS WS: 45. Voice Agent: 45 concurrent.
+Audio Intelligence: entities 5, sentiment/intent 10, summarization/topics 10.
+Rate limit hits → `429` (exponential backoff). Limits are **per project**, not per key.
+See `/reference/api-rate-limits`.
 
 ---
 
@@ -162,6 +251,10 @@ image generation, moderation.
 | OpenAI model + reasoning effort | **[UI]** Chat card (test area) |
 | Thinker/Planner + Talker model & effort | chosen in code: `voice/brain/config.js` |
 | Live STT | proxied via `/ws/listen` (key never leaves the server) |
+
+Not wired up (documented for reference): Flux STT (`/v2/listen`), Flux TTS
+(`/v2/speak`), Voice Agent, Audio/Text Intelligence, temporary tokens (blocked by
+key permissions).
 
 ## Try these quick experiments
 1. **Batch vs live**: record on the batch card, then read the same sentence on

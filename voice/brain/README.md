@@ -71,7 +71,8 @@ Persisted per session in `planner_state`, so a future instance resumes.
 
 | Tool | Access | Notes |
 |------|--------|-------|
-| `health_search(query)` | **read-only** | RxNorm ingredients/synonyms + RxClass classes. The *only* source of medical facts. |
+| `health_search(query)` | **read-only** | Drug/brand/class lookup via the shared `drugdb` (RxNorm + RxClass), plus plain-language guidance. The *only* source of medical facts. |
+| `check_prohibited(rxcui)` | read | Does a resolved drug trip this participant's protocol rules? Membership only; dose/timing limits are still the agent's to compare. |
 | `patient_read(scope, limit?)` | read | scoped slices only: profile, enrollment, medications, protocol_rules, planner_state, transcript, advice |
 | `patient_update(op, payload)` | controlled write | named ops only: `add_medication_change`, `add_advice`, `set_planner_state` |
 
@@ -88,12 +89,12 @@ nothing, the model must record it as missing rather than guess. See
 
 | DB | File | Access |
 |----|------|--------|
-| Health knowledge | `db/general_health.db` | **read-only** (opened `readOnly`, SELECT-only, no write method). RxNorm/RxClass subset + guidance. |
+| Health knowledge | `db/general_health.db` | **read-only** (opened `readOnly`, SELECT-only, no write method). General guidance only. |
 | Patient / clinical | `db/patient.db` | **read + controlled write** |
 
 Generated, not committed. Reset with `node db/seed.js`.
-The `rxnorm_*` / `rxclass_*` tables are a small **synthetic subset** standing in
-for real NLM data (loaded from RxNorm/RxClass or a local RxNav-in-a-Box).
+Drug and class facts are not in these files: they come from `../../drugdb`
+(real RxNorm / RxClass, cached locally; see its README).
 
 ## Run
 

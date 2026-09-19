@@ -4,15 +4,10 @@
  * Creates and seeds the two databases.
  *
  *   general_health.db  — READ-ONLY knowledge base.
- *                        RxNorm ingredients + synonyms, RxClass classes +
- *                        members, and general guidance. This is the ONLY
- *                        source of medical facts the agents may trust.
+ *                        General, non-personal guidance only. Drug and class
+ *                        facts live in ../../drugdb (RxNorm / RxClass).
  *   patient.db         — READ + controlled WRITE clinical record, including the
  *                        planner state.
- *
- * NOTE: the rxnorm/rxclass tables below are a small SYNTHETIC SUBSET standing in
- * for the real NLM resources. In production they are loaded from RxNorm /
- * RxClass (free, no auth) or a local RxNav-in-a-Box instance.
  *
  * Idempotent: drops and recreates both files.
  * Run:  node db/seed.js
@@ -34,10 +29,6 @@ function seedGeneral() {
   db.exec(`
     DROP TABLE IF EXISTS guidance;
     DROP TABLE IF EXISTS topics;
-    DROP TABLE IF EXISTS rxnorm_synonyms;
-    DROP TABLE IF EXISTS rxnorm_ingredients;
-    DROP TABLE IF EXISTS rxclass_members;
-    DROP TABLE IF EXISTS rxclass_classes;
 
     -- General, non-personal guidance (the only trusted prose source)
     CREATE TABLE topics (
@@ -50,29 +41,6 @@ function seedGeneral() {
       topic_id    TEXT NOT NULL REFERENCES topics(topic_id),
       advice      TEXT NOT NULL,
       source      TEXT
-    );
-
-    -- RxNorm (normalized drug naming)
-    CREATE TABLE rxnorm_ingredients (
-      rxcui TEXT PRIMARY KEY,
-      name  TEXT NOT NULL
-    );
-    CREATE TABLE rxnorm_synonyms (
-      term  TEXT PRIMARY KEY,
-      rxcui TEXT NOT NULL REFERENCES rxnorm_ingredients(rxcui),
-      kind  TEXT            -- brand | synonym
-    );
-
-    -- RxClass (class memberships, e.g. ATC-style)
-    CREATE TABLE rxclass_classes (
-      class_id    TEXT PRIMARY KEY,
-      name        TEXT NOT NULL,
-      description TEXT
-    );
-    CREATE TABLE rxclass_members (
-      rxcui    TEXT NOT NULL,
-      class_id TEXT NOT NULL,
-      PRIMARY KEY (rxcui, class_id)
     );
   `);
 
@@ -95,57 +63,12 @@ function seedGeneral() {
     ['polypharmacy_review', 'Bring or list everything you take — prescriptions, over-the-counter, vitamins, herbals — at each visit.', 'General guidance (synthetic)'],
   ];
 
-  // rxcui values are real RxNorm identifiers; the subset is illustrative.
-  const ingredients = [
-    ['5640', 'ibuprofen'],
-    ['7258', 'naproxen'],
-    ['1191', 'aspirin'],
-    ['161', 'acetaminophen'],
-    ['6809', 'metformin'],
-    ['29046', 'lisinopril'],
-    ['83367', 'atorvastatin'],
-    ['17767', 'amlodipine'],
-    ['11289', 'warfarin'],
-  ];
-  const synonyms = [
-    ['advil', '5640', 'brand'],
-    ['motrin', '5640', 'brand'],
-    ['aleve', '7258', 'brand'],
-    ['tylenol', '161', 'brand'],
-    ['apap', '161', 'synonym'],
-    ['asa', '1191', 'synonym'],
-    ['glucophage', '6809', 'brand'],
-    ['zestril', '29046', 'brand'],
-    ['lipitor', '83367', 'brand'],
-    ['coumadin', '11289', 'brand'],
-  ];
-  const classes = [
-    ['NSAID', 'Nonsteroidal anti-inflammatory drug', 'Pain/fever class; often restricted in trials.'],
-    ['biguanide', 'Biguanide', 'Oral diabetes class (metformin).'],
-    ['ace_inhibitor', 'ACE inhibitor', 'Blood-pressure class (lisinopril).'],
-    ['statin', 'HMG-CoA reductase inhibitor (statin)', 'Cholesterol-lowering class (atorvastatin).'],
-    ['anticoagulant', 'Anticoagulant', 'Bleeding-risk class (warfarin).'],
-    ['calcium_channel_blocker', 'Calcium channel blocker', 'Blood-pressure class (amlodipine).'],
-  ];
-  const members = [
-    ['5640', 'NSAID'], ['7258', 'NSAID'], ['1191', 'NSAID'],
-    ['6809', 'biguanide'],
-    ['29046', 'ace_inhibitor'],
-    ['83367', 'statin'],
-    ['11289', 'anticoagulant'],
-    ['17767', 'calcium_channel_blocker'],
-  ];
-
   const run = (sql, rows) => {
     const stmt = db.prepare(sql);
     for (const row of rows) stmt.run(...row);
   };
   run('INSERT INTO topics (topic_id, title, summary) VALUES (?,?,?)', topics);
   run('INSERT INTO guidance (topic_id, advice, source) VALUES (?,?,?)', guidance);
-  run('INSERT INTO rxnorm_ingredients (rxcui, name) VALUES (?,?)', ingredients);
-  run('INSERT INTO rxnorm_synonyms (term, rxcui, kind) VALUES (?,?,?)', synonyms);
-  run('INSERT INTO rxclass_classes (class_id, name, description) VALUES (?,?,?)', classes);
-  run('INSERT INTO rxclass_members (rxcui, class_id) VALUES (?,?)', members);
 
   db.close();
   return GENERAL_DB;
@@ -226,7 +149,9 @@ function seedPatient() {
       study_id   TEXT,
       started_at TEXT DEFAULT (datetime('now')),
       ended_at   TEXT,
-      status     TEXT DEFAULT 'open'
+      status     TEXT DEFAULT 'open',
+      identity_status   TEXT DEFAULT 'unverified',
+      identity_attempts INTEGER DEFAULT 0
     );
     CREATE TABLE utterances (
       utterance_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -269,7 +194,11 @@ function seedPatient() {
   med.run('0412', 'S1', 'atorvastatin', '83367', 'atorvastatin', 'cholesterol', '20 mg', 'oral', 'once daily', '2023-11-02', 'day', 1, 'active', 'seed');
 
   const rule = db.prepare('INSERT INTO protocol_rules (study_id, rule_type, rxcui, class_id, protocol_section, rationale) VALUES (?,?,?,?,?,?)');
-  rule.run('S1', 'prohibited', null, 'NSAID', '6.5', 'NSAIDs prohibited from 7 days before first dose through end of study.');
+  // One row per RxClass id. 'NSAID' resolves to ATC M01A and the FDA EPC
+  // "Nonsteroidal Anti-inflammatory Drug" (`node drugdb/cli.js class NSAID`).
+  for (const classId of ['M01A', 'N0000175722']) {
+    rule.run('S1', 'prohibited', null, classId, '6.5', 'NSAIDs prohibited from 7 days before first dose through end of study.');
+  }
   rule.run('S1', 'monitored', '6809', null, '6.6', 'Metformin permitted but monitored for glycemic control.');
 
   db.close();
@@ -283,7 +212,7 @@ function seed() {
 if (require.main === module) {
   const out = seed();
   console.log('Seeded:');
-  console.log('  general_health.db ->', out.general, '(read-only: RxNorm/RxClass + guidance)');
+  console.log('  general_health.db ->', out.general, '(read-only: general guidance)');
   console.log('  patient.db        ->', out.patient, '(read + controlled write)');
 }
 

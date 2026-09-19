@@ -33,6 +33,11 @@ class ReadOnlyStore {
     // readOnly: true is the real enforcement — any write throws at the engine level.
     this.db = new DatabaseSync(file, { readOnly: true });
     this.label = label;
+    try {
+      this.db.exec('PRAGMA busy_timeout = 5000;');
+    } catch {
+      /* best effort */
+    }
   }
   /** Run a read-only query. Returns all rows. */
   query(sql, ...params) {
@@ -54,6 +59,14 @@ class ReadWriteStore {
     }
     this.db = new DatabaseSync(file);
     this.label = label;
+    try {
+      // WAL + busy_timeout avoid "database is locked" when another process
+      // (the CLI, a reseed) touches the same file.
+      this.db.exec('PRAGMA journal_mode = WAL;');
+      this.db.exec('PRAGMA busy_timeout = 5000;');
+    } catch {
+      /* best effort */
+    }
   }
   query(sql, ...params) {
     return this.db.prepare(sql).all(...params);

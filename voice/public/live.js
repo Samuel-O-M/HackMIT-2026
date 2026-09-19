@@ -3,7 +3,7 @@
 /* ===== LIVE BRAIN — a realtime call with 3 views (conversation · talker · brain) ===== */
 
 (function () {
-  const { $, showError, clearError, fetchJson, speak } = window.App;
+  const { $, showError, clearError, fetchJson } = window.App;
 
   let sessionId = null;
   let subjectId = null;
@@ -14,9 +14,11 @@
   let currentConversation = [];
   let interim = '';
   let pendingFinals = [];
-  let flushTimer = null;
+  let flushInterval = null;
   let queue = [];
   let turnBusy = false;
+  let agentSpeaking = false;
+  let currentAudio = null;
 
   const verbose = () => $('#liveVerbose').checked;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -32,9 +34,16 @@
   function pre(obj) {
     return el('pre', { class: 'raw', text: typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2) });
   }
+  const openKeys = new Set();
   function det(summary, nodes, open = false) {
     const d = el('details', { class: 'acc' });
-    if (open) d.open = true;
+    // Stable key so expanded state survives re-renders (ignore "(3)" counters).
+    const key = String(summary).replace(/\(.*?\)/g, '').trim();
+    if (open || verbose() || openKeys.has(key)) d.open = true;
+    d.addEventListener('toggle', () => {
+      if (d.open) openKeys.add(key);
+      else openKeys.delete(key);
+    });
     d.appendChild(el('summary', { text: summary }));
     for (const n of nodes) if (n != null) d.appendChild(n);
     return d;
@@ -53,15 +62,38 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
+  function notifyChannel(state) {
+    if (!sessionId) return;
+    fetch('/api/brain/channel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId, state }),
+    }).catch(() => {});
+  }
+
   function setCallStatus(s) {
     const pill = $('#liveCallStatus');
     pill.textContent = s;
-    pill.className = 'pill' + (s.startsWith('listening') ? ' ok' : s.startsWith('thinking') ? ' warn' : '');
+    const kind = s.startsWith('listening') ? 'listening' : s.startsWith('thinking') ? 'thinking' : s.startsWith('speaking') ? 'speaking' : 'idle';
+    pill.className = 'pill' + (kind === 'listening' ? ' ok' : kind === 'idle' ? '' : ' warn');
+    notifyChannel(kind);
   }
 
+  // We reply only after a sustained silence that WE measure — not on Deepgram's
+  // speech_final (which fires at short pauses and caused the interruption).
+  const silenceToReplyMs = () => Number($('#liveUtteranceEnd').value) || 1500;
+  let lastVoiceAt = 0;
+  const noteVoice = () => {
+    lastVoiceAt = Date.now();
+  };
+
   // ---------------------------------------------------------------- rendering
+  let convSig = null;
   function renderConversation(conversation) {
     if (conversation) currentConversation = conversation;
+    const sig = JSON.stringify(currentConversation) + '||' + interim;
+    if (sig === convSig) return; // nothing changed — don't touch the DOM (keeps scroll)
+    convSig = sig;
     const box = $('#liveConversation');
     clear(box);
 
@@ -128,6 +160,7 @@
         el('span', { class: 'pill ' + (planner.running ? 'warn' : 'ok'), text: planner.running ? '⏳ planning' : '✓ idle' }),
         el('span', { class: 'pill', text: planner.lastPlanModel || '—' }),
         planner.lastPlanAt ? el('span', { class: 'pill', text: planner.lastPlanAt.replace('T', ' ').slice(11, 19) }) : null,
+        data.channel ? el('span', { class: 'pill', text: 'channel: ' + data.channel.state }) : null,
       ])
     );
     if (planner.errors?.length) nodes.push(det('planner errors', [pre(planner.errors)], true));
@@ -183,13 +216,32 @@
   }
 
   // ---------------------------------------------------------------- data flow
+  let talkerSig = null;
+  let brainSig = null;
   async function refresh() {
     if (!sessionId) return;
     try {
       const data = await fetchJson(`/api/brain/debug?sessionId=${encodeURIComponent(sessionId)}`);
       renderConversation(data.conversation);
-      renderTalker(data.lastTurn);
-      renderBrain(data);
+
+      // Only re-render a pane when its data actually changed; otherwise the
+      // user's expanded <details> and scroll position would be destroyed.
+      const tSig = JSON.stringify(data.lastTurn ?? null);
+      if (tSig !== talkerSig) {
+        talkerSig = tSig;
+        renderTalker(data.lastTurn);
+      }
+      const bSig = JSON.stringify({
+        s: data.state ?? null,
+        p: data.planner ?? null,
+        lp: data.lastPlan ?? null,
+        pt: data.patient ?? null,
+        ch: data.channel ?? null,
+      });
+      if (bSig !== brainSig) {
+        brainSig = bSig;
+        renderBrain(data);
+      }
     } catch {
       /* transient */
     }
@@ -236,6 +288,7 @@
     queue = [];
     pendingFinals = [];
     interim = '';
+    convSig = talkerSig = brainSig = null;
     renderConversation([]);
     renderTalker(null);
     renderBrain(null);
@@ -245,8 +298,41 @@
     return sessionId;
   }
 
+  /** Speak via Deepgram TTS; resolves when playback ends. */
+  async function agentSpeak(text) {
+    const res = await fetch('/api/tts?model=aura-2-helena-en', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) throw new Error('TTS failed');
+    const blob = await res.blob();
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.src = '';
+      currentAudio = null;
+    }
+    return new Promise((resolve) => {
+      const audio = new Audio(URL.createObjectURL(blob));
+      currentAudio = audio;
+      agentSpeaking = true; // mic frames are dropped while this is true
+      setCallStatus('speaking…');
+      const done = () => {
+        agentSpeaking = false;
+        currentAudio = null;
+        if (call) setCallStatus('listening…');
+        resolve();
+      };
+      audio.onended = done;
+      audio.onerror = done;
+      audio.play().catch(done);
+    });
+  }
+
   /** One conversational turn: talker replies fast; planner runs after. */
   async function doTurn(text) {
+    // Never generate or speak over ourselves.
+    while (agentSpeaking) await sleep(100);
     setCallStatus('thinking…');
     try {
       await fetchJson('/api/brain/turn', {
@@ -257,7 +343,7 @@
       await refresh();
       if ($('#liveAutoSpeak').checked) {
         const lastAgent = [...currentConversation].reverse().find((t) => t.speaker === 'agent');
-        if (lastAgent?.transcript) await speak(lastAgent.transcript, { model: 'aura-2-helena-en' });
+        if (lastAgent?.transcript) await agentSpeak(lastAgent.transcript);
       }
       refreshUntilIdle(4, 1300);
     } catch (err) {
@@ -285,9 +371,9 @@
   }
 
   // ---- live STT → auto-send each finished utterance ----
-  function scheduleFlush(ms = 900) {
-    if (flushTimer) clearTimeout(flushTimer);
-    flushTimer = setTimeout(flushFinals, ms);
+  function maybeFlush() {
+    if (!call || agentSpeaking || !pendingFinals.length) return;
+    if (Date.now() - lastVoiceAt >= silenceToReplyMs()) flushFinals();
   }
 
   function flushFinals() {
@@ -305,14 +391,16 @@
       if (msg.is_final) {
         pendingFinals.push(t);
         interim = '';
-        scheduleFlush(msg.speech_final ? 350 : 900);
+        noteVoice(); // keep resetting the silence clock while they talk
       } else {
         interim = t;
-        if (call) setCallStatus('listening…');
+        noteVoice();
+        if (call && !agentSpeaking) setCallStatus('listening…');
       }
       renderConversation(currentConversation);
-    } else if (msg.type === 'UtteranceEnd') {
-      scheduleFlush(250);
+    } else if (msg.type === 'SpeechStarted') {
+      noteVoice();
+      if (call && !agentSpeaking) setCallStatus('listening…');
     }
   }
 
@@ -328,12 +416,18 @@
       params.set('model', 'nova-3');
       params.set('encoding', 'linear16');
       params.set('sample_rate', String(ctx.sampleRate));
-      params.set('smart_format', 'true');
+      // Keep speech as words. smart_format/numerals rewrite "march twelve
+      // nineteen fifty eight" into "03/12/1958" (and can even mangle it),
+      // which loses fidelity for identity + date checks.
+      params.set('smart_format', 'false');
+      params.set('numerals', 'false');
       params.set('punctuate', 'true');
       params.set('interim_results', 'true');
       params.set('vad_events', 'true');
-      params.set('endpointing', '300');
-      params.set('utterance_end_ms', '1000');
+      // Higher endpointing = waits longer before deciding you've finished,
+      // so it's less likely to cut you off mid-thought.
+      params.set('endpointing', String(Number($('#liveEndpointing').value) || 800));
+      params.set('utterance_end_ms', String(Number($('#liveUtteranceEnd').value) || 1500));
 
       const proto = location.protocol === 'https:' ? 'wss' : 'ws';
       const ws = new WebSocket(`${proto}://${location.host}/ws/listen?${params}`);
@@ -357,6 +451,7 @@
       const processor = ctx.createScriptProcessor(4096, 1, 1);
       processor.onaudioprocess = (e) => {
         if (ws.readyState !== WebSocket.OPEN) return;
+        if (agentSpeaking) return; // half-duplex: never transcribe our own voice
         const f32 = e.inputBuffer.getChannelData(0);
         const i16 = new Int16Array(f32.length);
         for (let i = 0; i < f32.length; i++) {
@@ -369,6 +464,7 @@
       processor.connect(ctx.destination);
 
       call = { ws, ctx, stream, source, processor };
+      flushInterval = setInterval(maybeFlush, 200);
       $('#liveStartCall').disabled = true;
       $('#liveEndCall').disabled = false;
       setCallStatus('listening…');
@@ -385,6 +481,10 @@
     }
     const { ws, ctx, stream, source, processor } = call;
     call = null;
+    if (flushInterval) {
+      clearInterval(flushInterval);
+      flushInterval = null;
+    }
     try { processor.disconnect(); } catch {}
     try { source.disconnect(); } catch {}
     try { stream.getTracks().forEach((t) => t.stop()); } catch {}
@@ -420,7 +520,11 @@
     }
   });
   $('#liveRefresh').addEventListener('click', refresh);
-  $('#liveVerbose').addEventListener('change', refresh);
+  $('#liveVerbose').addEventListener('change', () => {
+    // force a rebuild so the verbose toggle takes effect
+    convSig = talkerSig = brainSig = null;
+    refresh();
+  });
   $('#livePatient').addEventListener('change', () => {
     // switching participant starts a fresh session on next call
     if (call) endCall();

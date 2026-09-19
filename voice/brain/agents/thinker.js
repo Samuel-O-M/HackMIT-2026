@@ -53,11 +53,12 @@ function normalize(raw) {
     to_save: arr(src.to_save).filter((x) => x && x.op),
     flags: arr(src.flags),
     summary: typeof src.summary === 'string' ? src.summary : '',
+    identity_status: typeof src.identity_status === 'string' ? src.identity_status : undefined,
     updated_at: new Date().toISOString(),
   };
 }
 
-const READ_TOOLS = new Set(['health_search', 'patient_read']);
+const READ_TOOLS = new Set(['health_search', 'check_prohibited', 'patient_read', 'verify_identity']);
 
 /** Phase 1: which lookups does the planner need? */
 async function decideRetrieval(context) {
@@ -71,7 +72,7 @@ async function decideRetrieval(context) {
           'Before finalizing, list the lookups you need. Return ONLY JSON:\n' +
           '{"retrieval":[{"tool":"health_search","args":{"query":"..."}},' +
           '{"tool":"patient_read","args":{"scope":"medications"}}]}\n' +
-          'Maximum 3, read-only tools only (health_search, patient_read). ' +
+          'Maximum 3, read-only tools only (health_search, check_prohibited, patient_read). ' +
           'Use {"retrieval":[]} if you need none.',
       },
     ],

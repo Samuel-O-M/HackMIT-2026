@@ -112,6 +112,9 @@ export interface Transport {
 
   getAudit(sessionId: string): Promise<AuditEvent[]>;
 
+  /** The full call transcript, for reading a captured value back in context. */
+  getTranscript(sessionId: string): Promise<TranscriptTurn[]>;
+
   /**
    * Stream a call. For an in-flight call this is the live feed; for a finished
    * one the mock transport replays it, which is what demo mode rides on.
