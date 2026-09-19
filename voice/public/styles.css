@@ -131,12 +131,33 @@ pre.tall { max-height: 360px; }
 /* recording state */
 button.recording { background: var(--bad); border-color: var(--bad); color: #fff; }
 
-/* ---- 3-pane live view ---- */
-.panes { display: grid; gap: 1rem; grid-template-columns: 1fr; }
-@media (min-width: 1100px) { .panes { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; } }
-.pane { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; min-width: 0; }
-.pane h3 { margin: 0 0 0.2rem; font-size: 0.95rem; }
-.pane .messages { max-height: 60vh; }
+/* ---- 3-pane live view: full-bleed, 3 independent columns ---- */
+main.wide { max-width: none; padding: 0.75rem 1rem; }
+.panes { display: grid; gap: 0.75rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1000px) { .panes { grid-template-columns: 1fr; } }
+main.wide .panes { height: calc(100vh - 235px); }
+.pane {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.85rem 0.9rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.pane > h3 { margin: 0 0 0.15rem; font-size: 0.95rem; flex: 0 0 auto; }
+.pane > .muted { flex: 0 0 auto; }
+.pane .messages,
+.pane #liveTalker,
+.pane #liveBrain {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+.pane .messages { max-height: none; }
 .stack { display: grid; gap: 0.5rem; }
 .acc { border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem 0.6rem; }
 .acc > summary { cursor: pointer; font-size: 0.85rem; color: var(--text); }

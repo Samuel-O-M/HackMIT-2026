@@ -129,12 +129,15 @@
   }
 
   function initTabs() {
+    const main = document.querySelector('main');
     $$('.tab').forEach((btn) => {
       btn.addEventListener('click', () => {
         $$('.tab').forEach((b) => b.classList.toggle('active', b === btn));
         $$('.tab-panel').forEach((p) =>
           p.classList.toggle('active', p.id === 'tab-' + btn.dataset.tab)
         );
+        // The Live tab goes full-bleed so its 3 panes can span the viewport.
+        if (main) main.classList.toggle('wide', btn.dataset.tab === 'live');
       });
     });
   }
