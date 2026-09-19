@@ -1,7 +1,7 @@
 import type { ReconciliationSession } from '../types/contract';
 import type { ScheduledVisit } from '../types/ui';
-import rawSessions from '../../../data/participants/sessions.json';
-import rawVisits from '../../../data/participants/visits.json';
+import rawSessions from '../../../patient_data/participants/sessions.json';
+import rawVisits from '../../../patient_data/participants/visits.json';
 import { toIso, type RelativeTime } from './schedule';
 
 /**

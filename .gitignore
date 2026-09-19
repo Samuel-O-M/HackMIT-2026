@@ -4,4 +4,4 @@ node_modules/
 next-env.d.ts
 *.tsbuildinfo
 voice/brain/db/*.db
-db/conmed.db
+patient_data/db/conmed.db

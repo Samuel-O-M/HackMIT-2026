@@ -5,7 +5,7 @@
  *
  *   general_health.db  — READ-ONLY knowledge base.
  *                        General, non-personal guidance only. Drug and class
- *                        facts live in ../../drugdb (RxNorm / RxClass).
+ *                        facts live in ../../medical_data (RxNorm / RxClass).
  *   patient.db         — READ + controlled WRITE clinical record, including the
  *                        planner state.
  *
@@ -195,7 +195,7 @@ function seedPatient() {
 
   const rule = db.prepare('INSERT INTO protocol_rules (study_id, rule_type, rxcui, class_id, protocol_section, rationale) VALUES (?,?,?,?,?,?)');
   // One row per RxClass id. 'NSAID' resolves to ATC M01A and the FDA EPC
-  // "Nonsteroidal Anti-inflammatory Drug" (`node drugdb/cli.js class NSAID`).
+  // "Nonsteroidal Anti-inflammatory Drug" (`node medical_data/cli.js class NSAID`).
   for (const classId of ['M01A', 'N0000175722']) {
     rule.run('S1', 'prohibited', null, classId, '6.5', 'NSAIDs prohibited from 7 days before first dose through end of study.');
   }

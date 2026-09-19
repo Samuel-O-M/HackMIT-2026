@@ -1,13 +1,13 @@
 # Database
 
-A SQLite database built from the JSON under `data/`.
+A SQLite database built from the JSON under `patient_data/`.
 
 ```
-node db/seed.mjs        # rebuild db/conmed.db from data/
-sqlite3 db/conmed.db    # open it
+node patient_data/db/seed.mjs        # rebuild db/conmed.db from data/
+sqlite3 patient_data/db/conmed.db    # open it
 ```
 
-`data/` is the source of truth. `conmed.db` is a derived artefact — safe to
+`patient_data/` is the source of truth. `conmed.db` is a derived artefact — safe to
 delete and rebuild at any time, and it is not what the frontend reads.
 
 ## Why it exists
@@ -60,6 +60,6 @@ the signature means. `audit_events.reason` carries the "why" that 11.10(e) wants
 
 ## Dates
 
-`data/` stores scheduling times as an offset from today so the demo never looks
+`patient_data/` stores scheduling times as an offset from today so the demo never looks
 stale; the seed resolves them to ISO instants. Rebuild the database to move the
 schedule to the current day. Clinical dates are stored as written.

@@ -3,7 +3,7 @@
 /**
  * health_search — READ-ONLY lookups against the health knowledge base.
  *
- * Drugs and classes come from the shared drugdb (RxNorm / RxClass, cached
+ * Drugs and classes come from the shared medical_data (RxNorm / RxClass, cached
  * locally, live NLM lookup on a miss). Plain-language guidance still comes from
  * general_health.db.
  *
@@ -13,7 +13,7 @@
  * Returns only what matched; never a table dump.
  */
 
-const drugdb = require('../../../drugdb');
+const medical_data = require('../../../medical_data');
 const { generalHealth } = require('../db');
 
 function tokenize(text) {
@@ -29,10 +29,10 @@ function searchGuidance(tokens) {
 const compactClass = (c) => ({ class_id: c.classId, name: c.name, type: c.type, direct: c.direct });
 
 async function search(query) {
-  const drug = await drugdb.resolveDrug(query);
+  const drug = await medical_data.resolveDrug(query);
   const ingredients = [];
   if (drug.found) {
-    const { classes } = await drugdb.classify(drug.rxcui);
+    const { classes } = await medical_data.classify(drug.rxcui);
     ingredients.push({
       rxcui: drug.rxcui,
       name: drug.name,
@@ -43,7 +43,7 @@ async function search(query) {
   }
 
   // A class name ("NSAIDs", "systemic corticosteroids") rather than a drug.
-  const cls = drug.found ? null : await drugdb.resolveClass(query);
+  const cls = drug.found ? null : await medical_data.resolveClass(query);
   const classes = cls && (cls.quality === 'exact' || cls.quality === 'partial')
     ? cls.classes.map((c) => ({ class_id: c.classId, name: c.name, type: c.type }))
     : [];
@@ -54,7 +54,7 @@ async function search(query) {
 
   return {
     query,
-    source: 'drugdb (RxNorm / RxClass, NLM) + general_health.db guidance — read-only',
+    source: 'medical_data (RxNorm / RxClass, NLM) + general_health.db guidance — read-only',
     ingredients,
     classes,
     guidance,

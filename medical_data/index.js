@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * drugdb — one place to ask "what is this drug, and what is it part of?".
+ * medical_data — one place to ask "what is this drug, and what is it part of?".
  *
  *   resolveDrug(text)            spoken/typed name -> RxNorm concept (+ ingredients)
  *   classify(rxcui)              -> ATC + FDA EPC classes, with ATC ancestors

@@ -1,16 +1,16 @@
-# drugdb
+# medical_data
 
 One place to ask "what is this drug, and what is it part of?". Shared by
 `voice/` (the call agent), `recognize/` (protocol extraction) and, later, the
 API.
 
 ```js
-const drugdb = require('../drugdb');
+const meds = require('../medical_data');
 
-await drugdb.resolveDrug('Advil');            // -> { rxcui: '5640', name: 'ibuprofen', match: 'exact', ... }
-await drugdb.classify('5640');                // -> ATC + FDA EPC classes (ATC ancestors included)
-await drugdb.resolveClass('systemic corticosteroid'); // -> { quality: 'exact', classes: [{ classId: 'H02', ... }] }
-await drugdb.checkProhibited('8640', [{ ruleId: 'PR-0021', classIds: ['H02'] }]);
+await meds.resolveDrug('Advil');            // -> { rxcui: '5640', name: 'ibuprofen', match: 'exact', ... }
+await meds.classify('5640');                // -> ATC + FDA EPC classes (ATC ancestors included)
+await meds.resolveClass('systemic corticosteroid'); // -> { quality: 'exact', classes: [{ classId: 'H02', ... }] }
+await meds.checkProhibited('8640', [{ ruleId: 'PR-0021', classIds: ['H02'] }]);
 ```
 
 ## Where the data comes from

@@ -1,5 +1,5 @@
 import type { TranscriptTurn } from '../types/ui';
-import raw from '../../../data/participants/transcripts.json';
+import raw from '../../../patient_data/participants/transcripts.json';
 
 /**
  * Call transcripts, keyed by session. Lives in

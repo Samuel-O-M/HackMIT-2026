@@ -1,10 +1,10 @@
-# Data
+# Patient data
 
 All fixture data for the app, kept out of the frontend so the backend, agent
 and voice branches can read the same files.
 
 ```
-data/
+patient_data/
   trials/
     trials.json          the trials this site is running
     protocols.json       each trial's protocol document and its prohibited rules

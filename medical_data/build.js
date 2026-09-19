@@ -44,7 +44,7 @@ function read(file) {
 }
 
 function fixturePairs() {
-  const sessions = read('../data/participants/sessions.json');
+  const sessions = read('../patient_data/participants/sessions.json');
   const pairs = new Map();
   (function walk(x) {
     if (Array.isArray(x)) x.forEach(walk);

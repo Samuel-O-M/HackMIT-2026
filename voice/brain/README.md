@@ -71,7 +71,7 @@ Persisted per session in `planner_state`, so a future instance resumes.
 
 | Tool | Access | Notes |
 |------|--------|-------|
-| `health_search(query)` | **read-only** | Drug/brand/class lookup via the shared `drugdb` (RxNorm + RxClass), plus plain-language guidance. The *only* source of medical facts. |
+| `health_search(query)` | **read-only** | Drug/brand/class lookup via the shared `medical_data` (RxNorm + RxClass), plus plain-language guidance. The *only* source of medical facts. |
 | `check_prohibited(rxcui)` | read | Does a resolved drug trip this participant's protocol rules? Membership only; dose/timing limits are still the agent's to compare. |
 | `patient_read(scope, limit?)` | read | scoped slices only: profile, enrollment, medications, protocol_rules, planner_state, transcript, advice |
 | `patient_update(op, payload)` | controlled write | named ops only: `add_medication_change`, `add_advice`, `set_planner_state` |
@@ -93,7 +93,7 @@ nothing, the model must record it as missing rather than guess. See
 | Patient / clinical | `db/patient.db` | **read + controlled write** |
 
 Generated, not committed. Reset with `node db/seed.js`.
-Drug and class facts are not in these files: they come from `../../drugdb`
+Drug and class facts are not in these files: they come from `../../medical_data`
 (real RxNorm / RxClass, cached locally; see its README).
 
 ## Run

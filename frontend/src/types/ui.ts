@@ -19,7 +19,7 @@ export interface ProhibitedRule {
   /** Dose or timing qualifier, when the ban is conditional rather than absolute. */
   threshold: string | null;
   /**
-   * RxClass ids (ATC / FDA EPC) this rule covers, looked up in drugdb rather
+   * RxClass ids (ATC / FDA EPC) this rule covers, looked up in medical_data rather
    * than written by the model. A drug in any of them trips the rule.
    */
   classIds?: string[];

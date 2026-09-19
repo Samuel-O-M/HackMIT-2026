@@ -1,5 +1,5 @@
 import type { AuditEvent } from '../types/ui';
-import raw from '../../../data/participants/audit.json';
+import raw from '../../../patient_data/participants/audit.json';
 import { toIso, type RelativeTime } from './schedule';
 
 /**

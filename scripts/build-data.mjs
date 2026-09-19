@@ -1,8 +1,8 @@
 /**
- * Rebuilds every file under data/ from two inputs:
+ * Rebuilds every file under patient_data/ from two inputs:
  *
- *   data/catalog/registry.json     ClinicalTrials.gov snapshot for each trial
- *   data/catalog/medications.json  curated medications, RxCUIs verified vs RxNav
+ *   patient_data/catalog/registry.json  ClinicalTrials.gov snapshot per trial
+ *   medical_data/medications.json       curated medications, RxCUIs verified vs RxNav
  *
  * Run: npm run build:data
  *
@@ -17,7 +17,7 @@ import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'no
 import { dirname, join } from 'node:path';
 
 const ROOT = join(process.cwd(), '..');
-const DATA = join(ROOT, 'data');
+const DATA = join(ROOT, 'patient_data');
 const read = (p) => JSON.parse(readFileSync(join(DATA, p), 'utf8'));
 const write = (p, v) => {
   const f = join(DATA, p);
@@ -42,7 +42,7 @@ const chance = (r, p) => r() < p;
 
 /* ---------------------------------------------------------------- trials */
 const registry = read('catalog/registry.json');
-const meds = read('catalog/medications.json');
+const meds = JSON.parse(readFileSync(join(ROOT, 'medical_data', 'medications.json'), 'utf8'));
 
 /** Hand-written where the registry title is too long to scan. */
 const TRIAL_COPY = {

@@ -1,5 +1,5 @@
 import type { ProhibitedRule, ProtocolDocument } from '../types/ui';
-import raw from '../../../data/trials/protocols.json';
+import raw from '../../../patient_data/trials/protocols.json';
 import { toIso, type RelativeTime } from './schedule';
 
 /**

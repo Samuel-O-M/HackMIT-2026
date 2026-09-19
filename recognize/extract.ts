@@ -12,7 +12,7 @@
  * it, every scalar value is also checked against the document text ("in text"):
  * a confident value that does not appear verbatim deserves a second look.
  *
- * Rules are then grounded through ../drugdb: the class each rule names is
+ * Rules are then grounded through ../medical_data: the class each rule names is
  * looked up in RxClass and the ids are written onto the rule (`classIds`), so
  * a drug can later be checked against the rule by membership.
  */
@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import mammoth from 'mammoth';
 import { extractText, getDocumentProxy } from 'unpdf';
-import drugdb from '../drugdb/index.js';
+import drugdb from '../medical_data/index.js';
 import type { ExtractedField, Phase, ProhibitedRule, ProtocolExtraction } from './types.ts';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -260,7 +260,7 @@ interface RuleGrounding {
 }
 
 /**
- * The model says what a rule bans, in prose. drugdb turns that into the ids a
+ * The model says what a rule bans, in prose. medical_data turns that into the ids a
  * drug is later checked against, so the check is set membership, not another
  * model's opinion. The model never picks an id; it only supplies the words.
  */

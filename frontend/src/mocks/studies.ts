@@ -1,5 +1,5 @@
 import type { Study } from '../types/ui';
-import trials from '../../../data/trials/trials.json';
+import trials from '../../../patient_data/trials/trials.json';
 
 /**
  * Trials this site is running. The data lives in data/trials/trials.json so the

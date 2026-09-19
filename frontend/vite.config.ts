@@ -5,7 +5,7 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 
 /**
- * Serves `data/trials/` at /protocol-docs, so an uploaded Clinical Study
+ * Serves `patient_data/trials/` at /protocol-docs, so an uploaded Clinical Study
  * Protocol can be opened from the app without duplicating a 3 MB PDF into the
  * frontend bundle. In production the backend serves these.
  *
@@ -14,7 +14,7 @@ import react from '@vitejs/plugin-react';
  * complete fallback rather than a degraded one.
  */
 function protocolDocs(): Plugin {
-  const root = resolve(process.cwd(), '..', 'data', 'trials');
+  const root = resolve(process.cwd(), '..', 'patient_data', 'trials');
   const TYPES: Record<string, string> = {
     '.pdf': 'application/pdf',
     '.doc': 'application/msword',
@@ -54,7 +54,7 @@ export default defineConfig({
   plugins: [react(), protocolDocs()],
   server: {
     port: 5173,
-    // The fixtures live in the repo's data/ directory, one level up.
+    // The fixtures live in the repo's patient_data/ directory, one level up.
     fs: { allow: ['..'] },
   },
   preview: { port: 5173, strictPort: true },

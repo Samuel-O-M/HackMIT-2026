@@ -1,10 +1,10 @@
 /**
- * Builds db/conmed.db from the JSON under data/.
+ * Builds patient_data/db/conmed.db from the JSON under patient_data/.
  *
- * Run: node db/seed.mjs        (from the repo root)
+ * Run: node patient_data/db/seed.mjs      (from the repo root)
  *
  * Uses node:sqlite, built into Node 22+, so there is no dependency to install.
- * The database is a derived artefact — data/ stays the source of truth, and
+ * The database is a derived artefact — patient_data/ stays the source of truth, and
  * this is safe to delete and rebuild at any time.
  */
 import { DatabaseSync } from 'node:sqlite';
@@ -13,8 +13,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(HERE, '..');
-const DATA = join(ROOT, 'data');
+const ROOT = join(HERE, '..', '..');
+const DATA = join(ROOT, 'patient_data');
 const DB_PATH = join(HERE, 'conmed.db');
 
 const read = (p) => JSON.parse(readFileSync(join(DATA, p), 'utf8'));
@@ -40,7 +40,7 @@ const visits = read('participants/visits.json');
 const sessions = read('participants/sessions.json');
 const transcripts = read('participants/transcripts.json');
 const audit = read('participants/audit.json');
-const meds = read('catalog/medications.json');
+const meds = JSON.parse(readFileSync(join(ROOT, 'medical_data', 'medications.json'), 'utf8'));
 
 const insert = (sql) => db.prepare(sql);
 const counts = {};
