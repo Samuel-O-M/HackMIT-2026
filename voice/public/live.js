@@ -1,14 +1,22 @@
 'use strict';
 
-/* ============ LIVE BRAIN — 3 views (conversation · talker · brain) ============ */
+/* ===== LIVE BRAIN — a realtime call with 3 views (conversation · talker · brain) ===== */
 
 (function () {
-  const { $, showError, clearError, fetchJson, speak, Recorder } = window.App;
+  const { $, showError, clearError, fetchJson, speak } = window.App;
 
-  const recorder = new Recorder();
   let sessionId = null;
   let subjectId = null;
   let pollTimer = null;
+
+  // call state
+  let call = null; // { ws, ctx, stream, source, processor }
+  let currentConversation = [];
+  let interim = '';
+  let pendingFinals = [];
+  let flushTimer = null;
+  let queue = [];
+  let turnBusy = false;
 
   const verbose = () => $('#liveVerbose').checked;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -45,21 +53,38 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
+  function setCallStatus(s) {
+    const pill = $('#liveCallStatus');
+    pill.textContent = s;
+    pill.className = 'pill' + (s.startsWith('listening') ? ' ok' : s.startsWith('thinking') ? ' warn' : '');
+  }
+
   // ---------------------------------------------------------------- rendering
   function renderConversation(conversation) {
+    if (conversation) currentConversation = conversation;
     const box = $('#liveConversation');
     clear(box);
-    if (!conversation?.length) {
-      box.appendChild(el('p', { class: 'muted small', text: 'No turns yet.' }));
+
+    if (!currentConversation.length && !interim) {
+      box.appendChild(el('p', { class: 'muted small', text: 'No turns yet. Click “Start call” and speak.' }));
       return;
     }
-    for (const turn of conversation) {
+    for (const turn of currentConversation) {
       const isUser = turn.speaker === 'patient';
-      const div = el('div', { class: 'msg ' + (isUser ? 'user' : 'assistant') }, [
-        el('span', { class: 'who', text: isUser ? 'Participant' : 'Agent (Talker)' }),
-        document.createTextNode(turn.transcript),
-      ]);
-      box.appendChild(div);
+      box.appendChild(
+        el('div', { class: 'msg ' + (isUser ? 'user' : 'assistant') }, [
+          el('span', { class: 'who', text: isUser ? 'Participant' : 'Agent' }),
+          document.createTextNode(turn.transcript),
+        ])
+      );
+    }
+    if (interim) {
+      box.appendChild(
+        el('div', { class: 'msg user interim' }, [
+          el('span', { class: 'who', text: 'Participant · live' }),
+          document.createTextNode(interim),
+        ])
+      );
     }
     box.scrollTop = box.scrollHeight;
   }
@@ -68,12 +93,11 @@
     const box = $('#liveTalker');
     clear(box);
     if (!lastTurn) {
-      box.appendChild(el('p', { class: 'muted small', text: 'No turn yet — record or type something.' }));
+      box.appendChild(el('p', { class: 'muted small', text: 'No turn yet.' }));
       return;
     }
     const t = lastTurn.talker || {};
     const tools = t.toolCalls || [];
-
     box.appendChild(
       stack([
         el('div', { class: 'pillrow' }, [
@@ -82,15 +106,9 @@
           el('span', { class: 'pill', text: (lastTurn.at || '').replace('T', ' ').slice(0, 19) }),
         ]),
         el('div', { class: 'kv' }, [el('span', { text: 'participant said' }), el('div', { class: 'muted', text: lastTurn.userText || '—' })]),
-        el('div', { class: 'kv' }, [el('span', { text: 'talker replied (spoken)' }), el('div', {}, [document.createTextNode(lastTurn.say || '—')])]),
+        el('div', { class: 'kv' }, [el('span', { text: 'agent said (spoken)' }), el('div', {}, [document.createTextNode(lastTurn.say || '—')])]),
         tools.length
-          ? det(
-              `tool calls (${tools.length})`,
-              tools.map((c, i) =>
-                det(`${i + 1}. ${c.name}`, [pre({ args: c.args, result: c.result })], verbose())
-              ),
-              verbose()
-            )
+          ? det(`tool calls (${tools.length})`, tools.map((c, i) => det(`${i + 1}. ${c.name}`, [pre({ args: c.args, result: c.result })], verbose())), verbose())
           : el('p', { class: 'muted small', text: 'No tools called this turn.' }),
         det('planner state the Talker used', [pre(t.stateUsed ?? null)], verbose()),
       ])
@@ -103,7 +121,6 @@
     if (!data) return;
     const st = data.state || null;
     const planner = data.planner || {};
-
     const nodes = [];
 
     nodes.push(
@@ -119,20 +136,14 @@
     nodes.push(el('div', { class: 'kv' }, [el('span', { text: 'summary' }), el('div', { class: 'muted small', text: st?.summary || '—' })]));
 
     const known = st?.known || [];
-    nodes.push(
-      det(`known (${known.length})`, [known.length ? list(known, (k) => `${k.fact}${k.source ? `  [${k.source}]` : ''}`) : el('p', { class: 'muted small', text: '—' })])
-    );
+    nodes.push(det(`known (${known.length})`, [known.length ? list(known, (k) => `${k.fact}${k.source ? `  [${k.source}]` : ''}`) : el('p', { class: 'muted small', text: '—' })]));
     const missing = st?.missing || [];
     nodes.push(det(`missing (${missing.length})`, [missing.length ? list(missing) : el('p', { class: 'muted small', text: '—' })], missing.length > 0));
     const nq = st?.next_questions || [];
     nodes.push(det(`next questions (${nq.length})`, [nq.length ? list(nq) : el('p', { class: 'muted small', text: '—' })], nq.length > 0));
     const flags = st?.flags || [];
     nodes.push(
-      det(
-        `flags (${flags.length})`,
-        [flags.length ? list(flags, (f) => `${f.type}: ${f.detail}${f.protocol_section ? ` (§${f.protocol_section})` : ''}`) : el('p', { class: 'muted small', text: '—' })],
-        flags.length > 0
-      )
+      det(`flags (${flags.length})`, [flags.length ? list(flags, (f) => `${f.type}: ${f.detail}${f.protocol_section ? ` (§${f.protocol_section})` : ''}`) : el('p', { class: 'muted small', text: '—' })], flags.length > 0)
     );
     const ts = st?.to_save || [];
     nodes.push(det(`pending saves (${ts.length})`, [ts.length ? pre(ts) : el('p', { class: 'muted small', text: '—' })]));
@@ -143,10 +154,8 @@
         det(
           `last planner run — ${lp.model}`,
           [
-            lp.toolCalls?.length ? el('p', { class: 'muted small', text: 'retrieval:' }) : null,
-            lp.toolCalls?.length
-              ? list(lp.toolCalls, (c) => `${c.tool}(${JSON.stringify(c.args)})`)
-              : el('p', { class: 'muted small', text: 'no retrieval' }),
+            el('p', { class: 'muted small', text: 'retrieval:' }),
+            lp.toolCalls?.length ? list(lp.toolCalls, (c) => `${c.tool}(${JSON.stringify(c.args)})`) : el('p', { class: 'muted small', text: 'no retrieval' }),
             el('p', { class: 'muted small', text: 'writes applied:' }),
             lp.applied?.length ? pre(lp.applied) : el('p', { class: 'muted small', text: 'none' }),
           ],
@@ -166,8 +175,6 @@
           pre(data.patient.medications),
           el('p', { class: 'muted small', text: 'protocol rules' }),
           pre(data.patient.protocol_rules),
-          data.patient.advice?.length ? el('p', { class: 'muted small', text: 'advice logged' }) : null,
-          data.patient.advice?.length ? pre(data.patient.advice) : null,
         ])
       );
     }
@@ -183,8 +190,8 @@
       renderConversation(data.conversation);
       renderTalker(data.lastTurn);
       renderBrain(data);
-    } catch (err) {
-      /* transient; ignore on poll */
+    } catch {
+      /* transient */
     }
   }
 
@@ -213,96 +220,215 @@
   }
 
   async function newSession() {
-    clearError();
     subjectId = $('#livePatient').value;
-    if (!subjectId) return showError('No participant selected.');
-    try {
-      const data = await fetchJson('/api/brain/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subjectId }),
-      });
-      sessionId = data.sessionId;
-      $('#liveSessionState').textContent = `session ${sessionId.slice(0, 8)}… (${subjectId})`;
-      $('#liveSessionState').classList.add('ok');
-      renderConversation([]);
-      renderTalker(null);
-      renderBrain(null);
-      if (pollTimer) clearInterval(pollTimer);
-      pollTimer = setInterval(refresh, 1600);
-      refresh();
-    } catch (err) {
-      showError('Session: ' + err.message);
+    if (!subjectId) {
+      showError('No participant selected.');
+      return null;
     }
+    const data = await fetchJson('/api/brain/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subjectId }),
+    });
+    sessionId = data.sessionId;
+    $('#liveSessionState').textContent = `session ${sessionId.slice(0, 8)}… (${subjectId})`;
+    $('#liveSessionState').classList.add('ok');
+    queue = [];
+    pendingFinals = [];
+    interim = '';
+    renderConversation([]);
+    renderTalker(null);
+    renderBrain(null);
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(refresh, 1600);
+    await refresh();
+    return sessionId;
   }
 
-  async function send(text) {
-    const content = (text || '').trim();
-    if (!content) return;
-    if (!sessionId) await newSession();
-    if (!sessionId) return;
-    clearError();
-    $('#liveSend').disabled = true;
+  /** One conversational turn: talker replies fast; planner runs after. */
+  async function doTurn(text) {
+    setCallStatus('thinking…');
     try {
       await fetchJson('/api/brain/turn', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, subjectId, text: content }),
+        body: JSON.stringify({ sessionId, subjectId, text }),
       });
-      $('#liveInput').value = '';
       await refresh();
       if ($('#liveAutoSpeak').checked) {
-        // speak the latest agent line
-        const data = await fetchJson(`/api/brain/debug?sessionId=${encodeURIComponent(sessionId)}`);
-        const lastAgent = [...(data.conversation || [])].reverse().find((t) => t.speaker === 'agent');
+        const lastAgent = [...currentConversation].reverse().find((t) => t.speaker === 'agent');
         if (lastAgent?.transcript) await speak(lastAgent.transcript, { model: 'aura-2-helena-en' });
       }
-      refreshUntilIdle();
+      refreshUntilIdle(4, 1300);
     } catch (err) {
       showError('Brain: ' + err.message);
     } finally {
-      $('#liveSend').disabled = false;
+      setCallStatus(call ? 'listening…' : 'idle');
     }
   }
 
-  // ---- record → transcribe → send ----
-  $('#liveRecord').addEventListener('click', async () => {
-    if (recorder.recording) {
-      const blob = await recorder.stop();
-      $('#liveRecord').textContent = '● Record';
-      $('#liveRecord').classList.remove('recording');
-      $('#liveRecordState').textContent = 'transcribing…';
-      try {
-        const data = await window.App.transcribeBlob(blob, { model: 'nova-3', smart_format: 'true', punctuate: 'true' });
-        $('#liveRecordState').textContent = 'done';
-        if (data.transcript) {
-          if ($('#liveAutoSend').checked) await send(data.transcript);
-          else $('#liveInput').value = data.transcript;
-        }
-      } catch (err) {
-        $('#liveRecordState').textContent = 'error';
-        showError('STT: ' + err.message);
-      }
-      return;
+  function enqueueTurn(text) {
+    const t = (text || '').trim();
+    if (!t) return;
+    queue.push(t);
+    pump();
+  }
+
+  async function pump() {
+    if (turnBusy) return;
+    turnBusy = true;
+    try {
+      while (queue.length) await doTurn(queue.shift());
+    } finally {
+      turnBusy = false;
     }
+  }
+
+  // ---- live STT → auto-send each finished utterance ----
+  function scheduleFlush(ms = 900) {
+    if (flushTimer) clearTimeout(flushTimer);
+    flushTimer = setTimeout(flushFinals, ms);
+  }
+
+  function flushFinals() {
+    if (!pendingFinals.length) return;
+    const text = pendingFinals.join(' ').trim();
+    pendingFinals = [];
+    interim = '';
+    if (text) enqueueTurn(text);
+  }
+
+  function handleStt(msg) {
+    if (msg.type === 'Results') {
+      const t = msg.channel?.alternatives?.[0]?.transcript || '';
+      if (!t) return;
+      if (msg.is_final) {
+        pendingFinals.push(t);
+        interim = '';
+        scheduleFlush(msg.speech_final ? 350 : 900);
+      } else {
+        interim = t;
+        if (call) setCallStatus('listening…');
+      }
+      renderConversation(currentConversation);
+    } else if (msg.type === 'UtteranceEnd') {
+      scheduleFlush(250);
+    }
+  }
+
+  async function startCall() {
+    if (call) return;
     clearError();
     try {
-      await recorder.start();
-      $('#liveRecord').textContent = '■ Stop';
-      $('#liveRecord').classList.add('recording');
-      $('#liveRecordState').textContent = 'recording…';
-    } catch (err) {
-      showError('Microphone: ' + err.message);
-    }
-  });
+      if (!sessionId) await newSession();
+      if (!sessionId) return;
 
-  $('#liveNewSession').addEventListener('click', newSession);
-  $('#liveSend').addEventListener('click', () => send($('#liveInput').value));
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const params = new URLSearchParams();
+      params.set('model', 'nova-3');
+      params.set('encoding', 'linear16');
+      params.set('sample_rate', String(ctx.sampleRate));
+      params.set('smart_format', 'true');
+      params.set('punctuate', 'true');
+      params.set('interim_results', 'true');
+      params.set('vad_events', 'true');
+      params.set('endpointing', '300');
+      params.set('utterance_end_ms', '1000');
+
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      const ws = new WebSocket(`${proto}://${location.host}/ws/listen?${params}`);
+      ws.binaryType = 'arraybuffer';
+      ws.onmessage = (ev) => {
+        let m;
+        try {
+          m = JSON.parse(ev.data);
+        } catch {
+          return;
+        }
+        handleStt(m);
+      };
+      ws.onerror = () => showError('Live STT socket error');
+      ws.onclose = () => {
+        if (call) endCall();
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const source = ctx.createMediaStreamSource(stream);
+      const processor = ctx.createScriptProcessor(4096, 1, 1);
+      processor.onaudioprocess = (e) => {
+        if (ws.readyState !== WebSocket.OPEN) return;
+        const f32 = e.inputBuffer.getChannelData(0);
+        const i16 = new Int16Array(f32.length);
+        for (let i = 0; i < f32.length; i++) {
+          const s = Math.max(-1, Math.min(1, f32[i]));
+          i16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+        }
+        ws.send(i16.buffer);
+      };
+      source.connect(processor);
+      processor.connect(ctx.destination);
+
+      call = { ws, ctx, stream, source, processor };
+      $('#liveStartCall').disabled = true;
+      $('#liveEndCall').disabled = false;
+      setCallStatus('listening…');
+    } catch (err) {
+      showError('Mic: ' + err.message);
+      endCall();
+    }
+  }
+
+  async function endCall() {
+    if (!call) {
+      setCallStatus('idle');
+      return;
+    }
+    const { ws, ctx, stream, source, processor } = call;
+    call = null;
+    try { processor.disconnect(); } catch {}
+    try { source.disconnect(); } catch {}
+    try { stream.getTracks().forEach((t) => t.stop()); } catch {}
+    try { if (ws.readyState === WebSocket.OPEN) ws.close(); } catch {}
+    try { ctx.close(); } catch {}
+    flushFinals();
+    $('#liveStartCall').disabled = false;
+    $('#liveEndCall').disabled = true;
+    setCallStatus('idle');
+    if (sessionId) {
+      try {
+        await fetchJson('/api/brain/end', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId }),
+        });
+      } catch {}
+    }
+    refresh();
+  }
+
+  // ---------------------------------------------------------------- wiring
+  $('#liveStartCall').addEventListener('click', startCall);
+  $('#liveEndCall').addEventListener('click', endCall);
+  $('#liveSend').addEventListener('click', () => {
+    enqueueTurn($('#liveInput').value);
+    $('#liveInput').value = '';
+  });
   $('#liveInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') send($('#liveInput').value);
+    if (e.key === 'Enter') {
+      enqueueTurn($('#liveInput').value);
+      $('#liveInput').value = '';
+    }
   });
   $('#liveRefresh').addEventListener('click', refresh);
   $('#liveVerbose').addEventListener('change', refresh);
+  $('#livePatient').addEventListener('change', () => {
+    // switching participant starts a fresh session on next call
+    if (call) endCall();
+    sessionId = null;
+    $('#liveSessionState').textContent = 'no session';
+    $('#liveSessionState').classList.remove('ok');
+  });
 
   loadPatients();
+  setCallStatus('idle');
 })();
