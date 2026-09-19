@@ -53,12 +53,19 @@ export function LiveCall({ sessionId, session }: Props) {
     feed.current?.scrollTo({ top: feed.current.scrollHeight, behavior: 'smooth' });
   }, [turns.length]);
 
+  /**
+   * Live means the participant is on the phone now. A finished session is a
+   * recording being replayed — same transcript, but calling it "in progress"
+   * would be a lie, and offering to fast-forward a live call is nonsense.
+   */
+  const isLive = session !== null && session.endedAt === null;
   const heard = turns.length ? turns[turns.length - 1].atMs : 0;
   const total = useMemo(
     () => (session ? Math.max(heard, 1) : 1),
     [session, heard],
   );
   const flagged = captured.filter((c) => c.prohibitedHit !== null).length;
+  const reviewCount = isLive ? captured.length : session?.changes.length ?? captured.length;
 
   if (unavailable) {
     return (
@@ -90,21 +97,36 @@ export function LiveCall({ sessionId, session }: Props) {
         <div>
           <h1>{session?.subjectId ?? sessionId}</h1>
           <p className="phead-sub">
-            {ended ? 'Call ended' : 'Call in progress'}
-            {session?.startedAt ? ` · started ${clock(session.startedAt)}` : ''} · {elapsed(heard)} elapsed
+            {isLive ? (
+              <>
+                Call in progress
+                {session?.startedAt ? ` · started ${clock(session.startedAt)}` : ''} ·{' '}
+                {elapsed(heard)} elapsed
+              </>
+            ) : (
+              <>
+                Recording of a finished call
+                {session?.startedAt && session?.endedAt
+                  ? ` · ${clock(session.startedAt)}–${clock(session.endedAt)}`
+                  : ''}{' '}
+                · playing {elapsed(heard)}
+              </>
+            )}
           </p>
         </div>
         <div className="phead-right">
-          {!ended && <span className="live-dot" aria-hidden="true" />}
-          <span className="pill" data-s={ended ? 'awaiting_review' : 'in_progress'}>
-            {ended ? 'Awaiting review' : 'Listening'}
+          {isLive && !ended && <span className="live-dot" aria-hidden="true" />}
+          <span className="pill" data-s={isLive && !ended ? 'in_progress' : 'awaiting_review'}>
+            {isLive ? (ended ? 'Awaiting review' : 'Listening') : 'Replay'}
           </span>
-          {ended && (
+          {/* A finished call's changes already exist — no need to sit through
+              the replay before the coordinator can go and review them. */}
+          {(!isLive || ended) && (
             <button
               className="btn btn-primary"
               onClick={() => navigate({ name: 'review', sessionId })}
             >
-              Review {captured.length} change{captured.length === 1 ? '' : 's'}
+              Review {reviewCount} change{reviewCount === 1 ? '' : 's'}
             </button>
           )}
         </div>
@@ -119,7 +141,11 @@ export function LiveCall({ sessionId, session }: Props) {
             <span className="dim">Read-only</span>
           </div>
           <div className="transcript" ref={feed} aria-live="polite" aria-atomic="false">
-            {turns.length === 0 && <p className="dim">Waiting for the call to connect…</p>}
+            {turns.length === 0 && (
+              <p className="dim">
+                {isLive ? 'Waiting for the call to connect…' : 'Starting the recording…'}
+              </p>
+            )}
             {turns.map((turn, i) => (
               <div className="turn" key={`${turn.atMs}-${i}`} data-who={turn.speaker}>
                 <div>
@@ -128,18 +154,25 @@ export function LiveCall({ sessionId, session }: Props) {
                 </div>
                 <p className="turn-text">
                   {turn.text}
-                  {!ended && i === turns.length - 1 && <span className="caret" aria-hidden="true" />}
+                  {isLive && !ended && i === turns.length - 1 && (
+                    <span className="caret" aria-hidden="true" />
+                  )}
                 </p>
               </div>
             ))}
           </div>
           <div className="replay">
             <span className="replay-time">{elapsed(heard)}</span>
-            <span className="replay-track" role="img" aria-label="Call progress">
+            <span
+              className="replay-track"
+              role="img"
+              aria-label={isLive ? 'Call progress' : 'Replay position'}
+            >
               <i style={{ width: ended ? '100%' : `${Math.min(100, (heard / total) * 100)}%` }} />
             </span>
-            <span className="replay-time">Speed</span>
-            {SPEEDS.map((s) => (
+            {!isLive && <span className="replay-time">Speed</span>}
+            {!isLive &&
+              SPEEDS.map((s) => (
               <button
                 key={s}
                 className="btn"
@@ -149,9 +182,11 @@ export function LiveCall({ sessionId, session }: Props) {
                 {s}×
               </button>
             ))}
-            <button className="btn" onClick={() => setRun((n) => n + 1)}>
-              Restart
-            </button>
+            {!isLive && (
+              <button className="btn" onClick={() => setRun((n) => n + 1)}>
+                Restart
+              </button>
+            )}
           </div>
         </section>
 

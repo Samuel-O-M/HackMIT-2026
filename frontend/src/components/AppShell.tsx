@@ -15,6 +15,14 @@ interface Props {
   children: ReactNode;
 }
 
+/** Where this participant's reconciliation has got to. The trial is named in
+ *  the group above, so repeating it here would say nothing. */
+const SESSION_STATE: Record<ReconciliationSession['status'], string> = {
+  in_progress: 'Call in progress',
+  awaiting_review: 'Awaiting review',
+  completed: 'Promoted to log',
+};
+
 function NavLink({
   to,
   current,
@@ -65,38 +73,44 @@ export function AppShell({ route, study, session, coordinator, onSignOut, childr
           </a>
         </div>
 
+        {/* Everything below belongs to one trial: its schedule and its documents. */}
         {studyId && (
-          <div className="rail-study">
-            <span className="rail-study-label">Monitoring</span>
-            <b>{studyId}</b>
-            {study && <span>{study.investigationalProduct}</span>}
-          </div>
+          <section className="rail-group" aria-labelledby="rail-trial">
+            <h2 className="rail-group-title" id="rail-trial">
+              Trial
+            </h2>
+            <div className="rail-context">
+              <b>{studyId}</b>
+              {study && <span>{study.investigationalProduct}</span>}
+            </div>
+            <div className="rail-nav">
+              <NavLink
+                to={{ name: 'visits', studyId }}
+                current={route.name === 'visits'}
+                label="Visits"
+                count={study?.awaitingReview ?? 0}
+              />
+              <NavLink
+                to={{ name: 'documents', studyId }}
+                current={route.name === 'documents'}
+                label="Documents"
+                count={study && !study.hasProtocol ? 1 : 0}
+                alarm
+              />
+            </div>
+          </section>
         )}
 
-        {studyId && (
-          <div className="rail-nav">
-            <NavLink
-              to={{ name: 'visits', studyId }}
-              current={route.name === 'visits'}
-              label="Visits"
-              count={study?.awaitingReview ?? 0}
-            />
-            <NavLink
-              to={{ name: 'documents', studyId }}
-              current={route.name === 'documents'}
-              label="Documents"
-              count={study && !study.hasProtocol ? 1 : 0}
-              alarm
-            />
-          </div>
-        )}
-
+        {/* One participant inside that trial. Nested, because a session only
+            exists within a trial — and the counts here mean different things. */}
         {sessionId && (
-          <>
-            <div className="rail-study rail-context">
-              <span className="rail-study-label">Reviewing</span>
+          <section className="rail-group" data-nested="true" aria-labelledby="rail-participant">
+            <h2 className="rail-group-title" id="rail-participant">
+              Participant
+            </h2>
+            <div className="rail-context">
               <b>{session?.subjectId ?? sessionId}</b>
-              {session?.endedAt === null && <span>Call in progress</span>}
+              {session && <span>{SESSION_STATE[session.status]}</span>}
             </div>
             <div className="rail-nav">
               <NavLink
@@ -109,15 +123,15 @@ export function AppShell({ route, study, session, coordinator, onSignOut, childr
               <NavLink
                 to={{ name: 'live', sessionId }}
                 current={route.name === 'live'}
-                label="Call"
+                label="Transcript"
               />
               <NavLink
                 to={{ name: 'audit', sessionId }}
                 current={route.name === 'audit'}
-                label="Audit"
+                label="History"
               />
             </div>
-          </>
+          </section>
         )}
 
         <div className="rail-foot">

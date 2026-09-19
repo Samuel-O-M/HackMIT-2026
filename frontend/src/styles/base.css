@@ -2,7 +2,10 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html, body, #root { height: 100%; }
+/* Fixed app shell: the page itself never scrolls, so the only scrollbar is the
+   one on whichever pane owns the overflow. Without this the document scrolls
+   too and the whole app slides up under a second scrollbar. */
+html, body, #root { height: 100%; overflow: hidden; }
 
 body {
   margin: 0;
@@ -28,7 +31,7 @@ button {
   cursor: pointer;
 }
 
-input, select {
+input, select, textarea {
   font: inherit;
   font-variant-numeric: inherit;
   color: inherit;
@@ -73,7 +76,10 @@ input, select {
   background: var(--surface);
   display: flex;
   flex-direction: column;
+  /* The rail grows as trial and session groups appear; on a short screen it
+     scrolls itself rather than pushing the shell past the viewport. */
   min-height: 0;
+  overflow-y: auto;
 }
 
 .rail-mark {
@@ -134,7 +140,7 @@ input, select {
 }
 .rail-env { margin-top: var(--s1); }
 
-.main { min-width: 0; overflow-y: auto; display: flex; flex-direction: column; }
+.main { min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
 
 .view { padding: var(--s5) var(--s6) var(--s7); flex: 1; min-width: 0; }
 .view-wide { max-width: 1440px; }
@@ -571,9 +577,28 @@ input, select {
 .sessions-group + .srow { border-top: 0; }
 .sessions-group .dim { font-weight: 400; }
 
+.sessions { --visit-grid: 112px 108px minmax(0, 1fr) 150px 170px; }
+
+.sessions-cols {
+  display: grid;
+  grid-template-columns: var(--visit-grid);
+  gap: var(--s4);
+  padding: var(--s2) var(--s4);
+  border-bottom: 1px solid var(--line-2);
+  background: var(--surface-2);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.sessions-cols span {
+  font-size: var(--t-11);
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
 .srow {
   display: grid;
-  grid-template-columns: 112px 148px minmax(0, 1fr) 150px 170px;
+  grid-template-columns: var(--visit-grid);
   align-items: center;
   gap: var(--s4);
   padding: var(--s3) var(--s4);
@@ -586,7 +611,6 @@ input, select {
 .srow-when b { font-weight: 620; }
 .srow-when span { display: block; font-size: var(--t-11); color: var(--ink-3); }
 .srow-subject { font-size: var(--t-14); font-weight: 600; letter-spacing: -0.01em; }
-.srow-study { font-size: var(--t-11); color: var(--ink-3); }
 .srow-signals { display: flex; gap: var(--s3); font-size: var(--t-12); color: var(--ink-3); }
 .srow-signals b { color: var(--ink-2); font-weight: 560; }
 .srow-signals .flag { color: var(--alarm); font-weight: 620; }
@@ -700,7 +724,9 @@ input, select {
 
 @media (max-width: 1180px) {
   .diff { --diff-grid: 70px minmax(0, 1fr) minmax(0, 1fr) 80px 132px; }
-  .srow { grid-template-columns: 96px 136px minmax(0, 1fr) 132px 150px; gap: var(--s3); }
+  .sessions { --visit-grid: 96px 100px minmax(0, 1fr) 132px 150px; }
+  .srow { gap: var(--s3); }
+  .sessions-cols { gap: var(--s3); }
   .srow-signals { flex-wrap: wrap; gap: var(--s2) var(--s3); }
   .live { grid-template-columns: minmax(0, 1fr); }
 }
@@ -711,6 +737,7 @@ input, select {
   .view { padding: var(--s4) var(--s4) var(--s6); }
   .promote { padding-inline: var(--s4); }
   .diff { --diff-grid: 64px minmax(0, 1fr) minmax(0, 1fr) 72px 120px; }
+  .sessions-cols { display: none; }
   .srow {
     grid-template-columns: 90px minmax(0, 1fr) 140px;
     grid-template-areas: 'when who pill' '. signals act';
@@ -830,12 +857,14 @@ input, select {
 .field-row textarea {
   width: 100%;
   padding: 6px var(--s2);
+  color: var(--ink-2);
   background: var(--ground);
   border: 1px solid var(--line-2);
   border-radius: var(--radius);
   font-size: var(--t-13);
 }
 .field-row textarea { resize: vertical; min-height: 68px; font-family: inherit; }
+.field-hint { font-size: var(--t-11); color: var(--ink-4); }
 
 .check-row { display: flex; align-items: flex-start; gap: var(--s2); font-size: var(--t-12); }
 .check-row input { margin-top: 2px; accent-color: var(--modify); }
@@ -1030,6 +1059,34 @@ input, select {
 .count[data-tone='alarm'] b { color: var(--alarm); font-weight: 620; }
 .count[data-tone='live'] b { color: var(--modify); }
 
+/* Two scopes, kept visually distinct: what belongs to the trial, and what
+   belongs to one participant inside it. The counts mean different things in
+   each — trial-level "1" is a reconciliation awaiting review, participant-level
+   "2" is prohibited findings — so they must not read as one flat list. */
+.rail-group {
+  padding: var(--s3) var(--s2) var(--s2);
+  border-top: 1px solid var(--line);
+}
+.rail-group + .rail-group { border-top: 1px solid var(--line); }
+
+.rail-group-title {
+  padding: 0 var(--s3);
+  font-size: var(--t-11);
+  font-weight: 620;
+  color: var(--ink-4);
+}
+
+/* A session exists only inside a trial, so its group is indented under it. */
+.rail-group[data-nested='true'] {
+  margin-left: var(--s3);
+  border-left: 1px solid var(--line-2);
+  padding-left: var(--s1);
+}
+
+.rail-context { padding: var(--s1) var(--s3) var(--s2); display: grid; gap: 1px; }
+.rail-context b { font-size: var(--t-13); font-weight: 640; letter-spacing: -0.01em; }
+.rail-context span { font-size: var(--t-11); color: var(--ink-3); }
+
 /* Circled so it reads as the way back out, not another nav row. */
 .rail-nav-top { padding-bottom: var(--s2); }
 
@@ -1064,21 +1121,6 @@ input, select {
 
 /* ---------- rail: which trial is open ---------- */
 
-.rail-study {
-  margin: 0 var(--s2) var(--s2);
-  padding: var(--s2) var(--s3);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
-  display: grid;
-  gap: 1px;
-}
-.rail-study-label { font-size: var(--t-11); color: var(--ink-4); }
-
-/* The session block sits under the study block, so it reads as nested. */
-.rail-context { margin-top: var(--s3); border-left: 2px solid var(--line-3); }
-.rail-study b { font-size: var(--t-13); font-weight: 640; letter-spacing: -0.01em; }
-.rail-study span:last-child { font-size: var(--t-11); color: var(--ink-3); }
 
 @media (max-width: 1180px) {
   .study { grid-template-columns: 148px minmax(0, 1.3fr) 176px; }
@@ -1086,7 +1128,7 @@ input, select {
 }
 @media (max-width: 720px) {
   .study { grid-template-columns: minmax(0, 1fr); gap: var(--s3); }
-  .rail-study { display: none; }
+  .rail-group-title, .rail-context { display: none; }
 }
 
 /* ---------- protocol document ---------- */

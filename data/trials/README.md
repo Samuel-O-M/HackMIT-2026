@@ -11,23 +11,28 @@ run medication reconciliation for that trial lives in its folder:
 
 ## What is here
 
-- `R2810-ONC-1540/` — the real published Clinical Study Protocol (Amendment 9)
-  for the pivotal cemiplimab study in advanced cutaneous squamous cell
-  carcinoma, downloaded from ClinicalTrials.gov (NCT02760498). Its §5.7.2,
-  "Prohibited Medications and Concomitant Treatments", is the section the
-  prohibited rules in the app are attributed to.
-- `R1979-ONC-22102/` (odronextamab + lenalidomide, NCT06149286) and
-  `R4018-ONC-2445/` (ubamatamab, NCT06787612) — real registered trials whose
-  protocols are **not** published. ClinicalTrials.gov posts a protocol only at
-  results posting, and both are still active, so there is no file to download.
-  Their rule sets are represented in the app fixtures.
-- `R3767-ONC-22122/` (fianlimab + cemiplimab, NCT06246916) — deliberately
-  empty. This trial demonstrates the state a coordinator actually starts from:
-  the trial is open at the site, no protocol has been loaded, and prohibited
-  screening is off until one is uploaded.
+Four real published Clinical Study Protocols, downloaded from
+ClinicalTrials.gov. The section listed is the one the app attributes its
+prohibited rules to, taken from each document's own table of contents:
 
-All four trials are real Regeneron studies; only the site-level detail in the
-app (investigators, enrolment counts, participants) is synthetic.
+| Trial | NCT | Indication | Prohibited medications section |
+|---|---|---|---|
+| `R2810-ONC-1540` | NCT02760498 | Advanced cutaneous squamous cell carcinoma | §5.7.2 Prohibited Medications and Concomitant Treatments |
+| `R2810-ONC-1676` | NCT03257267 | Recurrent/metastatic cervical cancer | §8.10.1 Prohibited Medications and Procedures |
+| `R2810-ONC-1620` | NCT03132636 | Advanced basal cell carcinoma | §7.7.1 Prohibited Medications and Procedures |
+| `R2810-ONC-1624` | NCT03088540 | Metastatic non-small cell lung cancer | §7.7.1 Prohibited Medications |
+
+`R1979-ONC-22102/` (odronextamab + lenalidomide, NCT06149286) is deliberately
+empty. ClinicalTrials.gov publishes a protocol only once results are posted,
+and that study is still active — so there genuinely is no document to
+download. This is the ordinary case for a trial a site is currently running,
+and it is why the app has an upload: the coordinator gets the protocol from the
+sponsor, not from the registry. It is also the trial to demonstrate the upload
+flow on, since its prohibited screening is off until a protocol is loaded.
+
+All five trials are real Regeneron studies. Only the site-level detail in the
+app — investigators, enrolment counts, participants and what they said on the
+calls — is synthetic.
 
 The app serves this directory at `/protocol-docs` in development
 (see `frontend/vite.config.ts`); in production the backend serves it.

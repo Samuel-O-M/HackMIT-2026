@@ -33,6 +33,15 @@ export function Dialog({
       'input, textarea, select, button:not([data-cancel])',
     );
     first?.focus();
+    // A field that opens pre-filled holds a suggested draft, not a committed
+    // value. Selecting it means typing replaces the whole thing, while clicking
+    // into it puts the caret where you clicked and keeps the draft to edit.
+    if (
+      (first instanceof HTMLTextAreaElement || first instanceof HTMLInputElement) &&
+      first.value !== ''
+    ) {
+      first.select();
+    }
     return () => restoreTo.current?.focus?.();
   }, []);
 

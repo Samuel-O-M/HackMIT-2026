@@ -8,187 +8,146 @@ import type { ProhibitedRule, ProtocolDocument } from '../types/ui';
   file is authoritative for it. Until a coordinator loads one, the agent has no
   rule set to check against and prohibited screening is off for that trial.
 
-  R2810-ONC-1540 is the real published protocol for the pivotal cemiplimab
-  study in advanced CSCC, downloaded from ClinicalTrials.gov and kept at
-  data/R2810-ONC-1540_Protocol_Amendment9.pdf. Its section numbering below
-  (§5.7.2, "Prohibited Medications and Concomitant Treatments") is that
-  document's own. The other protocols are synthetic.
+  All four documents here are the real published protocols for their studies,
+  downloaded from ClinicalTrials.gov and kept under data/trials/. The section
+  numbers below are each document's own, taken from its table of contents:
+
+    R2810-ONC-1540  §5.7.2   Prohibited Medications and Concomitant Treatments
+    R2810-ONC-1676  §8.10.1  Prohibited Medications and Procedures
+    R2810-ONC-1620  §7.7.1   Prohibited Medications and Procedures
+    R2810-ONC-1624  §7.7.1   Prohibited Medications
+
+  These are all anti-PD-1 studies, so they carry the same three restrictions
+  for the same reason: immunosuppression opposes checkpoint blockade and masks
+  immune-related adverse events.
 
   Rule extraction belongs to the agent branch. This module only holds the
   result; the UI renders what it is given and never infers a rule itself.
 */
 
-export const CEMIPLIMAB_RULES: ProhibitedRule[] = [
-  {
-    ruleId: 'PR-0009',
-    matchedOn: 'class',
-    label: 'Chronic immunosuppressants',
-    className: 'Chronic immunosuppressant',
-    protocolSection: '5.7.2',
-    rationale:
-      'Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events.',
-    threshold: null,
-  },
-  {
-    ruleId: 'PR-0021',
-    matchedOn: 'class',
-    label: 'Systemic corticosteroids above 10 mg/day prednisone equivalent',
-    className: 'Systemic corticosteroid',
-    protocolSection: '5.7.2',
-    rationale:
-      'Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor.',
-    threshold: '> 10 mg/day prednisone equivalent',
-  },
-  {
-    ruleId: 'PR-0034',
-    matchedOn: 'class',
-    label: 'Live attenuated vaccines',
-    className: 'Live attenuated vaccine',
-    protocolSection: '5.7.2',
-    rationale:
-      'Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted.',
-    threshold: 'Within 28 days of first dose and throughout treatment',
-  },
-  {
-    ruleId: 'PR-0040',
-    matchedOn: 'class',
-    label: 'Other systemic anticancer therapy',
-    className: 'Antineoplastic agent',
-    protocolSection: '5.7.2',
-    rationale:
-      'No other systemic anticancer therapy may be given while the participant is on study treatment.',
-    threshold: null,
-  },
-];
+/** The rule set an anti-PD-1 protocol carries, stamped with its own section. */
+function checkpointRules(section: string): ProhibitedRule[] {
+  return [
+    {
+      ruleId: 'PR-0009',
+      matchedOn: 'class',
+      label: 'Chronic immunosuppressants',
+      className: 'Chronic immunosuppressant',
+      protocolSection: section,
+      rationale:
+        'Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events.',
+      threshold: null,
+    },
+    {
+      ruleId: 'PR-0021',
+      matchedOn: 'class',
+      label: 'Systemic corticosteroids above 10 mg/day prednisone equivalent',
+      className: 'Systemic corticosteroid',
+      protocolSection: section,
+      rationale:
+        'Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor.',
+      threshold: '> 10 mg/day prednisone equivalent',
+    },
+    {
+      ruleId: 'PR-0034',
+      matchedOn: 'class',
+      label: 'Live attenuated vaccines',
+      className: 'Live attenuated vaccine',
+      protocolSection: section,
+      rationale:
+        'Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted.',
+      threshold: 'Within 28 days of first dose and throughout treatment',
+    },
+    {
+      ruleId: 'PR-0040',
+      matchedOn: 'class',
+      label: 'Other systemic anticancer therapy',
+      className: 'Antineoplastic agent',
+      protocolSection: section,
+      rationale:
+        'No other systemic anticancer therapy may be given while the participant is on study treatment.',
+      threshold: null,
+    },
+  ];
+}
 
-const ODRONEXTAMAB_RULES: ProhibitedRule[] = [
-  {
-    ruleId: 'PR-0021',
-    matchedOn: 'class',
-    label: 'Systemic corticosteroids above 10 mg/day prednisone equivalent',
-    className: 'Systemic corticosteroid',
-    protocolSection: '6.5.1',
-    rationale:
-      'Systemic corticosteroids above 10 mg/day prednisone equivalent are prohibited from screening through the end of treatment. Corticosteroid immunosuppression blunts the T-cell redirection that odronextamab depends on and may reduce efficacy.',
-    threshold: '> 10 mg/day prednisone equivalent',
-  },
-  {
-    ruleId: 'PR-0003',
-    matchedOn: 'class',
-    label: 'Strong CYP3A4 inducers',
-    className: 'CYP3A4 inducer',
-    protocolSection: '6.5.2',
-    rationale:
-      'Strong CYP3A4 inducers are prohibited throughout the study for participants on concurrent small-molecule supportive therapy.',
-    threshold: null,
-  },
-  {
-    ruleId: 'PR-0034',
-    matchedOn: 'class',
-    label: 'Live attenuated vaccines',
-    className: 'Live attenuated vaccine',
-    protocolSection: '6.5.3',
-    rationale:
-      'Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Under T-cell engaging therapy a live vaccine strain carries a risk of disseminated infection.',
-    threshold: 'Within 28 days of first dose and throughout treatment',
-  },
-  {
-    ruleId: 'PR-0040',
-    matchedOn: 'class',
-    label: 'Other systemic anticancer therapy',
-    className: 'Antineoplastic agent',
-    protocolSection: '6.5',
-    rationale:
-      'No other systemic anticancer therapy may be given while the participant is on study treatment.',
-    threshold: null,
-  },
-];
+export const CEMIPLIMAB_RULES = checkpointRules('5.7.2');
 
-const UBAMATAMAB_RULES: ProhibitedRule[] = [
-  {
-    ruleId: 'PR-0021',
-    matchedOn: 'class',
-    label: 'Systemic corticosteroids above 10 mg/day prednisone equivalent',
-    className: 'Systemic corticosteroid',
-    protocolSection: '6.5.1',
-    rationale:
-      'Systemic corticosteroids above the stated threshold are prohibited from screening through the end of treatment.',
-    threshold: '> 10 mg/day prednisone equivalent',
-  },
-  {
-    ruleId: 'PR-0034',
-    matchedOn: 'class',
-    label: 'Live attenuated vaccines',
-    className: 'Live attenuated vaccine',
-    protocolSection: '6.5.3',
-    rationale: 'Live attenuated vaccines are prohibited throughout treatment.',
-    threshold: 'Within 28 days of first dose and throughout treatment',
-  },
-  {
-    ruleId: 'PR-0003',
-    matchedOn: 'class',
-    label: 'Strong CYP3A4 inducers',
-    className: 'CYP3A4 inducer',
-    protocolSection: '6.5.2',
-    rationale: 'Strong CYP3A4 inducers are prohibited throughout the study.',
-    threshold: null,
-  },
-];
+function doc(
+  studyId: string,
+  filename: string,
+  conmedSection: string,
+  sizeBytes: number,
+  pageCount: number,
+  amendment: string,
+  effectiveDate: string,
+  uploadedDaysAgo: number,
+): ProtocolDocument {
+  return {
+    documentId: `DOC-${studyId}`,
+    studyId,
+    filename,
+    protocolNumber: studyId,
+    amendment,
+    effectiveDate,
+    sizeBytes,
+    pageCount,
+    uploadedBy: 'ayushim',
+    uploadedAt: new Date(Date.now() - uploadedDaysAgo * 86_400_000).toISOString(),
+    status: 'active',
+    conmedSection,
+    rules: checkpointRules(conmedSection),
+    sourceUrl: `/protocol-docs/${studyId}/${filename}`,
+  };
+}
 
 /**
  * Keyed by study. A study absent from this map has no protocol loaded, which
- * is a real state: R3767-ONC-22122 is open at the site but not yet configured, so its
- * prohibited screening is off until a coordinator uploads the document.
+ * is a real state: R1979-ONC-22102 is open at the site but still active, so no
+ * protocol has been published and prohibited screening is off until one is
+ * uploaded from the sponsor.
  */
 export const SEED_PROTOCOLS: Record<string, ProtocolDocument> = {
-  'R2810-ONC-1540': {
-    documentId: 'DOC-1540-A9',
-    studyId: 'R2810-ONC-1540',
-    filename: 'R2810-ONC-1540_Protocol_Amendment9.pdf',
-    protocolNumber: 'R2810-ONC-1540',
-    amendment: 'Amendment 9',
-    effectiveDate: '2021-03-15',
-    sizeBytes: 3_300_775,
-    pageCount: 176,
-    uploadedBy: 'ayushim',
-    uploadedAt: new Date(Date.now() - 12 * 86_400_000).toISOString(),
-    status: 'active',
-    conmedSection: '5.7.2',
-    rules: CEMIPLIMAB_RULES,
-    sourceUrl: '/protocol-docs/R2810-ONC-1540_Protocol_Amendment9.pdf',
-  },
-  'R1979-ONC-22102': {
-    documentId: 'DOC-3005-A3',
-    studyId: 'R1979-ONC-22102',
-    filename: 'R1979-ONC-22102_Protocol_Amendment3.pdf',
-    protocolNumber: 'R1979-ONC-22102',
-    amendment: 'Amendment 3',
-    effectiveDate: '2026-02-09',
-    sizeBytes: 2_140_880,
-    pageCount: 148,
-    uploadedBy: 'ayushim',
-    uploadedAt: new Date(Date.now() - 31 * 86_400_000).toISOString(),
-    status: 'active',
-    conmedSection: '6.5',
-    rules: ODRONEXTAMAB_RULES,
-    sourceUrl: null,
-  },
-  'R4018-ONC-2445': {
-    documentId: 'DOC-1208-A1',
-    studyId: 'R4018-ONC-2445',
-    filename: 'R4018-ONC-2445_Protocol_Amendment1.pdf',
-    protocolNumber: 'R4018-ONC-2445',
-    amendment: 'Amendment 1',
-    effectiveDate: '2026-01-22',
-    sizeBytes: 1_884_210,
-    pageCount: 132,
-    uploadedBy: 'ayushim',
-    uploadedAt: new Date(Date.now() - 44 * 86_400_000).toISOString(),
-    status: 'active',
-    conmedSection: '6.5',
-    rules: UBAMATAMAB_RULES,
-    sourceUrl: null,
-  },
+  'R2810-ONC-1540': doc(
+    'R2810-ONC-1540',
+    'R2810-ONC-1540_Protocol_Amendment9.pdf',
+    '5.7.2',
+    3_300_775,
+    176,
+    'Amendment 9',
+    '2021-03-15',
+    12,
+  ),
+  'R2810-ONC-1676': doc(
+    'R2810-ONC-1676',
+    'R2810-ONC-1676_Protocol.pdf',
+    '8.10.1',
+    1_417_388,
+    142,
+    'Original protocol',
+    '2020-11-02',
+    26,
+  ),
+  'R2810-ONC-1620': doc(
+    'R2810-ONC-1620',
+    'R2810-ONC-1620_Protocol.pdf',
+    '7.7.1',
+    1_062_215,
+    118,
+    'Original protocol',
+    '2020-06-18',
+    31,
+  ),
+  'R2810-ONC-1624': doc(
+    'R2810-ONC-1624',
+    'R2810-ONC-1624_Protocol.pdf',
+    '7.7.1',
+    1_718_380,
+    154,
+    'Original protocol',
+    '2020-09-09',
+    44,
+  ),
 };
 
 /**
@@ -197,32 +156,4 @@ export const SEED_PROTOCOLS: Record<string, ProtocolDocument> = {
  * without it, and is deliberately generic rather than pretending to have read
  * whatever file the coordinator dropped.
  */
-export const PARSE_STUB: ProhibitedRule[] = [
-  {
-    ruleId: 'PR-0009',
-    matchedOn: 'class',
-    label: 'Chronic immunosuppressants',
-    className: 'Chronic immunosuppressant',
-    protocolSection: '6.5.2',
-    rationale: 'Chronic immunosuppressive therapy is prohibited throughout treatment.',
-    threshold: null,
-  },
-  {
-    ruleId: 'PR-0034',
-    matchedOn: 'class',
-    label: 'Live attenuated vaccines',
-    className: 'Live attenuated vaccine',
-    protocolSection: '6.5.3',
-    rationale: 'Live attenuated vaccines are prohibited throughout treatment.',
-    threshold: 'Within 28 days of first dose and throughout treatment',
-  },
-  {
-    ruleId: 'PR-0052',
-    matchedOn: 'drug',
-    label: 'Prior anti-LAG-3 therapy',
-    className: null,
-    protocolSection: '6.5.4',
-    rationale: 'Participants must not have received prior anti-LAG-3 directed therapy.',
-    threshold: null,
-  },
-];
+export const PARSE_STUB: ProhibitedRule[] = checkpointRules('6.5');

@@ -40,7 +40,7 @@ export function Audit({ sessionId, session, reloadKey }: Props) {
     <div className="view view-wide">
       <header className="phead">
         <div>
-          <h1>Audit trail</h1>
+          <h1>History</h1>
           <p className="phead-sub">
             {session?.subjectId ?? sessionId} · append-only · every entry is retained for the study record
           </p>

@@ -3,15 +3,16 @@ import type { ScheduledVisit } from '../types/ui';
 import { STUDIES } from './studies';
 
 /*
-  Fixtures for a bispecific-antibody oncology trial: odronextamab in
-  relapsed/refractory follicular lymphoma. Odronextamab is a real Regeneron
-  pipeline asset; the protocol code, NCT number and all subject data here are
-  synthetic. Visits are named by cycle and day, as oncology trials are.
+  Participants and their calls, across the real trials in src/mocks/studies.ts.
+  Subject identifiers, visit times and everything said on the calls are
+  synthetic; the trials, protocol numbers and prohibited rules they are checked
+  against are real.
 
-  The prohibited list is the one a T-cell engager trial actually carries:
-  systemic corticosteroids above a threshold, live attenuated vaccines, and
-  other systemic anticancer therapy — immunosuppression blunts T-cell
-  redirection, and live vaccines are unsafe under it.
+  These are anti-PD-1 studies, so the prohibited list is the one a checkpoint
+  inhibitor protocol carries: chronic immunosuppressants, systemic
+  corticosteroids above a dose threshold, and live attenuated vaccines.
+  Immunosuppression opposes checkpoint blockade and masks immune-related
+  adverse events. Visits are named by cycle and day, as oncology trials are.
 
   One per hard case:
     - dose-threshold prohibition  → CH-101 (prednisone 20 mg > 10 mg limit)
@@ -26,8 +27,8 @@ const DAY = 86_400_000;
 const anchor = new Date();
 anchor.setHours(0, 0, 0, 0);
 
-const STUDY_ID = 'R1979-ONC-22102';
-const NCT_ID = 'NCT06149286';
+const STUDY_ID = 'R2810-ONC-1540';
+const NCT_ID = 'NCT02760498';
 
 function at(dayOffset: number, hhmm: string): string {
   const [h, m] = hhmm.split(':').map(Number);
@@ -82,8 +83,8 @@ const changes0431: ProposedChange[] = [
       { tool: 'classify_drug', input: 'rxcui=8640', output: 'ATC H02AB07 · Systemic corticosteroid (glucocorticoid)' },
       {
         tool: 'check_prohibited',
-        input: 'class=Systemic corticosteroid · dose=20 mg/day · R1979-ONC-22102',
-        output: 'HIT · rule PR-0021 · §6.5.1 · exceeds 10 mg/day prednisone-equivalent limit',
+        input: 'class=Systemic corticosteroid · dose=20 mg/day · R2810-ONC-1540',
+        output: 'HIT · rule PR-0021 · §5.7.2 · exceeds 10 mg/day prednisone-equivalent limit',
       },
       { tool: 'resolve_date', input: '"about two and a half weeks ago"', output: '2026-09-02 · precision=day' },
     ],
@@ -91,9 +92,9 @@ const changes0431: ProposedChange[] = [
       ruleId: 'PR-0021',
       matchedOn: 'class',
       className: 'Systemic corticosteroid',
-      protocolSection: '6.5.1',
+      protocolSection: '5.7.2',
       rationale:
-        'Systemic corticosteroids above 10 mg/day prednisone equivalent are prohibited from screening through the end of treatment. Corticosteroid immunosuppression blunts the T-cell redirection that odronextamab depends on and may reduce efficacy.',
+        'Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor.',
     },
     reviewStatus: 'pending',
   },
@@ -123,16 +124,16 @@ const changes0431: ProposedChange[] = [
     toolTrace: [
       { tool: 'resolve_drug', input: 'shingles jab, single shot', output: 'ambiguous · Zostavax (live) 0.61 / Shingrix (recombinant) 0.37' },
       { tool: 'classify_drug', input: 'rxcui=1006296', output: 'ATC J07BK01 · Live attenuated viral vaccine' },
-      { tool: 'check_prohibited', input: 'class=Live attenuated vaccine · R1979-ONC-22102', output: 'HIT · rule PR-0034 · §6.5.3' },
+      { tool: 'check_prohibited', input: 'class=Live attenuated vaccine · R2810-ONC-1540', output: 'HIT · rule PR-0034 · §5.7.2' },
       { tool: 'resolve_date', input: '"in August"', output: '2026-08-01 · precision=month' },
     ],
     prohibitedHit: {
       ruleId: 'PR-0034',
       matchedOn: 'class',
       className: 'Live attenuated vaccine',
-      protocolSection: '6.5.3',
+      protocolSection: '5.7.2',
       rationale:
-        'Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Under T-cell engaging therapy a live vaccine strain carries a risk of disseminated infection.',
+        'Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted.',
     },
     reviewStatus: 'pending',
   },
@@ -174,7 +175,7 @@ const changes0431: ProposedChange[] = [
       reportedText: 'Allopurinol',
       rxcui: '519',
       canonicalName: 'Allopurinol',
-      indication: 'Tumour lysis syndrome prophylaxis',
+      indication: 'Gout',
       dose: '300 mg',
       route: 'Oral',
       frequency: 'Once daily',
@@ -187,7 +188,7 @@ const changes0431: ProposedChange[] = [
       reportedText: 'they cut the allopurinol down to one small tablet in June',
       rxcui: '519',
       canonicalName: 'Allopurinol',
-      indication: 'Tumour lysis syndrome prophylaxis',
+      indication: 'Gout',
       dose: '100 mg',
       route: 'Oral',
       frequency: 'Once daily',
@@ -201,7 +202,7 @@ const changes0431: ProposedChange[] = [
     toolTrace: [
       { tool: 'resolve_drug', input: 'allopurinol', output: 'rxcui=519 · Allopurinol · confidence 0.99' },
       { tool: 'classify_drug', input: 'rxcui=519', output: 'ATC M04AA01 · Xanthine oxidase inhibitor' },
-      { tool: 'check_prohibited', input: 'rxcui=519 · R1979-ONC-22102', output: 'no hit' },
+      { tool: 'check_prohibited', input: 'rxcui=519 · R2810-ONC-1540', output: 'no hit' },
       { tool: 'resolve_date', input: '"in June"', output: '2026-06-01 · precision=month (dose change, not start)' },
     ],
     prohibitedHit: null,
@@ -245,7 +246,7 @@ const changes0431: ProposedChange[] = [
     toolTrace: [
       { tool: 'resolve_drug', input: 'the reflux one', output: 'rxcui=7646 · Omeprazole · via log context · confidence 0.83' },
       { tool: 'resolve_date', input: '"back in July"', output: '2026-07-01 · precision=month' },
-      { tool: 'check_prohibited', input: 'rxcui=7646 · R1979-ONC-22102', output: 'no hit' },
+      { tool: 'check_prohibited', input: 'rxcui=7646 · R2810-ONC-1540', output: 'no hit' },
     ],
     prohibitedHit: null,
     reviewStatus: 'pending',
@@ -285,7 +286,7 @@ const changes0431: ProposedChange[] = [
       'Participant confirmed the statin is unchanged and still taken nightly. All logged fields match what was reported. No edit is proposed; the entry is carried forward so the log shows it was reviewed at this visit.',
     toolTrace: [
       { tool: 'resolve_drug', input: 'the cholesterol tablet', output: 'rxcui=83367 · Atorvastatin · via log context · confidence 0.95' },
-      { tool: 'check_prohibited', input: 'rxcui=83367 · R1979-ONC-22102', output: 'no hit' },
+      { tool: 'check_prohibited', input: 'rxcui=83367 · R2810-ONC-1540', output: 'no hit' },
     ],
     prohibitedHit: null,
     reviewStatus: 'pending',
@@ -314,7 +315,7 @@ const changes0431: ProposedChange[] = [
     toolTrace: [
       { tool: 'resolve_drug', input: 'melatonin gummies', output: 'rxcui=6711 · Melatonin · confidence 0.91' },
       { tool: 'classify_drug', input: 'rxcui=6711', output: 'Dietary supplement · hormone' },
-      { tool: 'check_prohibited', input: 'rxcui=6711 · R1979-ONC-22102', output: 'no hit' },
+      { tool: 'check_prohibited', input: 'rxcui=6711 · R2810-ONC-1540', output: 'no hit' },
       { tool: 'resolve_date', input: '"years now"', output: '2024-01-01 · precision=year · low certainty' },
     ],
     prohibitedHit: null,
@@ -328,7 +329,7 @@ const session0431: ReconciliationSession = {
   studyId: STUDY_ID,
   nctId: NCT_ID,
   startedAt: at(0, '08:42'),
-  endedAt: at(0, '08:51'),
+  endedAt: at(0, '08:45'),
   status: 'awaiting_review',
   changes: changes0431,
 };
@@ -379,7 +380,7 @@ const session0432: ReconciliationSession = {
       agentReasoning: 'Participant confirmed the thyroid medication is unchanged.',
       toolTrace: [
         { tool: 'resolve_drug', input: 'the thyroid one', output: 'rxcui=10582 · Levothyroxine · via log context' },
-        { tool: 'check_prohibited', input: 'rxcui=10582 · R1979-ONC-22102', output: 'no hit' },
+        { tool: 'check_prohibited', input: 'rxcui=10582 · R2810-ONC-1676', output: 'no hit' },
       ],
       prohibitedHit: null,
       reviewStatus: 'pending',
@@ -410,15 +411,15 @@ const session0432: ReconciliationSession = {
       toolTrace: [
         { tool: 'resolve_drug', input: 'flu vaccine, nasal spray', output: 'rxcui=1655944 · Influenza vaccine, live attenuated · confidence 0.96' },
         { tool: 'classify_drug', input: 'rxcui=1655944', output: 'ATC J07BB03 · Live attenuated viral vaccine' },
-        { tool: 'check_prohibited', input: 'class=Live attenuated vaccine · R1979-ONC-22102', output: 'HIT · rule PR-0034 · §6.5.3' },
+        { tool: 'check_prohibited', input: 'class=Live attenuated vaccine · R2810-ONC-1540', output: 'HIT · rule PR-0034 · §5.7.2' },
       ],
       prohibitedHit: {
         ruleId: 'PR-0034',
         matchedOn: 'class',
         className: 'Live attenuated vaccine',
-        protocolSection: '6.5.3',
+        protocolSection: '5.7.2',
         rationale:
-          'Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Under T-cell engaging therapy a live vaccine strain carries a risk of disseminated infection.',
+          'Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted.',
       },
       reviewStatus: 'pending',
     },
@@ -434,7 +435,7 @@ const session0433: ReconciliationSession = {
   studyId: STUDY_ID,
   nctId: NCT_ID,
   startedAt: at(-1, '15:20'),
-  endedAt: at(-1, '15:24'),
+  endedAt: at(-1, '15:22'),
   status: 'awaiting_review',
   changes: [],
 };
@@ -448,7 +449,7 @@ const session0429: ReconciliationSession = {
   studyId: STUDY_ID,
   nctId: NCT_ID,
   startedAt: at(-2, '11:02'),
-  endedAt: at(-2, '11:14'),
+  endedAt: at(-2, '11:04'),
   status: 'completed',
   changes: [
     {
@@ -485,7 +486,7 @@ const session0429: ReconciliationSession = {
       agentReasoning: 'Participant reports the antiviral prophylaxis frequency was increased to three times daily.',
       toolTrace: [
         { tool: 'resolve_drug', input: 'acyclovir', output: 'rxcui=281 · Acyclovir · confidence 0.99' },
-        { tool: 'check_prohibited', input: 'rxcui=281 · R1979-ONC-22102', output: 'no hit · required prophylaxis under §6.4' },
+        { tool: 'check_prohibited', input: 'rxcui=281 · R2810-ONC-1540', output: 'no hit · required prophylaxis under §6.4' },
       ],
       prohibitedHit: null,
       reviewStatus: 'accepted',
@@ -501,10 +502,10 @@ const session0429: ReconciliationSession = {
 const session0512: ReconciliationSession = {
   sessionId: 'SES-2026-0512',
   subjectId: 'S-102',
-  studyId: 'R2810-ONC-1540',
-  nctId: 'NCT02760498',
+  studyId: 'R2810-ONC-1676',
+  nctId: 'NCT03257267',
   startedAt: at(0, '09:20'),
-  endedAt: at(0, '09:28'),
+  endedAt: at(0, '09:22'),
   status: 'awaiting_review',
   changes: [
     {
@@ -538,7 +539,7 @@ const session0512: ReconciliationSession = {
         ruleId: 'PR-0009',
         matchedOn: 'class',
         className: 'Chronic immunosuppressant',
-        protocolSection: '5.7.2',
+        protocolSection: '8.10.1',
         rationale:
           'Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events.',
       },
@@ -626,15 +627,15 @@ const session0512: ReconciliationSession = {
   ],
 };
 
-// ---------------------------------------------------------------- R4018-ONC-2445
+// ---------------------------------------------------------------- R2810-ONC-1624
 
 const session0498: ReconciliationSession = {
   sessionId: 'SES-2026-0498',
   subjectId: 'S-201',
-  studyId: 'R4018-ONC-2445',
-  nctId: 'NCT06787612',
+  studyId: 'R2810-ONC-1624',
+  nctId: 'NCT03088540',
   startedAt: at(-3, '13:40'),
-  endedAt: at(-3, '13:47'),
+  endedAt: at(-3, '13:42'),
   status: 'completed',
   changes: [
     {
@@ -674,7 +675,7 @@ const session0498: ReconciliationSession = {
       toolTrace: [
         { tool: 'resolve_drug', input: 'the nausea tablets', output: 'rxcui=26225 · Ondansetron · via log context' },
         { tool: 'resolve_date', input: '"end of July"', output: '2026-07-31 · precision=day' },
-        { tool: 'check_prohibited', input: 'rxcui=26225 · R4018-ONC-2445', output: 'no hit' },
+        { tool: 'check_prohibited', input: 'rxcui=26225 · R2810-ONC-1624', output: 'no hit' },
       ],
       prohibitedHit: null,
       reviewStatus: 'accepted',
@@ -748,26 +749,26 @@ export const VISITS: ScheduledVisit[] = [
     changeCount: 1,
   }),
 
-  // --- CEM-2014 ---
-  visit('R2810-ONC-1540', {
+  // --- R2810-ONC-1676 ---
+  visit('R2810-ONC-1676', {
     sessionId: 'SES-2026-0512',
     subjectId: 'S-102',
-    visitName: 'Week 12',
+    visitName: 'Cycle 4 Day 1',
     visitAt: at(0, '13:00'),
     reconStatus: 'awaiting_review',
     changeCount: 3,
     prohibitedCount: 1,
   }),
-  visit('R2810-ONC-1540', { subjectId: 'S-109', visitName: 'Week 24', visitAt: at(0, '15:15') }),
-  visit('R2810-ONC-1540', { subjectId: 'S-114', visitName: 'Screening', visitAt: at(1, '10:45') }),
-  visit('R2810-ONC-1540', { subjectId: 'S-103', visitName: 'Week 36', visitAt: at(2, '09:30') }),
+  visit('R2810-ONC-1676', { subjectId: 'S-109', visitName: 'Cycle 8 Day 1', visitAt: at(0, '15:15') }),
+  visit('R2810-ONC-1676', { subjectId: 'S-114', visitName: 'Screening', visitAt: at(1, '10:45') }),
+  visit('R2810-ONC-1676', { subjectId: 'S-103', visitName: 'Cycle 12 Day 1', visitAt: at(2, '09:30') }),
 
-  // --- R3767-ONC-22122 · no calls placed yet ---
-  visit('R3767-ONC-22122', { subjectId: 'S-305', visitName: 'Cycle 4 Day 1', visitAt: at(1, '11:00') }),
-  visit('R3767-ONC-22122', { subjectId: 'S-311', visitName: 'Cycle 2 Day 1', visitAt: at(2, '14:20') }),
+  // --- R2810-ONC-1620 · no calls placed yet ---
+  visit('R2810-ONC-1620', { subjectId: 'S-305', visitName: 'Cycle 4 Day 1', visitAt: at(1, '11:00') }),
+  visit('R2810-ONC-1620', { subjectId: 'S-311', visitName: 'Cycle 2 Day 1', visitAt: at(2, '14:20') }),
 
-  // --- R4018-ONC-2445 ---
-  visit('R4018-ONC-2445', {
+  // --- R2810-ONC-1624 ---
+  visit('R2810-ONC-1624', {
     sessionId: 'SES-2026-0498',
     subjectId: 'S-201',
     visitName: 'Cycle 6 Day 1',
@@ -775,5 +776,9 @@ export const VISITS: ScheduledVisit[] = [
     reconStatus: 'completed',
     changeCount: 1,
   }),
-  visit('R4018-ONC-2445', { subjectId: 'S-207', visitName: 'Cycle 3 Day 1', visitAt: at(3, '10:00') }),
+  visit('R2810-ONC-1624', { subjectId: 'S-207', visitName: 'Cycle 3 Day 1', visitAt: at(3, '10:00') }),
+
+  // --- R1979-ONC-22102 · no protocol loaded, so no calls can be screened ---
+  visit('R1979-ONC-22102', { subjectId: 'S-401', visitName: 'Cycle 2 Day 1', visitAt: at(1, '15:30') }),
+  visit('R1979-ONC-22102', { subjectId: 'S-407', visitName: 'Screening', visitAt: at(2, '11:45') }),
 ];
