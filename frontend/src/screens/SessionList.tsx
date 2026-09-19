@@ -16,7 +16,7 @@ const ACTION: Record<ScheduledVisit['reconStatus'], string> = {
   not_started: 'Start call',
   in_progress: 'Open call',
   awaiting_review: 'Review',
-  completed: 'View audit',
+  completed: 'View history',
 };
 
 export function SessionList({ studyId, study, onStartCall, reloadKey }: Props) {
@@ -122,6 +122,15 @@ export function SessionList({ studyId, study, onStartCall, reloadKey }: Props) {
         </div>
       ) : (
         <div className="sessions">
+          {/* Labels only — each row already reads on its own, so this is not
+              announced twice to a screen reader. */}
+          <div className="sessions-cols" aria-hidden="true">
+            <span>Visit</span>
+            <span>Participant</span>
+            <span>From the call</span>
+            <span>Status</span>
+            <span />
+          </div>
           {groups.map((group) => (
             <div key={group.key}>
               <div className="sessions-group">
@@ -142,9 +151,6 @@ export function SessionList({ studyId, study, onStartCall, reloadKey }: Props) {
                   </div>
                   <div>
                     <div className="srow-subject">{visit.subjectId}</div>
-                    <div className="srow-study">
-                      {visit.studyId} · <span className="mono">{visit.nctId}</span>
-                    </div>
                   </div>
                   <div className="srow-signals">
                     {visit.reconStatus === 'not_started' ? (

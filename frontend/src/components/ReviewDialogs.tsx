@@ -166,6 +166,10 @@ export function DeviationDialog({
       <label className="field-row">
         <span>Description</span>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+        <span className="field-hint">
+          Suggested wording, built from the reported entry. Start typing to replace it, or click
+          into it to edit.
+        </span>
       </label>
 
       <label className="check-row">

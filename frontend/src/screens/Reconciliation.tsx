@@ -257,7 +257,7 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
                   className="btn"
                   onClick={() => navigate({ name: 'audit', sessionId: session.sessionId })}
                 >
-                  View audit trail
+                  View history
                 </button>
               </>
             ) : (

@@ -43,9 +43,78 @@ const SES_0432: TranscriptTurn[] = [
   { atMs: 34100, speaker: 'agent', text: 'Thank you for telling me, that detail matters. I am flagging it for your coordinator. Which pharmacy was that at?' },
 ];
 
+
+// S-033 · nothing to reconcile. The participant takes no concomitant
+// medications at all, which is why this session stages zero changes.
+const SES_0433: TranscriptTurn[] = [
+  { atMs: 0, speaker: 'agent', text: 'Good afternoon. This is the study team calling ahead of your Cycle 9 visit. I have a short set of questions about your medications. Is now a good time?' },
+  { atMs: 6400, speaker: 'participant', text: 'Yes, go ahead. It will be quick though, I do not take anything.' },
+  { atMs: 12100, speaker: 'agent', text: 'That is good to know. I have no concomitant medications on file for you, so I am checking whether anything has started since your last visit. Anything prescribed by another doctor?' },
+  { atMs: 21800, speaker: 'participant', text: 'No, nothing.' },
+  { atMs: 24600, speaker: 'agent', text: 'Anything you buy without a prescription — painkillers, antacids, anything for sleep?' },
+  { atMs: 31200, speaker: 'participant', text: 'No. I have never been one for tablets.' },
+  { atMs: 36500, speaker: 'agent', text: 'And vitamins, supplements or herbal products? People often do not think of those as medication.' },
+  { atMs: 44300, speaker: 'participant', text: 'No, none of that either.' },
+  { atMs: 48100, speaker: 'agent', text: 'Any vaccinations in the last few months?' },
+  { atMs: 52900, speaker: 'participant', text: 'No, not since the study started.' },
+  { atMs: 57600, speaker: 'agent', text: 'Then there is nothing to change and your log is already accurate. Thank you for your time, and we will see you at the visit.' },
+  { atMs: 65200, speaker: 'participant', text: 'Thank you, goodbye.' },
+];
+
+// S-008 · a single frequency change to antiviral prophylaxis.
+const SES_0429: TranscriptTurn[] = [
+  { atMs: 0, speaker: 'agent', text: 'Good morning. This is the study team calling ahead of your Cycle 7 visit. Do you have a few minutes to go through your medications?' },
+  { atMs: 6800, speaker: 'participant', text: 'Yes, that is fine.' },
+  { atMs: 9500, speaker: 'agent', text: 'Thank you. I have one medication on file, acyclovir, four hundred milligrams twice a day. Is that still right?' },
+  { atMs: 17200, speaker: 'participant', text: 'They put the acyclovir up to three a day.', yields: ['CH-091'] },
+  { atMs: 22600, speaker: 'agent', text: 'Understood, so four hundred milligrams three times daily. Do you remember roughly when that changed?' },
+  { atMs: 30100, speaker: 'participant', text: 'A few weeks back, when the rash was starting.' },
+  { atMs: 36400, speaker: 'agent', text: 'Thank you. Your coordinator will confirm the date against the prescription. Has anything else started or stopped?' },
+  { atMs: 45200, speaker: 'participant', text: 'No, that is the only one.' },
+  { atMs: 49800, speaker: 'agent', text: 'That is everything I needed. Thank you for your time.' },
+  { atMs: 55300, speaker: 'participant', text: 'Thanks, bye.' },
+];
+
+// S-102 · cemiplimab trial. A prohibited immunosuppressant, a thyroid dose
+// change worth cross-checking against the adverse event log, and one unchanged.
+const SES_0512: TranscriptTurn[] = [
+  { atMs: 0, speaker: 'agent', text: 'Good morning. This is the study team calling ahead of your Week 12 visit. I have a few questions about your medications. Is now still a good time?' },
+  { atMs: 7100, speaker: 'participant', text: 'Yes, that works.' },
+  { atMs: 9800, speaker: 'agent', text: 'Thank you. I have two on file. First, amlodipine, five milligrams once a day for blood pressure.' },
+  { atMs: 17500, speaker: 'participant', text: 'Blood pressure one, no change, same as always.', yields: ['CH-303'] },
+  { atMs: 23200, speaker: 'agent', text: 'Good. And levothyroxine, fifty micrograms once a day.' },
+  { atMs: 29400, speaker: 'participant', text: 'The thyroid tablet went up after my last blood test. I take the 75 now.', yields: ['CH-302'] },
+  { atMs: 36900, speaker: 'agent', text: 'Noted, seventy-five micrograms. I will flag the timing for your coordinator to check. Has anything new started since we last spoke?' },
+  { atMs: 46300, speaker: 'participant', text: 'My rheumatologist started me on methotrexate. One dose a week, on Sundays.', yields: ['CH-301'] },
+  { atMs: 54800, speaker: 'agent', text: 'Thank you for telling me. I am flagging that one for your coordinator to discuss at the visit. Do you know the strength?' },
+  { atMs: 63500, speaker: 'participant', text: 'Fifteen milligrams, I think. It is on the box.' },
+  { atMs: 70200, speaker: 'agent', text: 'That is helpful. Anything else at all, including anything over the counter?' },
+  { atMs: 78400, speaker: 'participant', text: 'No, that is everything.' },
+  { atMs: 82900, speaker: 'agent', text: 'Thank you for your time. Your coordinator will go through the methotrexate with you at the visit.' },
+  { atMs: 90100, speaker: 'participant', text: 'Alright, thank you.' },
+];
+
+// S-201 · ubamatamab trial. One antiemetic stopped.
+const SES_0498: TranscriptTurn[] = [
+  { atMs: 0, speaker: 'agent', text: 'Good afternoon. This is the study team calling ahead of your Cycle 6 visit. Can I go through your medications with you?' },
+  { atMs: 7300, speaker: 'participant', text: 'Of course.' },
+  { atMs: 9900, speaker: 'agent', text: 'Thank you. I have ondansetron on file, eight milligrams twice a day as needed for nausea.' },
+  { atMs: 18600, speaker: 'participant', text: 'I stopped the nausea tablets. I have not needed them since the end of July.', yields: ['CH-401'] },
+  { atMs: 26200, speaker: 'agent', text: 'Noted, stopped at the end of July. Was that a particular day you remember?' },
+  { atMs: 33500, speaker: 'participant', text: 'The last one was the thirty-first, I remember because it was the end of the month.' },
+  { atMs: 42100, speaker: 'agent', text: 'Thank you, that is precise enough to record. Has anything new started?' },
+  { atMs: 50400, speaker: 'participant', text: 'No, nothing new.' },
+  { atMs: 54800, speaker: 'agent', text: 'That is everything I needed. Thank you for your time.' },
+  { atMs: 60200, speaker: 'participant', text: 'Thank you.' },
+];
+
 export const TRANSCRIPTS: Record<string, TranscriptTurn[]> = {
   'SES-2026-0431': SES_0431,
   'SES-2026-0432': SES_0432,
+  'SES-2026-0433': SES_0433,
+  'SES-2026-0429': SES_0429,
+  'SES-2026-0512': SES_0512,
+  'SES-2026-0498': SES_0498,
 };
 
 /** Wall-clock length of a call fixture. */
