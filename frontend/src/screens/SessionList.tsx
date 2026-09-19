@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { api, usingFixtures } from '../api';
-import type { ScheduledVisit } from '../types/ui';
+import type { ScheduledVisit, StudySummary } from '../types/ui';
 import { clock, dayKey, dayLabel } from '../lib/dates';
 import { navigate } from '../router';
 import { StatusPill } from '../components/StatusPill';
 
 interface Props {
+  studyId: string;
+  study: StudySummary | null;
   onStartCall: (visit: ScheduledVisit) => void;
   reloadKey: number;
 }
@@ -17,18 +19,18 @@ const ACTION: Record<ScheduledVisit['reconStatus'], string> = {
   completed: 'View audit',
 };
 
-export function SessionList({ onStartCall, reloadKey }: Props) {
+export function SessionList({ studyId, study, onStartCall, reloadKey }: Props) {
   const [visits, setVisits] = useState<ScheduledVisit[] | null>(null);
 
   useEffect(() => {
     let live = true;
-    api.listVisits().then((rows) => {
+    api.listVisits(studyId).then((rows) => {
       if (live) setVisits(rows);
     });
     return () => {
       live = false;
     };
-  }, [reloadKey]);
+  }, [reloadKey, studyId]);
 
   if (!visits) return <div className="view view-wide"><p className="skeleton">Loading visits…</p></div>;
 
@@ -56,7 +58,11 @@ export function SessionList({ onStartCall, reloadKey }: Props) {
     <div className="view view-wide">
       <header className="phead">
         <div>
-          <h1>Visits</h1>
+          <h1>{study ? study.shortTitle : studyId}</h1>
+          <p className="phead-sub">
+            {studyId} · <span className="mono">{study?.nctId ?? ''}</span>
+            {study ? ` · ${study.phase} · ${study.principalInvestigator}` : ''}
+          </p>
           <p className="phead-sub">
             {awaiting > 0
               ? `${awaiting} reconciliation${awaiting === 1 ? '' : 's'} awaiting review`
@@ -65,7 +71,10 @@ export function SessionList({ onStartCall, reloadKey }: Props) {
           </p>
         </div>
         <div className="phead-right">
-          {usingFixtures && (
+          <button className="btn" onClick={() => navigate({ name: 'studies' })}>
+            Change trial
+          </button>
+          {usingFixtures && studyId === 'R1979-ONC-22102' && (
             <button
               className="btn"
               title="Replays the S-014 call from fixtures, end to end, with no backend"
@@ -79,10 +88,37 @@ export function SessionList({ onStartCall, reloadKey }: Props) {
 
       <hr className="rule" />
 
+      {study && !study.hasProtocol && (
+        <section className="alarm" aria-labelledby="no-protocol-banner">
+          <header className="alarm-head">
+            <h2 id="no-protocol-banner">No protocol loaded for {studyId}</h2>
+            <span className="dim">Prohibited screening is off for every call on this trial</span>
+          </header>
+          <div className="alarm-item">
+            <p className="alarm-why">
+              The agent will still resolve and record what participants report, but it cannot flag
+              prohibited medications until the Clinical Study Protocol is loaded.
+            </p>
+            <div className="alarm-acts">
+              <button
+                className="alarm-jump"
+                data-primary="true"
+                onClick={() => navigate({ name: 'documents', studyId })}
+              >
+                Load the protocol
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
       {sorted.length === 0 ? (
         <div className="empty">
-          <h2>No visits scheduled</h2>
+          <h2>No visits scheduled for {studyId}</h2>
           <p>Visits appear here once they are booked in the study calendar.</p>
+          <button className="btn" onClick={() => navigate({ name: 'studies' })}>
+            Back to all trials
+          </button>
         </div>
       ) : (
         <div className="sessions">

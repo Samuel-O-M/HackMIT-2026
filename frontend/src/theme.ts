@@ -43,15 +43,13 @@ export function useTheme() {
     }
   }, [choice]);
 
-  const cycle = useCallback(() => {
-    setChoice((current) => (current === 'light' ? 'dark' : current === 'dark' ? 'system' : 'light'));
-  }, []);
+  const select = useCallback((next: ThemeChoice) => setChoice(next), []);
 
-  return { choice, setChoice, cycle };
+  return { choice, setChoice: select };
 }
 
-export const THEME_LABEL: Record<ThemeChoice, string> = {
-  system: 'Theme: system',
-  light: 'Theme: light',
-  dark: 'Theme: dark',
-};
+export const THEME_OPTIONS: { value: ThemeChoice; label: string }[] = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'system', label: 'System' },
+];

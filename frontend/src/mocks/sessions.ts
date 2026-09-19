@@ -1,5 +1,6 @@
 import type { ConmedEntry, ProposedChange, ReconciliationSession } from '../types/contract';
 import type { ScheduledVisit } from '../types/ui';
+import { STUDIES } from './studies';
 
 /*
   Fixtures for a bispecific-antibody oncology trial: odronextamab in
@@ -25,8 +26,8 @@ const DAY = 86_400_000;
 const anchor = new Date();
 anchor.setHours(0, 0, 0, 0);
 
-const STUDY_ID = 'ODR-3005';
-const NCT_ID = 'NCT06214470';
+const STUDY_ID = 'R1979-ONC-22102';
+const NCT_ID = 'NCT06149286';
 
 function at(dayOffset: number, hhmm: string): string {
   const [h, m] = hhmm.split(':').map(Number);
@@ -81,7 +82,7 @@ const changes0431: ProposedChange[] = [
       { tool: 'classify_drug', input: 'rxcui=8640', output: 'ATC H02AB07 · Systemic corticosteroid (glucocorticoid)' },
       {
         tool: 'check_prohibited',
-        input: 'class=Systemic corticosteroid · dose=20 mg/day · ODR-3005',
+        input: 'class=Systemic corticosteroid · dose=20 mg/day · R1979-ONC-22102',
         output: 'HIT · rule PR-0021 · §6.5.1 · exceeds 10 mg/day prednisone-equivalent limit',
       },
       { tool: 'resolve_date', input: '"about two and a half weeks ago"', output: '2026-09-02 · precision=day' },
@@ -122,7 +123,7 @@ const changes0431: ProposedChange[] = [
     toolTrace: [
       { tool: 'resolve_drug', input: 'shingles jab, single shot', output: 'ambiguous · Zostavax (live) 0.61 / Shingrix (recombinant) 0.37' },
       { tool: 'classify_drug', input: 'rxcui=1006296', output: 'ATC J07BK01 · Live attenuated viral vaccine' },
-      { tool: 'check_prohibited', input: 'class=Live attenuated vaccine · ODR-3005', output: 'HIT · rule PR-0034 · §6.5.3' },
+      { tool: 'check_prohibited', input: 'class=Live attenuated vaccine · R1979-ONC-22102', output: 'HIT · rule PR-0034 · §6.5.3' },
       { tool: 'resolve_date', input: '"in August"', output: '2026-08-01 · precision=month' },
     ],
     prohibitedHit: {
@@ -200,7 +201,7 @@ const changes0431: ProposedChange[] = [
     toolTrace: [
       { tool: 'resolve_drug', input: 'allopurinol', output: 'rxcui=519 · Allopurinol · confidence 0.99' },
       { tool: 'classify_drug', input: 'rxcui=519', output: 'ATC M04AA01 · Xanthine oxidase inhibitor' },
-      { tool: 'check_prohibited', input: 'rxcui=519 · ODR-3005', output: 'no hit' },
+      { tool: 'check_prohibited', input: 'rxcui=519 · R1979-ONC-22102', output: 'no hit' },
       { tool: 'resolve_date', input: '"in June"', output: '2026-06-01 · precision=month (dose change, not start)' },
     ],
     prohibitedHit: null,
@@ -244,7 +245,7 @@ const changes0431: ProposedChange[] = [
     toolTrace: [
       { tool: 'resolve_drug', input: 'the reflux one', output: 'rxcui=7646 · Omeprazole · via log context · confidence 0.83' },
       { tool: 'resolve_date', input: '"back in July"', output: '2026-07-01 · precision=month' },
-      { tool: 'check_prohibited', input: 'rxcui=7646 · ODR-3005', output: 'no hit' },
+      { tool: 'check_prohibited', input: 'rxcui=7646 · R1979-ONC-22102', output: 'no hit' },
     ],
     prohibitedHit: null,
     reviewStatus: 'pending',
@@ -284,7 +285,7 @@ const changes0431: ProposedChange[] = [
       'Participant confirmed the statin is unchanged and still taken nightly. All logged fields match what was reported. No edit is proposed; the entry is carried forward so the log shows it was reviewed at this visit.',
     toolTrace: [
       { tool: 'resolve_drug', input: 'the cholesterol tablet', output: 'rxcui=83367 · Atorvastatin · via log context · confidence 0.95' },
-      { tool: 'check_prohibited', input: 'rxcui=83367 · ODR-3005', output: 'no hit' },
+      { tool: 'check_prohibited', input: 'rxcui=83367 · R1979-ONC-22102', output: 'no hit' },
     ],
     prohibitedHit: null,
     reviewStatus: 'pending',
@@ -313,7 +314,7 @@ const changes0431: ProposedChange[] = [
     toolTrace: [
       { tool: 'resolve_drug', input: 'melatonin gummies', output: 'rxcui=6711 · Melatonin · confidence 0.91' },
       { tool: 'classify_drug', input: 'rxcui=6711', output: 'Dietary supplement · hormone' },
-      { tool: 'check_prohibited', input: 'rxcui=6711 · ODR-3005', output: 'no hit' },
+      { tool: 'check_prohibited', input: 'rxcui=6711 · R1979-ONC-22102', output: 'no hit' },
       { tool: 'resolve_date', input: '"years now"', output: '2024-01-01 · precision=year · low certainty' },
     ],
     prohibitedHit: null,
@@ -378,7 +379,7 @@ const session0432: ReconciliationSession = {
       agentReasoning: 'Participant confirmed the thyroid medication is unchanged.',
       toolTrace: [
         { tool: 'resolve_drug', input: 'the thyroid one', output: 'rxcui=10582 · Levothyroxine · via log context' },
-        { tool: 'check_prohibited', input: 'rxcui=10582 · ODR-3005', output: 'no hit' },
+        { tool: 'check_prohibited', input: 'rxcui=10582 · R1979-ONC-22102', output: 'no hit' },
       ],
       prohibitedHit: null,
       reviewStatus: 'pending',
@@ -409,7 +410,7 @@ const session0432: ReconciliationSession = {
       toolTrace: [
         { tool: 'resolve_drug', input: 'flu vaccine, nasal spray', output: 'rxcui=1655944 · Influenza vaccine, live attenuated · confidence 0.96' },
         { tool: 'classify_drug', input: 'rxcui=1655944', output: 'ATC J07BB03 · Live attenuated viral vaccine' },
-        { tool: 'check_prohibited', input: 'class=Live attenuated vaccine · ODR-3005', output: 'HIT · rule PR-0034 · §6.5.3' },
+        { tool: 'check_prohibited', input: 'class=Live attenuated vaccine · R1979-ONC-22102', output: 'HIT · rule PR-0034 · §6.5.3' },
       ],
       prohibitedHit: {
         ruleId: 'PR-0034',
@@ -484,7 +485,7 @@ const session0429: ReconciliationSession = {
       agentReasoning: 'Participant reports the antiviral prophylaxis frequency was increased to three times daily.',
       toolTrace: [
         { tool: 'resolve_drug', input: 'acyclovir', output: 'rxcui=281 · Acyclovir · confidence 0.99' },
-        { tool: 'check_prohibited', input: 'rxcui=281 · ODR-3005', output: 'no hit · required prophylaxis under §6.4' },
+        { tool: 'check_prohibited', input: 'rxcui=281 · R1979-ONC-22102', output: 'no hit · required prophylaxis under §6.4' },
       ],
       prohibitedHit: null,
       reviewStatus: 'accepted',
@@ -492,13 +493,213 @@ const session0429: ReconciliationSession = {
   ],
 };
 
-export const SESSIONS: ReconciliationSession[] = [session0431, session0432, session0433, session0429];
+// ---------------------------------------------------------------- CEM-2014
+// A second trial. Same UI, different prohibited profile: a checkpoint
+// inhibitor restricts chronic immunosuppressants, which a T-cell engager
+// protocol words differently.
 
-function visit(over: Partial<ScheduledVisit> & Pick<ScheduledVisit, 'subjectId' | 'visitName' | 'visitAt'>): ScheduledVisit {
+const session0512: ReconciliationSession = {
+  sessionId: 'SES-2026-0512',
+  subjectId: 'S-102',
+  studyId: 'R2810-ONC-1540',
+  nctId: 'NCT02760498',
+  startedAt: at(0, '09:20'),
+  endedAt: at(0, '09:28'),
+  status: 'awaiting_review',
+  changes: [
+    {
+      changeId: 'CH-301',
+      changeType: 'add',
+      targetLogId: null,
+      current: null,
+      proposed: entry({
+        logId: 'NEW-301',
+        reportedText: 'my rheumatologist started me on methotrexate, one dose a week on Sundays',
+        rxcui: '6851',
+        canonicalName: 'Methotrexate',
+        indication: 'Rheumatoid arthritis',
+        dose: '15 mg',
+        route: 'Oral',
+        frequency: 'Once weekly',
+        startDate: '2026-08-15',
+        startDatePrecision: 'day',
+        ongoing: true,
+      }),
+      agentConfidence: 0.91,
+      agentReasoning:
+        'Participant reports weekly oral methotrexate started by a rheumatologist for rheumatoid arthritis. Low-dose weekly methotrexate is a chronic immunosuppressant, which this protocol prohibits. Note the dosing: methotrexate is weekly, and a daily entry would be a dosing error worth catching separately.',
+      toolTrace: [
+        { tool: 'resolve_drug', input: 'methotrexate', output: 'rxcui=6851 · Methotrexate · confidence 0.98' },
+        { tool: 'classify_drug', input: 'rxcui=6851', output: 'ATC L04AX03 · Immunosuppressant; antimetabolite' },
+        { tool: 'check_prohibited', input: 'class=Chronic immunosuppressant · CEM-2014', output: 'HIT · rule PR-0009 · §5.7.2' },
+        { tool: 'resolve_date', input: '"middle of August"', output: '2026-08-15 · precision=day' },
+      ],
+      prohibitedHit: {
+        ruleId: 'PR-0009',
+        matchedOn: 'class',
+        className: 'Chronic immunosuppressant',
+        protocolSection: '5.7.2',
+        rationale:
+          'Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events.',
+      },
+      reviewStatus: 'pending',
+    },
+    {
+      changeId: 'CH-302',
+      changeType: 'modify',
+      targetLogId: 'LOG-0210',
+      current: entry({
+        logId: 'LOG-0210',
+        reportedText: 'Levothyroxine',
+        rxcui: '10582',
+        canonicalName: 'Levothyroxine',
+        indication: 'Hypothyroidism',
+        dose: '50 mcg',
+        route: 'Oral',
+        frequency: 'Once daily',
+        startDate: '2026-05-02',
+        startDatePrecision: 'day',
+        ongoing: true,
+      }),
+      proposed: entry({
+        logId: 'LOG-0210',
+        reportedText: 'the thyroid tablet went up after my last blood test, I take the 75 now',
+        rxcui: '10582',
+        canonicalName: 'Levothyroxine',
+        indication: 'Hypothyroidism',
+        dose: '75 mcg',
+        route: 'Oral',
+        frequency: 'Once daily',
+        startDate: '2026-05-02',
+        startDatePrecision: 'day',
+        ongoing: true,
+      }),
+      agentConfidence: 0.87,
+      agentReasoning:
+        'Participant reports the levothyroxine dose was increased to 75 mcg after a thyroid function test. Levothyroxine was started during treatment and a dose increase may reflect immune-related thyroiditis, so the timing is worth checking against the adverse event log.',
+      toolTrace: [
+        { tool: 'resolve_drug', input: 'the thyroid tablet', output: 'rxcui=10582 · Levothyroxine · via log context · confidence 0.94' },
+        { tool: 'check_prohibited', input: 'rxcui=10582 · CEM-2014', output: 'no hit' },
+      ],
+      prohibitedHit: null,
+      reviewStatus: 'pending',
+    },
+    {
+      changeId: 'CH-303',
+      changeType: 'confirm_unchanged',
+      targetLogId: 'LOG-0208',
+      current: entry({
+        logId: 'LOG-0208',
+        reportedText: 'Amlodipine',
+        rxcui: '17767',
+        canonicalName: 'Amlodipine',
+        indication: 'Hypertension',
+        dose: '5 mg',
+        route: 'Oral',
+        frequency: 'Once daily',
+        startDate: '2020-01-20',
+        startDatePrecision: 'day',
+        ongoing: true,
+      }),
+      proposed: entry({
+        logId: 'LOG-0208',
+        reportedText: 'blood pressure one, no change, same as always',
+        rxcui: '17767',
+        canonicalName: 'Amlodipine',
+        indication: 'Hypertension',
+        dose: '5 mg',
+        route: 'Oral',
+        frequency: 'Once daily',
+        startDate: '2020-01-20',
+        startDatePrecision: 'day',
+        ongoing: true,
+      }),
+      agentConfidence: 0.95,
+      agentReasoning: 'Participant confirmed the antihypertensive is unchanged.',
+      toolTrace: [
+        { tool: 'resolve_drug', input: 'blood pressure one', output: 'rxcui=17767 · Amlodipine · via log context' },
+        { tool: 'check_prohibited', input: 'rxcui=17767 · CEM-2014', output: 'no hit' },
+      ],
+      prohibitedHit: null,
+      reviewStatus: 'pending',
+    },
+  ],
+};
+
+// ---------------------------------------------------------------- R4018-ONC-2445
+
+const session0498: ReconciliationSession = {
+  sessionId: 'SES-2026-0498',
+  subjectId: 'S-201',
+  studyId: 'R4018-ONC-2445',
+  nctId: 'NCT06787612',
+  startedAt: at(-3, '13:40'),
+  endedAt: at(-3, '13:47'),
+  status: 'completed',
+  changes: [
+    {
+      changeId: 'CH-401',
+      changeType: 'stop',
+      targetLogId: 'LOG-0301',
+      current: entry({
+        logId: 'LOG-0301',
+        reportedText: 'Ondansetron',
+        rxcui: '26225',
+        canonicalName: 'Ondansetron',
+        indication: 'Chemotherapy-induced nausea',
+        dose: '8 mg',
+        route: 'Oral',
+        frequency: 'Twice daily PRN',
+        startDate: '2026-06-02',
+        startDatePrecision: 'day',
+        ongoing: true,
+      }),
+      proposed: entry({
+        logId: 'LOG-0301',
+        reportedText: 'I stopped the nausea tablets, I have not needed them since the end of July',
+        rxcui: '26225',
+        canonicalName: 'Ondansetron',
+        indication: 'Chemotherapy-induced nausea',
+        dose: '8 mg',
+        route: 'Oral',
+        frequency: 'Twice daily PRN',
+        startDate: '2026-06-02',
+        startDatePrecision: 'day',
+        stopDate: '2026-07-31',
+        stopDatePrecision: 'day',
+        ongoing: false,
+      }),
+      agentConfidence: 0.89,
+      agentReasoning: 'Participant reports stopping the antiemetic at the end of July as nausea resolved.',
+      toolTrace: [
+        { tool: 'resolve_drug', input: 'the nausea tablets', output: 'rxcui=26225 · Ondansetron · via log context' },
+        { tool: 'resolve_date', input: '"end of July"', output: '2026-07-31 · precision=day' },
+        { tool: 'check_prohibited', input: 'rxcui=26225 · R4018-ONC-2445', output: 'no hit' },
+      ],
+      prohibitedHit: null,
+      reviewStatus: 'accepted',
+    },
+  ],
+};
+
+export const SESSIONS: ReconciliationSession[] = [
+  session0431,
+  session0432,
+  session0433,
+  session0429,
+  session0512,
+  session0498,
+];
+
+function visit(
+  studyId: string,
+  over: Partial<ScheduledVisit> & Pick<ScheduledVisit, 'subjectId' | 'visitName' | 'visitAt'>,
+): ScheduledVisit {
+  const study = STUDIES.find((s) => s.studyId === studyId);
   return {
     sessionId: null,
-    studyId: STUDY_ID,
-    nctId: NCT_ID,
+    studyId,
+    nctId: study?.nctId ?? NCT_ID,
     reconStatus: 'not_started',
     changeCount: 0,
     prohibitedCount: 0,
@@ -508,7 +709,8 @@ function visit(over: Partial<ScheduledVisit> & Pick<ScheduledVisit, 'subjectId' 
 }
 
 export const VISITS: ScheduledVisit[] = [
-  visit({
+  // --- R1979-ONC-22102 ---
+  visit(STUDY_ID, {
     sessionId: 'SES-2026-0431',
     subjectId: 'S-014',
     visitName: 'Cycle 5 Day 1',
@@ -518,7 +720,7 @@ export const VISITS: ScheduledVisit[] = [
     prohibitedCount: 2,
     unresolvedCount: 1,
   }),
-  visit({
+  visit(STUDY_ID, {
     sessionId: 'SES-2026-0432',
     subjectId: 'S-021',
     visitName: 'Cycle 3 Day 1',
@@ -527,17 +729,17 @@ export const VISITS: ScheduledVisit[] = [
     changeCount: 2,
     prohibitedCount: 1,
   }),
-  visit({
+  visit(STUDY_ID, {
     sessionId: 'SES-2026-0433',
     subjectId: 'S-033',
     visitName: 'Cycle 9 Day 1',
     visitAt: at(0, '14:00'),
     reconStatus: 'awaiting_review',
   }),
-  visit({ subjectId: 'S-047', visitName: 'Screening', visitAt: at(0, '16:00') }),
-  visit({ subjectId: 'S-052', visitName: 'Cycle 2 Day 1', visitAt: at(1, '09:00') }),
-  visit({ subjectId: 'S-019', visitName: 'Cycle 5 Day 1', visitAt: at(1, '13:30') }),
-  visit({
+  visit(STUDY_ID, { subjectId: 'S-047', visitName: 'Screening', visitAt: at(0, '16:00') }),
+  visit(STUDY_ID, { subjectId: 'S-052', visitName: 'Cycle 2 Day 1', visitAt: at(1, '09:00') }),
+  visit(STUDY_ID, { subjectId: 'S-019', visitName: 'Cycle 5 Day 1', visitAt: at(1, '13:30') }),
+  visit(STUDY_ID, {
     sessionId: 'SES-2026-0429',
     subjectId: 'S-008',
     visitName: 'Cycle 7 Day 1',
@@ -545,4 +747,33 @@ export const VISITS: ScheduledVisit[] = [
     reconStatus: 'completed',
     changeCount: 1,
   }),
+
+  // --- CEM-2014 ---
+  visit('R2810-ONC-1540', {
+    sessionId: 'SES-2026-0512',
+    subjectId: 'S-102',
+    visitName: 'Week 12',
+    visitAt: at(0, '13:00'),
+    reconStatus: 'awaiting_review',
+    changeCount: 3,
+    prohibitedCount: 1,
+  }),
+  visit('R2810-ONC-1540', { subjectId: 'S-109', visitName: 'Week 24', visitAt: at(0, '15:15') }),
+  visit('R2810-ONC-1540', { subjectId: 'S-114', visitName: 'Screening', visitAt: at(1, '10:45') }),
+  visit('R2810-ONC-1540', { subjectId: 'S-103', visitName: 'Week 36', visitAt: at(2, '09:30') }),
+
+  // --- R3767-ONC-22122 · no calls placed yet ---
+  visit('R3767-ONC-22122', { subjectId: 'S-305', visitName: 'Cycle 4 Day 1', visitAt: at(1, '11:00') }),
+  visit('R3767-ONC-22122', { subjectId: 'S-311', visitName: 'Cycle 2 Day 1', visitAt: at(2, '14:20') }),
+
+  // --- R4018-ONC-2445 ---
+  visit('R4018-ONC-2445', {
+    sessionId: 'SES-2026-0498',
+    subjectId: 'S-201',
+    visitName: 'Cycle 6 Day 1',
+    visitAt: at(-3, '14:00'),
+    reconStatus: 'completed',
+    changeCount: 1,
+  }),
+  visit('R4018-ONC-2445', { subjectId: 'S-207', visitName: 'Cycle 3 Day 1', visitAt: at(3, '10:00') }),
 ];

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { SITE_LABEL } from './brand';
 
 /**
  * Demo sign-in.
@@ -17,9 +18,6 @@ export interface Coordinator {
   site: string;
 }
 
-/** The study and site this install is deployed for. Shown before sign-in. */
-export const SITE_CONTEXT = { study: 'ODR-3005', site: 'Site 042' };
-
 const DEMO_USERNAME = 'ayushim';
 const DEMO_PASSWORD = 'password';
 
@@ -27,7 +25,7 @@ const DEMO_COORDINATOR: Coordinator = {
   username: 'ayushim',
   displayName: 'Ayushi Mehrotra',
   role: 'Clinical research coordinator',
-  site: SITE_CONTEXT.site,
+  site: SITE_LABEL,
 };
 
 const STORAGE_KEY = 'conmed.coordinator';

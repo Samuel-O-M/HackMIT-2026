@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { DEMO_HINT, SITE_CONTEXT, type SignInResult } from '../auth';
+import { DEMO_HINT, type SignInResult } from '../auth';
+import { PRODUCT_NAME, SITE_LABEL } from '../brand';
 import { usingFixtures } from '../api';
 
 interface Props {
@@ -26,10 +27,8 @@ export function SignIn({ onSubmit }: Props) {
     <div className="signin">
       <form className="signin-card" onSubmit={submit} noValidate>
         <div className="signin-mark">
-          <b>Conmed Reconciliation</b>
-          <span>
-            {SITE_CONTEXT.study} · {SITE_CONTEXT.site}
-          </span>
+          <b>{PRODUCT_NAME}</b>
+          <span>{SITE_LABEL}</span>
         </div>
 
         <div className="signin-body">

@@ -10,7 +10,13 @@ import type {
   DataQuery,
   ElectronicSignature,
   ProtocolDeviation,
+  NewStudyInput,
+  ProtocolDocument,
   ScheduledVisit,
+  Study,
+  SupportingDocument,
+  SupportingDocumentKind,
+  StudySummary,
   TranscriptTurn,
 } from '../types/ui';
 
@@ -48,7 +54,34 @@ export interface DeviationInput {
 }
 
 export interface Transport {
-  listVisits(): Promise<ScheduledVisit[]>;
+  /** Trials this coordinator is assigned to at this site, with their rollups. */
+  listStudies(): Promise<StudySummary[]>;
+
+  /** Visits for one trial. Scoped by study — a prohibited rule is protocol-specific. */
+  listVisits(studyId: string): Promise<ScheduledVisit[]>;
+
+  /**
+   * The Clinical Study Protocol in force for a trial. `null` means none is
+   * loaded, and the agent has no prohibited rule set to check against.
+   */
+  getProtocol(studyId: string): Promise<ProtocolDocument | null>;
+
+  /**
+   * Upload a protocol. The backend stores the file and extracts the prohibited
+   * list from its concomitant medications section; the UI only shows the result.
+   */
+  uploadProtocol(studyId: string, file: File): Promise<ProtocolDocument>;
+
+  /** The baseline medication log and visit schedule for a trial. */
+  listSupportingDocuments(studyId: string): Promise<SupportingDocument[]>;
+  uploadSupportingDocument(
+    studyId: string,
+    kind: SupportingDocumentKind,
+    file: File,
+  ): Promise<SupportingDocument>;
+
+  /** Open a new trial at this site. */
+  createStudy(input: NewStudyInput): Promise<Study>;
   getSession(sessionId: string): Promise<ReconciliationSession | null>;
 
   setReviewStatus(sessionId: string, changeId: string, status: ReviewStatus): Promise<ProposedChange>;

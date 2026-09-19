@@ -6,7 +6,10 @@ import { useEffect, useState } from 'react';
  */
 
 export type Route =
-  | { name: 'sessions' }
+  | { name: 'studies' }
+  | { name: 'visits'; studyId: string }
+  | { name: 'newTrial' }
+  | { name: 'documents'; studyId: string }
   | { name: 'review'; sessionId: string }
   | { name: 'live'; sessionId: string }
   | { name: 'audit'; sessionId: string };
@@ -15,17 +18,30 @@ export function parseRoute(hash: string): Route {
   const path = hash.replace(/^#\/?/, '').split('?')[0];
   const segments = path.split('/').filter(Boolean);
 
+  if (segments[0] === 'new-trial') return { name: 'newTrial' };
+
+  if (segments[0] === 'study' && segments[1]) {
+    if (segments[2] === 'documents') return { name: 'documents', studyId: segments[1] };
+    return { name: 'visits', studyId: segments[1] };
+  }
+
   if (segments[0] === 'session' && segments[1]) {
     const sessionId = segments[1];
     if (segments[2] === 'live') return { name: 'live', sessionId };
     if (segments[2] === 'audit') return { name: 'audit', sessionId };
     return { name: 'review', sessionId };
   }
-  return { name: 'sessions' };
+  return { name: 'studies' };
 }
 
 export function hrefFor(route: Route): string {
   switch (route.name) {
+    case 'visits':
+      return `#/study/${route.studyId}`;
+    case 'newTrial':
+      return '#/new-trial';
+    case 'documents':
+      return `#/study/${route.studyId}/documents`;
     case 'review':
       return `#/session/${route.sessionId}`;
     case 'live':

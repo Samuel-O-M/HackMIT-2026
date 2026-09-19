@@ -1,5 +1,5 @@
 import type { ConmedEntry, ReviewStatus } from '../types/contract';
-import type { ElectronicSignature } from '../types/ui';
+import type { ElectronicSignature, NewStudyInput, SupportingDocumentKind } from '../types/ui';
 import type { CallEvent, DeviationInput, Transport, Unsubscribe } from './transport';
 
 /**
@@ -7,7 +7,13 @@ import type { CallEvent, DeviationInput, Transport, Unsubscribe } from './transp
  *
  * This doubles as the written ask to the backend branch. Endpoints:
  *
- *   GET    /visits                                  → ScheduledVisit[]
+ *   GET    /studies                                 → StudySummary[]
+ *   GET    /studies/:studyId/visits                 → ScheduledVisit[]
+ *   GET    /studies/:studyId/protocol               → ProtocolDocument | null
+ *   POST   /studies/:studyId/protocol               multipart file → ProtocolDocument
+ *   GET    /studies/:studyId/documents              → SupportingDocument[]
+ *   POST   /studies/:studyId/documents              multipart file + kind → SupportingDocument
+ *   POST   /studies                                 NewStudyInput → Study
  *   GET    /sessions/:id                            → ReconciliationSession
  *   PATCH  /sessions/:id/changes/:changeId/status   { status } → ProposedChange
  *   PATCH  /sessions/:id/changes/:changeId          { patch, reason } → ProposedChange
@@ -38,7 +44,33 @@ function makeHttpTransport(base: string): Transport {
   }
 
   return {
-    listVisits: () => json('/visits'),
+    listStudies: () => json('/studies'),
+    listVisits: (studyId) => json(`/studies/${studyId}/visits`),
+
+    getProtocol: (studyId) => json(`/studies/${studyId}/protocol`),
+
+    listSupportingDocuments: (studyId) => json(`/studies/${studyId}/documents`),
+
+    async uploadSupportingDocument(studyId, kind: SupportingDocumentKind, file: File) {
+      const body = new FormData();
+      body.append('kind', kind);
+      body.append('file', file);
+      const res = await fetch(`${base}/studies/${studyId}/documents`, { method: 'POST', body });
+      if (!res.ok) throw new Error(`Document upload failed: ${res.status}`);
+      return res.json();
+    },
+
+    createStudy: (input: NewStudyInput) =>
+      json('/studies', { method: 'POST', body: JSON.stringify(input) }),
+
+    async uploadProtocol(studyId, file: File) {
+      const body = new FormData();
+      body.append('file', file);
+      // Let the browser set the multipart boundary.
+      const res = await fetch(`${base}/studies/${studyId}/protocol`, { method: 'POST', body });
+      if (!res.ok) throw new Error(`Protocol upload failed: ${res.status}`);
+      return res.json();
+    },
     getSession: (id) => json(`/sessions/${id}`),
 
     setReviewStatus: (sessionId, changeId, status: ReviewStatus) =>

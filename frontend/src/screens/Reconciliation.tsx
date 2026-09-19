@@ -194,8 +194,11 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
               The call completed at {session.endedAt ? formatDateTime(session.endedAt) : 'an unknown time'} and
               the participant confirmed their medication log is accurate. There is nothing to promote.
             </p>
-            <button className="btn" onClick={() => navigate({ name: 'sessions' })}>
-              Back to today's visits
+            <button
+              className="btn"
+              onClick={() => navigate({ name: 'visits', studyId: session.studyId })}
+            >
+              Back to {session.studyId} visits
             </button>
           </div>
         ) : (

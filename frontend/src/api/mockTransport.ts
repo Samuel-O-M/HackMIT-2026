@@ -4,9 +4,17 @@ import type {
   DataQuery,
   ElectronicSignature,
   ProtocolDeviation,
+  NewStudyInput,
+  ProtocolDocument,
   ScheduledVisit,
+  Study,
+  StudySummary,
+  SupportingDocument,
+  SupportingDocumentKind,
 } from '../types/ui';
 import { SESSIONS, VISITS } from '../mocks/sessions';
+import { STUDIES } from '../mocks/studies';
+import { PARSE_STUB, SEED_PROTOCOLS } from '../mocks/protocols';
 import { TRANSCRIPTS } from '../mocks/transcripts';
 import { SEED_AUDIT } from '../mocks/audit';
 import { displayName } from '../lib/entry';
@@ -36,6 +44,10 @@ const visits: ScheduledVisit[] = clone(VISITS);
 const audit = new Map<string, AuditEvent[]>(Object.entries(clone(SEED_AUDIT)));
 const queries = new Map<string, DataQuery[]>();
 const deviations = new Map<string, ProtocolDeviation[]>();
+const protocols = new Map<string, ProtocolDocument>(Object.entries(clone(SEED_PROTOCOLS)));
+const supporting = new Map<string, SupportingDocument[]>();
+/** Mutable: a coordinator can open a new trial at the site. */
+const studies: Study[] = clone(STUDIES);
 
 let eventSeq = 9000;
 function record(sessionId: string, event: Omit<AuditEvent, 'eventId' | 'at' | 'reason'> & { reason?: string | null }): void {
@@ -83,9 +95,105 @@ function syncVisit(session: ReconciliationSession): void {
   visit.unresolvedCount = session.changes.filter((c) => c.proposed.rxcui === null).length;
 }
 
+function isToday(iso: string): boolean {
+  const d = new Date(iso);
+  const now = new Date();
+  return (
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate()
+  );
+}
+
 export const mockTransport: Transport = {
-  listVisits() {
-    return settle(clone(visits));
+  listStudies() {
+    const summaries: StudySummary[] = studies.map((study) => {
+      const mine = visits.filter((v) => v.studyId === study.studyId);
+      const protocol = protocols.get(study.studyId) ?? null;
+      return {
+        ...study,
+        hasProtocol: protocol !== null && protocol.status === 'active',
+        protocolRuleCount: protocol?.rules.length ?? 0,
+        visitsToday: mine.filter((v) => isToday(v.visitAt)).length,
+        awaitingReview: mine.filter((v) => v.reconStatus === 'awaiting_review').length,
+        prohibitedFindings: mine.reduce((n, v) => n + v.prohibitedCount, 0),
+        unresolvedItems: mine.reduce((n, v) => n + v.unresolvedCount, 0),
+        callsInProgress: mine.filter((v) => v.reconStatus === 'in_progress').length,
+      };
+    });
+    return settle(summaries);
+  },
+
+  listVisits(studyId) {
+    return settle(clone(visits.filter((v) => v.studyId === studyId)));
+  },
+
+  listSupportingDocuments(studyId) {
+    return settle(clone(supporting.get(studyId) ?? []));
+  },
+
+  uploadSupportingDocument(studyId, kind: SupportingDocumentKind, file: File) {
+    const document: SupportingDocument = {
+      documentId: `DOC-${kind.toUpperCase()}-${Date.now().toString(36).toUpperCase()}`,
+      studyId,
+      kind,
+      filename: file.name,
+      sizeBytes: file.size,
+      // The real row count comes from parsing the file on the backend.
+      recordCount: null,
+      uploadedBy: actor(),
+      uploadedAt: new Date().toISOString(),
+      sourceUrl: null,
+    };
+    const list = (supporting.get(studyId) ?? []).filter((d) => d.kind !== kind);
+    list.push(document);
+    supporting.set(studyId, list);
+    return new Promise((resolve) => setTimeout(() => resolve(clone(document)), 900));
+  },
+
+  createStudy(input: NewStudyInput) {
+    if (studies.some((s) => s.studyId === input.studyId)) {
+      return Promise.reject(new Error(`${input.studyId} is already open at this site.`));
+    }
+    const study: Study = {
+      ...input,
+      enrolledAtSite: 0,
+      // Populated once the protocol is loaded and its rules are read.
+      prohibitedHighlights: [],
+    };
+    studies.push(study);
+    return settle(clone(study));
+  },
+
+  getProtocol(studyId) {
+    return settle(clone(protocols.get(studyId) ?? null));
+  },
+
+  uploadProtocol(studyId, file: File) {
+    // The real parse — finding the concomitant medications section and reading
+    // the prohibited list out of it — happens on the agent branch. This stands
+    // in so the flow is demonstrable, and does not pretend to have read the file.
+    const existing = protocols.get(studyId);
+    if (existing) existing.status = 'superseded';
+
+    const document: ProtocolDocument = {
+      documentId: `DOC-${studyId}-${Date.now().toString(36).toUpperCase()}`,
+      studyId,
+      filename: file.name,
+      protocolNumber: studyId,
+      amendment: existing ? 'Amendment (new)' : 'Amendment 1',
+      effectiveDate: new Date().toISOString().slice(0, 10),
+      sizeBytes: file.size,
+      pageCount: null,
+      uploadedBy: actor(),
+      uploadedAt: new Date().toISOString(),
+      status: 'active',
+      conmedSection: '6.5',
+      rules: clone(PARSE_STUB),
+      sourceUrl: null,
+    };
+    protocols.set(studyId, document);
+    return new Promise((resolve) => setTimeout(() => resolve(clone(document)), 1400));
   },
 
   getSession(sessionId) {

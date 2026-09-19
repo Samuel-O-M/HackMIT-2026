@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from './api';
 import type { ReconciliationSession } from './types/contract';
-import type { ScheduledVisit } from './types/ui';
+import type { ScheduledVisit, StudySummary } from './types/ui';
 import { navigate, useRoute } from './router';
 import { useAuth } from './auth';
 import { AppShell } from './components/AppShell';
 import { Toasts, useToasts } from './components/Toast';
+import { StudyPicker } from './screens/StudyPicker';
 import { SessionList } from './screens/SessionList';
 import { Reconciliation } from './screens/Reconciliation';
 import { LiveCall } from './screens/LiveCall';
 import { Audit } from './screens/Audit';
+import { Documents } from './screens/Documents';
+import { NewTrial } from './screens/NewTrial';
 import { SignIn } from './screens/SignIn';
 
 export default function App() {
@@ -17,10 +20,14 @@ export default function App() {
   const { coordinator, signIn, signOut } = useAuth();
   const { toasts, push, dismiss } = useToasts();
   const [session, setSession] = useState<ReconciliationSession | null>(null);
-  const [awaiting, setAwaiting] = useState(0);
+  const [studies, setStudies] = useState<StudySummary[]>([]);
   const [reloadKey, setReloadKey] = useState(0);
 
   const sessionId = coordinator && 'sessionId' in route ? route.sessionId : null;
+
+  /** The trial in view: named by the route, or inherited from the open session. */
+  const studyId = 'studyId' in route ? route.studyId : session?.studyId ?? null;
+  const study = studies.find((s) => s.studyId === studyId) ?? null;
 
   useEffect(() => {
     if (!sessionId) {
@@ -32,8 +39,8 @@ export default function App() {
       if (!live) return;
       if (next) setSession(next);
       else {
-        push(`Session ${sessionId} was not found. Showing today's visits instead.`, 'warn');
-        navigate({ name: 'sessions' });
+        push(`Session ${sessionId} was not found. Showing your trials instead.`, 'warn');
+        navigate({ name: 'studies' });
       }
     });
     return () => {
@@ -43,9 +50,7 @@ export default function App() {
 
   useEffect(() => {
     if (!coordinator) return;
-    api.listVisits().then((visits) => {
-      setAwaiting(visits.filter((v) => v.reconStatus === 'awaiting_review').length);
-    });
+    api.listStudies().then(setStudies);
   }, [reloadKey, coordinator]);
 
   const onSessionChange = useCallback((next: ReconciliationSession) => {
@@ -65,7 +70,7 @@ export default function App() {
 
   function leave() {
     signOut();
-    navigate({ name: 'sessions' });
+    navigate({ name: 'studies' });
   }
 
   if (!coordinator) return <SignIn onSubmit={signIn} />;
@@ -73,18 +78,32 @@ export default function App() {
   return (
     <AppShell
       route={route}
+      study={study}
       session={session}
-      awaitingReview={awaiting}
       coordinator={coordinator}
       onSignOut={leave}
     >
-      {route.name === 'sessions' && <SessionList onStartCall={onStartCall} reloadKey={reloadKey} />}
+      {route.name === 'studies' && <StudyPicker coordinator={coordinator} />}
+      {route.name === 'visits' && (
+        <SessionList studyId={route.studyId} study={study} onStartCall={onStartCall} reloadKey={reloadKey} />
+      )}
       {route.name === 'review' && (
         <Reconciliation
           session={session}
           coordinator={coordinator}
           onSessionChange={onSessionChange}
           onToast={push}
+        />
+      )}
+      {route.name === 'newTrial' && (
+        <NewTrial onToast={push} onCreated={() => setReloadKey((n) => n + 1)} />
+      )}
+      {route.name === 'documents' && (
+        <Documents
+          studyId={route.studyId}
+          study={study}
+          onToast={push}
+          onChanged={() => setReloadKey((n) => n + 1)}
         />
       )}
       {route.name === 'live' && <LiveCall sessionId={route.sessionId} session={session} />}
