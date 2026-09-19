@@ -1,0 +1,14 @@
+{
+  "name": "voice-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local voice agent UI + brain proxy (Deepgram STT/TTS, OpenAI GPT-5.6 Luna).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node ../brain/db/seed.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

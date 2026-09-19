@@ -1,0 +1,221 @@
+# THIS IS A VERY ROUGH DESCRIPTION OF THE PROJECT. NEVER TAKE THIS AS A GROUND TRUTH MBUT MORE AS A GUIDANCE. ALWAYS PRIORITIZE THE USERS PROMPT AND INTENTIONS OVER ANYTHING ON THIS DOCUMENT, AND ASK IF THERE ARE ANY CONCERNS OR POINTS TO BRING UP ABOUT THIS. 
+
+DOCUMENT CONTENT : 
+
+Informed consent
+patient medication
+Patient screening
+reconciliation
+
+Features:
+Pull and save patient data and records
+Pull information from medical data for accurate help and recommendation
+Request and store video consent
+
+
+Pre-Visit Concomitant Medication Reconciliation
+Summary
+One sentence. Before a clinical trial visit, the system calls the participant, walks them through their current medications, and produces a reconciled concomitant medication record that a coordinator reviews and promotes, with any protocol-prohibited medication flagged before the participant arrives.
+The pitch.
+Concomitant medication logs drift. Participants start and stop drugs between visits, report them vaguely when asked, and reconciliation happens under time pressure in the room. Some of those drugs are prohibited by the protocol, and finding out weeks later means a protocol deviation that is already in the record. We move reconciliation to a phone call before the visit, resolve what the participant says to a canonical drug concept, check it against this protocol's prohibited list, and hand the coordinator a diff to confirm.
+Why this is not an ambient scribe. Abridge and Nuance DAX listen to an encounter and produce a narrative note. They hold no state between encounters and they do not know the protocol. What we maintain is a longitudinal medication record reconciled at every visit and checked against trial-specific rules. Different artifact, different failure mode, different user.
+Users. The clinical research coordinator is the primary user. The participant is the voice on the call. The principal investigator sees escalations only.
+The problem
+A concomitant medication is anything a trial participant takes besides the study drug. The conmed log records each one: drug name, indication, dose, route, frequency, start date, stop date. It has to stay accurate for the entire study, because it feeds safety analysis and because the protocol restricts what participants may take.
+Three things break it.
+Participants are unreliable reporters. They say "the little white pill for my blood pressure." They forget they stopped something. They omit over-the-counter drugs, herbals, and supplements because those do not feel like medication. Start and stop dates come back partial: "a few weeks ago," "sometime after Christmas."
+Reconciliation happens under time pressure. The coordinator has a visit to run and a protocol schedule to complete. Medication review is one item among many and it gets compressed.
+Prohibited medications surface too late. Protocols forbid specific drugs or drug classes, usually for interaction or safety reasons. A participant taking one is a protocol deviation, and it can exclude them from the per-protocol analysis population. Today this is caught during monitoring, weeks after the exposure.
+Evidence
+A pilot study reviewed 95 patient visits over two months in a dedicated research unit and checked the medication lists afterward. Only 20.6% of investigational drugs were listed in the EHR after study visits. Of those listed, 40% had the correct dose and 50% the correct frequency. The review identified 20 potential protocol-prohibited medications, and four medications recorded in a way that may have compromised blinding.
+Twenty prohibited medications in ninety-five visits, under current practice.
+What people do about it today
+They assign a pharmacist. Published practice in early-phase oncology is for a pharmacist to conduct reconciliation during screening, drawing on at least three sources: the medical record, a patient interview, and community pharmacy dispensing history including over-the-counter and herbal products. They then read the protocol and investigator's brochure to determine which drugs are prohibited or require monitoring.
+That is thorough, expensive, and does not scale to every visit. It is the gap we are building into.
+What we build
+The flow
+Coordinator initiates. In the dashboard, they click Start pre-visit reconciliation for a scheduled participant. The system places an outbound call to the number on file.
+The agent reconciles. It reads back the current conmed log, asks what has changed, probes on anything vague, and collects start and stop dates for every change.
+Resolution and checking. Each reported medication resolves through RxNorm to a canonical ingredient concept, gets classified through RxClass, and is checked against this protocol's prohibited list.
+Staging. The call produces a proposed change set. Nothing is written to the conmed log.
+Coordinator review. They open a reconciliation diff, confirm or reject each change, and promote the accepted ones. Prohibited hits are flagged at the top and route to the investigator.
+Why the call is outbound
+An inbound number has an identity problem: anyone who dials it can claim to be participant 0412. Calling the number on file solves identity without building authentication, and it fits the real workflow, where the site initiates contact before a scheduled visit.
+It is also the better demo. A judge gives you their phone number, you click a button, their phone rings.
+The three things that make it work
+RxNorm resolution. NLM's RxNorm normalizes drug naming, so Tylenol, acetaminophen, and APAP all resolve to one ingredient concept with a stable identifier (RxCUI). The RxNav API is free and requires no authentication. RxNav-in-a-Box is a locally installable Docker version, which we use so the demo does not depend on conference wifi.
+RxClass for class-level rules. Protocols usually prohibit classes, not individual products. RxClass returns a drug's classification, so a rule like "no NSAIDs" matches ibuprofen without maintaining a hardcoded drug list.
+Protocol rules as data. Prohibited drugs and classes are stored per protocol, with the protocol section reference, so a flag can cite where the prohibition comes from.
+One thing we do not claim
+NLM discontinued the RxNav drug-drug interaction API in January 2024 and nothing replaced it. We do not do interaction checking. We check against the protocol's stated prohibitions, which is the more accurate framing anyway, since protocols specify prohibitions rather than deriving them.
+Architecture
+ Coordinator clicks "Start reconciliation"
+        │
+        ▼
+  [ Telephony ]  ──►  outbound call to number in identity_store
+        │
+        ▼
+  [ VAD + streaming STT ]  ──►  transcript + confidence
+        │
+        ▼
+  [ Conversation agent ]  ◄── current conmed_log state
+        │                 ◄── protocol_rules for this study
+        │
+        │  tools:
+        │    resolve_drug(text)        → RxNorm RxCUI + canonical name
+        │    classify_drug(rxcui)      → RxClass ATC / class memberships
+        │    check_prohibited(rxcui)   → rule hit + protocol section
+        │    resolve_date(phrase)      → date or partial-date flag
+        │
+        ▼
+  proposed_changes  (staged, unpromoted)
+        │
+        ▼
+  [ Reconciliation diff UI ]  ──►  coordinator confirms / rejects
+        │
+        ▼
+  [ audit_log ]  ──►  promoted rows land in conmed_log
+Two stores, split on PHI
+The boundary that matters is not patient data versus medical data. It is identifying information versus clinical record, linked by a pseudonymous subject ID. That is the standard pattern in regulated clinical systems and it gives us something real to say about privacy design.
+identity_store holds name, phone, date of birth, and the mapping to subject_id. Access-controlled, separable, deletable.
+clinical_store holds everything else and references participants only by subject_id.
+One agent with tools,
+Regeneron's starter kit does ask for visible agentic reasoning and self-correction. We get that by surfacing the tool trace in the UI: heard "something white for my knee" → resolved to ibuprofen (RxCUI 5640) → classified NSAID → matched prohibited rule, protocol section 6.5. Same credibility, a fraction of the risk.
+The front end
+Primary user is the coordinator, not the physician. The investigator sees escalations only.
+The screen that matters is the reconciliation diff: what the log said on the left, what the call produced on the right, each row marked added, stopped, changed, or unchanged. Prohibited hits render as a banner above the diff with the protocol section cited. Every row has confirm and reject. Nothing moves to conmed_log without a click.
+If we build one screen well this weekend, it is that one.
+Data model
+identity_store
+Table
+Fields
+participants
+subject_id (PK), given_name, family_name, phone, dob, preferred_language
+
+Nothing clinical lives here. Everything downstream references subject_id only.
+clinical_store
+Table
+Purpose
+studies
+study_id, nct_id, title, protocol_version
+enrollments
+subject_id, study_id, enrolled_date, arm
+conmed_log
+The regulated record. Append-only, versioned. One row per medication per state change.
+protocol_rules
+study_id, rule_type (prohibited / monitored), rxcui or class_id, protocol_section, rationale
+call_sessions
+session_id, subject_id, started_at, ended_at, status
+utterances
+session_id, seq, transcript, stt_confidence, audio_ref
+proposed_changes
+Staging. What the call produced, before any human touched it.
+audit_log
+Append-only. Every promotion, rejection, and edit.
+
+conmed_log row
+log_id, subject_id, study_id, reported_text, rxcui, canonical_name, indication, dose, route, frequency, start_date, start_date_precision, stop_date, stop_date_precision, ongoing, status, version, superseded_by, created_by, created_at
+*_precision carries day, month, year, or unknown. Partial dates are normal in this domain and pretending otherwise produces silently wrong data.
+proposed_changes row
+change_id, session_id, subject_id, change_type (add / stop / modify / confirm_unchanged), target_log_id (null for add), proposed_values (JSON), agent_confidence, agent_reasoning, tool_trace (JSON), prohibited_hit (rule_id or null), review_status (pending / accepted / rejected / edited), reviewed_by, reviewed_at
+Audit trail
+Regulated records are held to ALCOA+: Attributable, Legible, Contemporaneous, Original, Accurate, plus Complete, Consistent, Enduring, Available. Capturing at the moment the participant speaks is more contemporaneous than a coordinator writing it up later, which is a point worth making out loud.
+Rules: append-only, no silent overwrites, no value reaches conmed_log without an explicit human action event, and raw audio is stored separately from the structured record with its own retention and deletion policy. Voice is identifiable data.
+Conversation design
+The person on the phone is a patient, often elderly, possibly unwell. Tone is warm, pace is slow, questions are one at a time.
+Call structure
+Identify and get permission. Confirm you are speaking to the right person, say the call is being recorded for the study record, and get a yes before continuing.
+Read back the current log. "Our records show you're taking metformin, lisinopril, and atorvastatin. Does that sound right?"
+Walk the deltas. Anything stopped, anything new, any dose changes.
+Probe the open categories. Over-the-counter, vitamins, supplements, herbals, anything from another doctor. Participants do not volunteer these because they do not think of them as medication.
+Close. Summarize what changed, say a coordinator will review it before the visit.
+Handling the vague report
+Participants describe drugs by appearance and purpose, not name. The agent narrows rather than guessing.
+Participant: "I've been taking something white for my knee." Agent: "Is it something you got from a pharmacy shelf, or was it prescribed?" Participant: "Just from the drugstore." Agent: "Do you remember the name on the box? Something like Advil, Aleve, or Tylenol?" Participant: "Advil, I think."
+Resolves to ibuprofen. If the participant cannot narrow it, record the verbatim text with rxcui null and flag it for the coordinator. An unresolved medication is a useful output. Do not force a resolution.
+Handling partial dates
+"A few weeks ago" is not a date. The agent tries one narrowing question, then records what it has with an explicit precision flag.
+Agent: "Roughly when did you stop it? Was it before or after your last visit, on the 2nd?"
+If that lands, record a day-precision date. If not, record month precision and move on. Never silently convert a vague phrase into a specific date.
+Handling the prohibited hit
+The agent does not tell the participant they have done something wrong, and does not tell them to stop taking anything. That is a clinical instruction and it is the investigator's call.
+Agent: "Thanks, that's helpful. I'll make sure the study team sees that before your visit, and they may want to talk with you about it."
+The flag goes to the coordinator's screen and the investigator queue. The participant is told a human will follow up, nothing more.
+Latency targets
+Under two seconds from end of speech to agent response. Above that the call feels broken. Stream the STT, keep responses short, and pre-warm the RxNorm lookup with a local RxNav instance.
+Demo script
+Three minutes. One participant, one protocol, one call.
+Setup (15s). "This is a site running an oncology trial. Participant 0412 has a visit tomorrow. The coordinator is doing pre-visit medication reconciliation. Today that's a phone call somebody has to make, or it gets squeezed into the visit itself."
+Click Start pre-visit reconciliation. A judge's phone rings, or your second phone on the table.
+Beat 1, reconciliation (45s).
+Agent: "Our records show you're on metformin, lisinopril, and atorvastatin. Is that still right?" Participant: "I stopped the atorvastatin a few weeks ago." Agent: "Do you remember roughly when? Was it before or after your last visit, on the 2nd?" Participant: "After, I think. Maybe the week after."
+Diff updates live: atorvastatin marked stopped, date recorded at week precision, flagged for coordinator confirmation.
+Beat 2, the vague report (45s).
+Participant: "Oh, and I've been taking something white for my knee."
+Agent narrows it in two questions. Show the tool trace on screen: reported text → RxNorm resolution → ibuprofen, RxCUI 5640.
+Beat 3, the catch (45s).
+RxClass returns NSAID. protocol_rules has a prohibited entry for NSAIDs citing section 6.5. The banner fires on the coordinator's screen: Prohibited concomitant medication. Ibuprofen (NSAID). Protocol section 6.5. Investigator review required before visit.
+Agent on the call stays neutral: "Thanks, I'll make sure the study team sees that before your visit."
+Say the line: under current practice this gets found weeks later during monitoring, and by then it is already a protocol deviation. A pilot study found twenty prohibited medications across ninety-five visits.
+Beat 4, the trust surface (30s).
+Show the diff. Every proposed change with its confidence and the tool trace behind it. Confirm and reject per row. Show that nothing has entered the conmed log yet, and show the audit entry when the coordinator promotes.
+Close on: the agent proposes, the coordinator confirms, the investigator decides.
+Rehearsal notes
+Run it end to end at least five times before judging. Latency and phone audio are where live demos die.
+Have a recorded fallback video ready. If the wifi goes, you still have a demo.
+Use a local RxNav instance so drug resolution is not a network dependency.
+Glossary
+Read this before talking to a mentor or judge. Using these correctly is most of what "knowing the domain" looks like from the outside.
+The people
+Participant (or subject) — the person enrolled in the trial. Say participant, not patient, when talking about trials.
+CRC, clinical research coordinator — site staff who run visits, record source data, and enter eCRF data. Our primary user.
+PI, principal investigator — the physician responsible for the trial at a site. Makes clinical determinations and signs off on safety data.
+Sponsor — the organization running the trial, for example Regeneron. CRO — a contract research organization running it on the sponsor's behalf.
+Site — the hospital or clinic where participants are seen. A trial has many.
+The documents and systems
+Protocol — the trial's governing document. Defines eligibility, the schedule of assessments, endpoints, permitted and prohibited medications, and what must be recorded at each visit.
+CRF / eCRF, case report form — the structured form on which protocol-required data is recorded per participant.
+EDC, electronic data capture — the system holding eCRF data. Medidata Rave and Veeva EDC are the common commercial ones; OpenClinica and LibreClinica are open source.
+Source data / source documentation — the original record of an observation. The eCRF is derived from it. Under eSource or direct data capture, the electronic record is the source, which removes transcription.
+CTMS — clinical trial management system. Tracks visits and enrollment operationally, separate from the EDC which holds clinical data.
+ICF, informed consent form — the document a participant signs after understanding the risks. Consent is a process, not a form, and it is conducted by a human.
+Our domain
+Concomitant medication (conmed) — anything the participant takes besides the study drug, including over-the-counter drugs, vitamins, supplements, and herbals.
+Prohibited medication — a drug or drug class the protocol forbids, usually for interaction or safety reasons. Monitored or restricted medications are permitted but tracked.
+Protocol deviation — any departure from the protocol. Taking a prohibited conmed is one. It can exclude the participant from the per-protocol analysis population.
+Medication reconciliation — the process of building an accurate list of everything a person is taking. Standard in hospital admission; in trials it additionally means checking against the protocol.
+Investigational product / study drug — the drug being tested. Blinding means participants or staff do not know which arm someone is on, and recording medications carelessly can break it.
+Data and regulation
+Query — a question raised by a data manager back to the site about a data point. Not a database query. Query volume and resolution time are a major trial cost.
+SDV, source data verification — a monitor comparing the eCRF against source documentation to confirm they agree.
+ALCOA+ — the data integrity standard: Attributable, Legible, Contemporaneous, Original, Accurate, plus Complete, Consistent, Enduring, Available.
+GCP, Good Clinical Practice — the international ethical and quality standard, ICH E6, governing trial conduct.
+Database lock — when trial data is frozen for analysis. Outstanding queries delay it, which delays results, which delays the medicine.
+Terminologies
+RxNorm — NLM's free, publicly available normalized drug naming system. Each concept has an RxCUI identifier. What we use.
+RxClass — NLM API returning a drug's class memberships, including ATC classification. What we use for class-level protocol rules.
+WHODrug — the dictionary conmeds are coded to for regulatory submission. Licensed, so out of scope.
+MedDRA — the dictionary adverse events are coded to. Also licensed, also out of scope.
+CTCAE — NCI's free adverse event severity scale, grades 1 to 5. Relevant only if we build the AE cross-link.
+Judging, risks, schedule
+Rubric alignment
+Regeneron grades on Readiness, Utility, Design, Relevance, Packaging.
+Criterion
+How we satisfy it
+Readiness
+MIT license, public repo, runs from a clean clone, local RxNav so there is no API key to obtain, synthetic data included, documented setup
+Utility
+Attacks protocol deviations and conmed log accuracy, both quantified in the literature. Pharmacist-led reconciliation is the current alternative and it does not scale.
+Design
+The reconciliation diff is the product. It must be obvious what needs attention and what to confirm.
+Relevance
+Build against a real oncology protocol and cite its NCT number in the demo. Cheap point most teams miss.
+Packaging
+10-slide deck, demo video, README, this spec, and the data model all public
+
+Risks
+"Isn't this Abridge?" Have the answer on slide one. Ambient scribes produce a narrative note per encounter, hold no state between encounters, and do not know the protocol. We maintain longitudinal state and check it against trial rules.
+"Isn't medication reconciliation solved?" In hospital admission, largely. In trials against a protocol's prohibited list, the current solution is a pharmacist reading the protocol and interviewing the patient from three sources. Cite the pilot study.
+Live phone demo fails. Highest-probability failure. Mitigations: local RxNav, a recorded fallback video, and five full rehearsals.
+Latency. Above two seconds the call feels broken. Stream STT, keep agent responses short, pre-warm lookups.
+Scope creep toward AE capture. It is adjacent and tempting. It is a stretch goal and only after conmed works end to end.
