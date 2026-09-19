@@ -32,9 +32,16 @@
   function pre(obj) {
     return el('pre', { class: 'raw', text: typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2) });
   }
+  const openKeys = new Set();
   function det(summary, nodes, open = false) {
     const d = el('details', { class: 'acc' });
-    if (open) d.open = true;
+    // Stable key so expanded state survives re-renders (ignore "(3)" counters).
+    const key = String(summary).replace(/\(.*?\)/g, '').trim();
+    if (open || verbose() || openKeys.has(key)) d.open = true;
+    d.addEventListener('toggle', () => {
+      if (d.open) openKeys.add(key);
+      else openKeys.delete(key);
+    });
     d.appendChild(el('summary', { text: summary }));
     for (const n of nodes) if (n != null) d.appendChild(n);
     return d;
@@ -60,8 +67,12 @@
   }
 
   // ---------------------------------------------------------------- rendering
+  let convSig = null;
   function renderConversation(conversation) {
     if (conversation) currentConversation = conversation;
+    const sig = JSON.stringify(currentConversation) + '||' + interim;
+    if (sig === convSig) return; // nothing changed — don't touch the DOM (keeps scroll)
+    convSig = sig;
     const box = $('#liveConversation');
     clear(box);
 
@@ -183,13 +194,31 @@
   }
 
   // ---------------------------------------------------------------- data flow
+  let talkerSig = null;
+  let brainSig = null;
   async function refresh() {
     if (!sessionId) return;
     try {
       const data = await fetchJson(`/api/brain/debug?sessionId=${encodeURIComponent(sessionId)}`);
       renderConversation(data.conversation);
-      renderTalker(data.lastTurn);
-      renderBrain(data);
+
+      // Only re-render a pane when its data actually changed; otherwise the
+      // user's expanded <details> and scroll position would be destroyed.
+      const tSig = JSON.stringify(data.lastTurn ?? null);
+      if (tSig !== talkerSig) {
+        talkerSig = tSig;
+        renderTalker(data.lastTurn);
+      }
+      const bSig = JSON.stringify({
+        s: data.state ?? null,
+        p: data.planner ?? null,
+        lp: data.lastPlan ?? null,
+        pt: data.patient ?? null,
+      });
+      if (bSig !== brainSig) {
+        brainSig = bSig;
+        renderBrain(data);
+      }
     } catch {
       /* transient */
     }
@@ -236,6 +265,7 @@
     queue = [];
     pendingFinals = [];
     interim = '';
+    convSig = talkerSig = brainSig = null;
     renderConversation([]);
     renderTalker(null);
     renderBrain(null);
@@ -420,7 +450,11 @@
     }
   });
   $('#liveRefresh').addEventListener('click', refresh);
-  $('#liveVerbose').addEventListener('change', refresh);
+  $('#liveVerbose').addEventListener('change', () => {
+    // force a rebuild so the verbose toggle takes effect
+    convSig = talkerSig = brainSig = null;
+    refresh();
+  });
   $('#livePatient').addEventListener('change', () => {
     // switching participant starts a fresh session on next call
     if (call) endCall();
