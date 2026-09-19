@@ -1,0 +1,200 @@
+/*
+  Two palettes, one structure.
+
+  Light is the default and the one to demo: every EDC a coordinator actually
+  works in — Rave, Vault CDMS, Clinical One, REDCap — is light, sites work in
+  bright rooms, and screens get printed into the trial master file. Dark is
+  offered for long review sessions and follows the OS unless the coordinator
+  picks one explicitly.
+
+  Colour rule, in both palettes: warm hues (red/amber) are reserved for
+  prohibited findings and nothing else. Change types use cool hues so they
+  never read as alarm.
+*/
+
+:root {
+  /* ground — page is recessed, panels sit on top of it */
+  --ground: #f3f5f7;
+  --surface: #ffffff;
+  --surface-2: #f7f9fb;
+  --surface-3: #eceff3;
+
+  /* structure */
+  --line: #e0e4e9;
+  --line-2: #c9cfd7;
+  --line-3: #9aa2ad;
+
+  /* text */
+  --ink: #171b21;
+  --ink-2: #4b535e;
+  --ink-3: #6f7883;
+  --ink-4: #98a0aa;
+
+  /* change types — cool, deliberately unalarming */
+  --add: #0f7355;
+  --stop: #6244a6;
+  --modify: #1a5fad;
+  --same: #767e89;
+
+  /* the one loud thing */
+  --alarm: #c2190b;
+  --alarm-ink: #a3170c;
+  --alarm-ink-2: #7d3229;
+  --alarm-ink-3: #9a6058;
+  --alarm-dim: #f1b9b2;
+  --alarm-line: #f1b9b2;
+  --alarm-wash: #fdf3f1;
+  --alarm-hover: rgba(194, 25, 11, 0.08);
+
+  /* low confidence — dim gold, never red */
+  --caution: #8a6206;
+
+  --accept: #0f7355;
+  --accept-ink: #0b5b43;
+  --accept-wash: rgba(15, 115, 85, 0.1);
+  --reject: #9c4552;
+  --reject-ink: #83303d;
+  --reject-wash: rgba(156, 69, 82, 0.1);
+
+  /* review-state row washes */
+  --row-accepted: rgba(15, 115, 85, 0.045);
+  --row-edited: rgba(26, 95, 173, 0.05);
+  --row-rejected: rgba(23, 27, 33, 0.045);
+
+  /* primary action */
+  --primary-bg: #171b21;
+  --primary-bg-hover: #000000;
+  --primary-ink: #ffffff;
+
+  --focus: #1668e3;
+  --shadow: 0 6px 20px rgba(23, 27, 33, 0.16);
+
+  /* type */
+  --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter,
+    "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  --t-11: 11px;
+  --t-12: 12px;
+  --t-13: 13px;
+  --t-14: 14px;
+  --t-16: 16px;
+  --t-20: 20px;
+  --t-26: 26px;
+
+  /* space — 4px base, dense */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+
+  --rail: 196px;
+  --radius: 3px;
+}
+
+/* Dark: follows the OS unless the coordinator has explicitly chosen light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ground: #0c0e11;
+    --surface: #13161b;
+    --surface-2: #191d23;
+    --surface-3: #202630;
+
+    --line: #242a33;
+    --line-2: #323a46;
+    --line-3: #48525f;
+
+    --ink: #e8ebf0;
+    --ink-2: #a2abb8;
+    --ink-3: #6e7885;
+    --ink-4: #4d5663;
+
+    --add: #3ea68c;
+    --stop: #8e7fc8;
+    --modify: #5590d8;
+    --same: #545e6b;
+
+    --alarm: #ff5b4d;
+    --alarm-ink: #f0b6ae;
+    --alarm-ink-2: #d8b3ad;
+    --alarm-ink-3: #9c7d78;
+    --alarm-dim: #7a231c;
+    --alarm-line: rgba(122, 35, 28, 0.55);
+    --alarm-wash: #1e1210;
+    --alarm-hover: rgba(255, 91, 77, 0.1);
+
+    --caution: #c49a45;
+
+    --accept: #3ea68c;
+    --accept-ink: #7fd3bd;
+    --accept-wash: rgba(62, 166, 140, 0.14);
+    --reject: #96525c;
+    --reject-ink: #d69ba5;
+    --reject-wash: rgba(150, 82, 92, 0.16);
+
+    --row-accepted: rgba(62, 166, 140, 0.045);
+    --row-edited: rgba(85, 144, 216, 0.05);
+    --row-rejected: rgba(0, 0, 0, 0.22);
+
+    --primary-bg: #e8ebf0;
+    --primary-bg-hover: #ffffff;
+    --primary-ink: #0c0e11;
+
+    --focus: #6aa9ff;
+    --shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* Explicit dark choice wins in both directions. */
+:root[data-theme='dark'] {
+  --ground: #0c0e11;
+  --surface: #13161b;
+  --surface-2: #191d23;
+  --surface-3: #202630;
+
+  --line: #242a33;
+  --line-2: #323a46;
+  --line-3: #48525f;
+
+  --ink: #e8ebf0;
+  --ink-2: #a2abb8;
+  --ink-3: #6e7885;
+  --ink-4: #4d5663;
+
+  --add: #3ea68c;
+  --stop: #8e7fc8;
+  --modify: #5590d8;
+  --same: #545e6b;
+
+  --alarm: #ff5b4d;
+  --alarm-ink: #f0b6ae;
+  --alarm-ink-2: #d8b3ad;
+  --alarm-ink-3: #9c7d78;
+  --alarm-dim: #7a231c;
+  --alarm-line: rgba(122, 35, 28, 0.55);
+  --alarm-wash: #1e1210;
+  --alarm-hover: rgba(255, 91, 77, 0.1);
+
+  --caution: #c49a45;
+
+  --accept: #3ea68c;
+  --accept-ink: #7fd3bd;
+  --accept-wash: rgba(62, 166, 140, 0.14);
+  --reject: #96525c;
+  --reject-ink: #d69ba5;
+  --reject-wash: rgba(150, 82, 92, 0.16);
+
+  --row-accepted: rgba(62, 166, 140, 0.045);
+  --row-edited: rgba(85, 144, 216, 0.05);
+  --row-rejected: rgba(0, 0, 0, 0.22);
+
+  --primary-bg: #e8ebf0;
+  --primary-bg-hover: #ffffff;
+  --primary-ink: #0c0e11;
+
+  --focus: #6aa9ff;
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
