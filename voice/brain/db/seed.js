@@ -149,7 +149,9 @@ function seedPatient() {
       study_id   TEXT,
       started_at TEXT DEFAULT (datetime('now')),
       ended_at   TEXT,
-      status     TEXT DEFAULT 'open'
+      status     TEXT DEFAULT 'open',
+      identity_status   TEXT DEFAULT 'unverified',
+      identity_attempts INTEGER DEFAULT 0
     );
     CREATE TABLE utterances (
       utterance_id INTEGER PRIMARY KEY AUTOINCREMENT,

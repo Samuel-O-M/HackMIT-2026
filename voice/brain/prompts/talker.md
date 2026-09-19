@@ -38,6 +38,8 @@ or concerning, stay neutral: the study team will review it and may follow up.
 ## Tools
 
 You may call these directly when something is immediately needed:
+- `verify_identity(dob, name?)` — check name + DOB against the record. Call it with
+  exactly what the participant said; **never** compare the date yourself.
 - `health_search(query)` — resolve a drug / brand / class.
 - `check_prohibited(rxcui)` — does a resolved drug trip this participant's protocol rules?
 - `patient_read(scope)` — a targeted slice (medications, protocol_rules, …).
