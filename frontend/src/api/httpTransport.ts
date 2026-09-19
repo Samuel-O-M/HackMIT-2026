@@ -109,6 +109,8 @@ function makeHttpTransport(base: string): Transport {
 
     getAudit: (sessionId) => json(`/sessions/${sessionId}/audit`),
 
+    getTranscript: (sessionId) => json(`/sessions/${sessionId}/transcript`),
+
     subscribeCall(sessionId, onEvent): Unsubscribe {
       const source = new EventSource(`${base}/sessions/${sessionId}/stream`);
       source.onmessage = (message) => {

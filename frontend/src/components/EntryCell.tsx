@@ -11,6 +11,7 @@ import {
 } from '../lib/entry';
 import type { EditableField } from '../lib/entry';
 import { InlineEdit } from './InlineEdit';
+import { TranscriptPeek } from './TranscriptPeek';
 
 interface Props {
   entry: ConmedEntry | null;
@@ -21,6 +22,8 @@ interface Props {
   editable?: boolean;
   changed?: Set<string>;
   onEdit?: (field: EditableField, value: string | null) => void;
+  /** Where in the call this entry came from; lets the verbatim quote open its transcript. */
+  source?: { sessionId: string; changeId: string };
 }
 
 function Field({
@@ -71,6 +74,7 @@ export function EntryCell({
   editable = false,
   changed,
   onEdit,
+  source,
 }: Props) {
   if (!entry) {
     return (
@@ -145,9 +149,9 @@ export function EntryCell({
       )}
 
       {editable && (
-        <p className="drug-verbatim">
+        <TranscriptPeek source={source} reportedText={entry.reportedText}>
           <span className="code-label">CMTRT</span> Heard: <q>{entry.reportedText}</q>
-        </p>
+        </TranscriptPeek>
       )}
     </div>
   );

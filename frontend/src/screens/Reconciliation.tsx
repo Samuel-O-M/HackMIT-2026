@@ -216,6 +216,7 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
               {session.changes.map((change) => (
                 <ChangeRow
                   key={change.changeId}
+                  sessionId={session.sessionId}
                   change={change}
                   queries={queries.filter((q) => q.changeId === change.changeId)}
                   flash={flashId === change.changeId}

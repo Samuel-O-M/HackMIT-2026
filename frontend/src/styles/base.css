@@ -285,6 +285,39 @@ input, select, textarea {
   color: var(--ink-3);
 }
 .drug-verbatim q { quotes: '\201C' '\201D'; }
+.peekable { cursor: help; border-radius: var(--radius); }
+.peekable:hover, .peekable:focus-visible, .peekable[aria-expanded='true'] { border-left-color: var(--line-3); color: var(--ink-2); }
+
+/* Transcript popover. Fixed and portalled: the diff sits in a scroll pane. */
+.peek {
+  position: fixed;
+  z-index: 60;
+  overflow-y: auto;
+  padding: var(--s2) var(--s3) var(--s3);
+  display: grid;
+  gap: var(--s2);
+  align-content: start;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.peek-head {
+  position: sticky;
+  top: calc(-1 * var(--s2));
+  margin: calc(-1 * var(--s2)) calc(-1 * var(--s3)) 0;
+  padding: var(--s2) var(--s3);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--t-11);
+  font-weight: 620;
+  color: var(--ink-3);
+}
+.peek-note { font-size: var(--t-12); color: var(--ink-3); }
+.peek .turn { grid-template-columns: 68px minmax(0, 1fr); padding: var(--s1) var(--s2); border-radius: var(--radius); }
+.peek .turn-text { font-size: var(--t-12); }
+.peek .turn[data-hit='true'] { background: var(--row-edited); box-shadow: inset 2px 0 0 var(--modify); }
+.peek .turn[data-hit='true'] .turn-text { color: var(--ink); font-weight: 560; }
 
 .unresolved {
   display: inline-block;

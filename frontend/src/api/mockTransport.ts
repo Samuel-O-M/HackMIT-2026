@@ -323,6 +323,10 @@ export const mockTransport: Transport = {
     return settle(clone(audit.get(sessionId) ?? []));
   },
 
+  getTranscript(sessionId) {
+    return settle(clone(TRANSCRIPTS[sessionId] ?? []));
+  },
+
   subscribeCall(sessionId, onEvent, speed = 1): Unsubscribe {
     const session = sessions.get(sessionId);
     const turns = TRANSCRIPTS[sessionId] ?? [];
