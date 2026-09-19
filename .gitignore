@@ -3,4 +3,4 @@ node_modules/
 .next/
 next-env.d.ts
 *.tsbuildinfo
-brain/db/*.db
+voice/brain/db/*.db

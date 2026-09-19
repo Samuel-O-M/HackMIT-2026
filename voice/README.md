@@ -9,7 +9,7 @@ The UI has **two tabs**:
 - **🧪 Test area** — exercise the APIs directly: batch STT, **live streaming
   STT**, transcribe-a-URL, plain OpenAI chat, TTS, and STT/TTS settings.
 - **🧠 Product — Thinker → Talker** — the real product: pick a participant,
-  start a session, and talk to the two-agent brain (`../brain`).
+  start a session, and talk to the two-agent brain (`brain/`).
 
 See [`API_SETTINGS.md`](./API_SETTINGS.md) for every Deepgram + OpenAI setting,
 and [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the design.
@@ -19,7 +19,7 @@ and [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the design.
 ```bash
 cd voice
 npm install          # one dependency: `ws` (server-side live-STT proxy)
-node ../brain/db/seed.js   # first time: create the two databases
+node brain/db/seed.js      # first time: create the two databases
 node server.js       # → http://localhost:8787
 ```
 

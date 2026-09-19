@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "seed": "node ../brain/db/seed.js"
+    "seed": "node brain/db/seed.js"
   },
   "dependencies": {
     "ws": "^8.18.0"

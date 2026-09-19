@@ -46,19 +46,18 @@ decoupled two-agent brain).
 
 ```
 HackMIT-2026/
-├── brain/
-│   ├── brain.js                 # orchestrator: handleTurn (fast) + schedulePlan (async)
-│   ├── agents/{talker,thinker}.js
-│   ├── prompts/{talker,thinker}.md
-│   ├── tools/{index,patient,health}.js   # health_search, patient_read/update
-│   ├── db/{seed,index}.js       # general_health.db (RO) + patient.db (RW)
-│   └── README.md
 └── voice/
     ├── server.js                # HTTP + WS proxy, brain routes
     ├── public/                  # two-tab UI (index.html, common/test/product.js)
     ├── data/                    # example documents
-    ├── API_SETTINGS.md          # Deepgram + OpenAI settings
-    ├── DEEPGRAM.md / ARCHITECTURE.md / README.md
+    ├── brain/                   # the two-agent brain (Talker + Planner)
+    │   ├── brain.js             # orchestrator: handleTurn (fast) + schedulePlan (async)
+    │   ├── agents/{talker,thinker}.js
+    │   ├── prompts/{talker,thinker}.md
+    │   ├── tools/{index,patient,health}.js   # health_search, patient_read/update
+    │   ├── db/{seed,index}.js   # general_health.db (RO) + patient.db (RW)
+    │   └── README.md
+    └── API_SETTINGS.md / DEEPGRAM.md / ARCHITECTURE.md / README.md
 ```
 
 ## Design decisions
@@ -82,6 +81,6 @@ HackMIT-2026/
 ```bash
 cd voice
 npm install
-node ../brain/db/seed.js
+node brain/db/seed.js
 node server.js      # → http://localhost:8787
 ```

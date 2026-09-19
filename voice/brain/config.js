@@ -11,7 +11,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 (function loadEnv() {
-  const envPath = path.join(__dirname, '..', '.env');
+  const envPath = path.join(__dirname, '..', '..', '.env');
   let raw;
   try {
     raw = fs.readFileSync(envPath, 'utf8');

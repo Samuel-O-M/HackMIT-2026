@@ -160,7 +160,7 @@ image generation, moderation.
 | `interim_results`, `vad_events`, `endpointing` | **[UI]** live STT card |
 | TTS voice / encoding / container | **[UI]** Text→Speech card |
 | OpenAI model + reasoning effort | **[UI]** Chat card (test area) |
-| Thinker/Planner + Talker model & effort | chosen in code: `brain/config.js` |
+| Thinker/Planner + Talker model & effort | chosen in code: `voice/brain/config.js` |
 | Live STT | proxied via `/ws/listen` (key never leaves the server) |
 
 ## Try these quick experiments

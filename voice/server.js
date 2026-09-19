@@ -15,7 +15,7 @@
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
-const brain = require('../brain/brain');
+const brain = require('./brain/brain');
 
 let WS = null;
 try {
