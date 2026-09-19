@@ -1,8 +1,11 @@
 'use strict';
 
 /**
- * health_search — READ-ONLY lookups against the health knowledge base
- * (RxNorm ingredients/synonyms, RxClass classes/members, general guidance).
+ * health_search — READ-ONLY lookups against the health knowledge base.
+ *
+ * Drugs and classes come from the shared drugdb (RxNorm / RxClass, cached
+ * locally, live NLM lookup on a miss). Plain-language guidance still comes from
+ * general_health.db.
  *
  * This is the ONLY place medical facts may come from. If a lookup returns
  * nothing, the correct answer is "not in the knowledge base" — never a guess.
@@ -10,82 +13,61 @@
  * Returns only what matched; never a table dump.
  */
 
+const drugdb = require('../../../drugdb');
 const { generalHealth } = require('../db');
 
 function tokenize(text) {
   return Array.from(new Set(String(text || '').toLowerCase().match(/[a-z0-9]{3,}/g) || []));
 }
 
-function search(query) {
-  const db = generalHealth();
-  const tokens = tokenize(query);
+function searchGuidance(tokens) {
+  if (tokens.length === 0) return [];
+  const rows = generalHealth().query('SELECT topic_id, advice, source FROM guidance');
+  return rows.filter((g) => tokens.some((t) => g.topic_id.toLowerCase().includes(t) || g.advice.toLowerCase().includes(t)));
+}
 
-  const ingredients = db.query('SELECT rxcui, name FROM rxnorm_ingredients');
-  const synonyms = db.query('SELECT term, rxcui FROM rxnorm_synonyms');
-  const classes = db.query('SELECT class_id, name, description FROM rxclass_classes');
-  const members = db.query('SELECT rxcui, class_id FROM rxclass_members');
-  const guidance = db.query('SELECT topic_id, advice, source FROM guidance');
+const compactClass = (c) => ({ class_id: c.classId, name: c.name, type: c.type, direct: c.direct });
 
-  const byRxcui = new Map(ingredients.map((i) => [i.rxcui, i.name]));
-  const classesOf = (rxcui) => members.filter((m) => m.rxcui === rxcui).map((m) => m.class_id);
-
-  const matchIngredient = (rxcui, name, matchedTerm, kind) => ({
-    rxcui,
-    name,
-    matched_term: matchedTerm,
-    matched_kind: kind,
-    classes: classesOf(rxcui).map((id) => {
-      const c = classes.find((x) => x.class_id === id);
-      return { class_id: id, name: c?.name, description: c?.description };
-    }),
-  });
-
-  const found = [];
-  const seen = new Set();
-  const add = (entry) => {
-    if (!seen.has(entry.rxcui + ':' + entry.matched_term)) {
-      seen.add(entry.rxcui + ':' + entry.matched_term);
-      found.push(entry);
-    }
-  };
-
-  for (const t of tokens) {
-    for (const ing of ingredients) {
-      if (ing.name.toLowerCase() === t || ing.name.toLowerCase().includes(t)) {
-        add(matchIngredient(ing.rxcui, ing.name, t, 'ingredient'));
-      }
-    }
-    for (const syn of synonyms) {
-      if (syn.term.toLowerCase() === t || syn.term.toLowerCase().includes(t)) {
-        add(matchIngredient(syn.rxcui, byRxcui.get(syn.rxcui), t, syn.kind || 'synonym'));
-      }
-    }
+async function search(query) {
+  const drug = await drugdb.resolveDrug(query);
+  const ingredients = [];
+  if (drug.found) {
+    const { classes } = await drugdb.classify(drug.rxcui);
+    ingredients.push({
+      rxcui: drug.rxcui,
+      name: drug.name,
+      matched_term: query,
+      matched_kind: drug.match === 'exact' ? 'exact' : 'approximate — spelling or wording differed; confirm with the participant',
+      classes: classes.map(compactClass),
+    });
   }
 
-  const matchedClasses = classes
-    .filter((c) => tokens.some((t) => c.name.toLowerCase().includes(t) || c.class_id.toLowerCase().includes(t)))
-    .map((c) => ({
-      class_id: c.class_id,
-      name: c.name,
-      description: c.description,
-      members: members
-        .filter((m) => m.class_id === c.class_id)
-        .map((m) => ({ rxcui: m.rxcui, name: byRxcui.get(m.rxcui) })),
-    }));
+  // A class name ("NSAIDs", "systemic corticosteroids") rather than a drug.
+  const cls = drug.found ? null : await drugdb.resolveClass(query);
+  const classes = cls && (cls.quality === 'exact' || cls.quality === 'partial')
+    ? cls.classes.map((c) => ({ class_id: c.classId, name: c.name, type: c.type }))
+    : [];
 
-  const matchedGuidance = guidance.filter((g) =>
-    tokens.some((t) => g.topic_id.toLowerCase().includes(t) || g.advice.toLowerCase().includes(t))
-  );
+  const guidance = searchGuidance(tokenize(query));
+  const total = ingredients.length + classes.length + guidance.length;
+  const unavailable = drug.unavailable || cls?.unavailable;
 
   return {
     query,
-    source: 'general_health.db (RxNorm / RxClass / guidance) — read-only',
-    ingredients: found,
-    classes: matchedClasses,
-    guidance: matchedGuidance,
-    found_anything: found.length + matchedClasses.length + matchedGuidance.length > 0,
-    ...(found.length + matchedClasses.length + matchedGuidance.length === 0
-      ? { note: 'Nothing matched in the knowledge base. Do not infer a drug or class from memory.' }
+    source: 'drugdb (RxNorm / RxClass, NLM) + general_health.db guidance — read-only',
+    ingredients,
+    classes,
+    guidance,
+    ...(drug.found ? {} : { suggestions: drug.candidates.map((c) => ({ rxcui: c.rxcui, name: c.name })) }),
+    found_anything: total > 0,
+    ...(total === 0
+      ? {
+          note: unavailable
+            ? 'The drug database could not be reached. Say you cannot check that right now; do not infer a drug or class from memory.'
+            : drug.candidates.length > 0
+              ? 'No confident match. "suggestions" are possibilities to confirm with the participant, not an identification.'
+              : 'Nothing matched in the knowledge base. Do not infer a drug or class from memory.',
+        }
       : {}),
   };
 }

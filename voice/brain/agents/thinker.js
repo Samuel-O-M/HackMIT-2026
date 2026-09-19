@@ -57,7 +57,7 @@ function normalize(raw) {
   };
 }
 
-const READ_TOOLS = new Set(['health_search', 'patient_read']);
+const READ_TOOLS = new Set(['health_search', 'check_prohibited', 'patient_read']);
 
 /** Phase 1: which lookups does the planner need? */
 async function decideRetrieval(context) {
@@ -71,7 +71,7 @@ async function decideRetrieval(context) {
           'Before finalizing, list the lookups you need. Return ONLY JSON:\n' +
           '{"retrieval":[{"tool":"health_search","args":{"query":"..."}},' +
           '{"tool":"patient_read","args":{"scope":"medications"}}]}\n' +
-          'Maximum 3, read-only tools only (health_search, patient_read). ' +
+          'Maximum 3, read-only tools only (health_search, check_prohibited, patient_read). ' +
           'Use {"retrieval":[]} if you need none.',
       },
     ],

@@ -21,6 +21,13 @@ export interface ProhibitedRule {
   rationale: string;
   /** Dose or timing qualifier, when the ban is conditional rather than absolute. */
   threshold: string | null;
+  /**
+   * RxClass ids (ATC / FDA EPC) this rule covers, looked up in drugdb rather
+   * than written by the model. A drug in any of them trips the rule.
+   */
+  classIds?: string[];
+  /** RxNorm concepts, for rules that name a specific drug. */
+  rxcuis?: string[];
 }
 
 /** One field the agent read out of the protocol. */

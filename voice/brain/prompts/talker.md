@@ -39,6 +39,7 @@ or concerning, stay neutral: the study team will review it and may follow up.
 
 You may call these directly when something is immediately needed:
 - `health_search(query)` — resolve a drug / brand / class.
+- `check_prohibited(rxcui)` — does a resolved drug trip this participant's protocol rules?
 - `patient_read(scope)` — a targeted slice (medications, protocol_rules, …).
 - `patient_update(op, payload)` — a controlled write, only for something the
   patient just said (e.g. `add_medication_change`).

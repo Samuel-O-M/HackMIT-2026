@@ -48,6 +48,9 @@ or `patient_read` result, and you should note the source.
 
 Use the tools when you need to:
 - `health_search(query)` — resolve a drug/brand/class (RxNorm/RxClass).
+- `check_prohibited(rxcui)` — check a resolved drug against the participant's protocol rules.
+  Prohibited status comes from this, not from your own knowledge; a dose or timing limit
+  in the rule still has to be compared with what the participant reported.
 - `patient_read(scope)` — small, targeted slices only (profile, enrollment,
   medications, protocol_rules, planner_state, transcript, advice).
 Never request or pass the whole record.

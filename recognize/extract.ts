@@ -3,7 +3,7 @@
  * print what it found, with per-field confidence.
  *
  *   npm install
- *   node extract.ts [file] [--model gpt-5.6-luna] [--effort low] [--json]
+ *   node extract.ts [file] [--model gpt-5.6-luna] [--effort low] [--json] [--skip-grounding]
  *
  * `file` defaults to the R2810-ONC-1540 protocol sitting next to this script.
  * Reads OPENAI_API_KEY from the repo-root .env.
@@ -11,6 +11,10 @@
  * Confidence is the model's own estimate, so it is not calibrated. To help judge
  * it, every scalar value is also checked against the document text ("in text"):
  * a confident value that does not appear verbatim deserves a second look.
+ *
+ * Rules are then grounded through ../drugdb: the class each rule names is
+ * looked up in RxClass and the ids are written onto the rule (`classIds`), so
+ * a drug can later be checked against the rule by membership.
  */
 
 import { readFile } from 'node:fs/promises';
@@ -19,6 +23,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import mammoth from 'mammoth';
 import { extractText, getDocumentProxy } from 'unpdf';
+import drugdb from '../drugdb/index.js';
 import type { ExtractedField, Phase, ProhibitedRule, ProtocolExtraction } from './types.ts';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -240,6 +245,63 @@ function toExtraction(raw: RawExtraction): ProtocolExtraction {
 }
 
 /* -------------------------------------------------------------------------- */
+/*  Grounding: rule text -> RxNorm / RxClass ids                              */
+/* -------------------------------------------------------------------------- */
+
+interface RuleGrounding {
+  /**
+   * exact/partial: ids written onto the rule (partial = some words unmatched).
+   * weak: candidates only, not applied. none: nothing found.
+   */
+  status: 'exact' | 'partial' | 'weak' | 'none' | 'unavailable' | 'skipped';
+  matches: { id: string; name: string | null; type?: string }[];
+  /** Words of the class name that no matched class contains — what "partial" is missing. */
+  note?: string;
+}
+
+/**
+ * The model says what a rule bans, in prose. drugdb turns that into the ids a
+ * drug is later checked against, so the check is set membership, not another
+ * model's opinion. The model never picks an id; it only supplies the words.
+ */
+async function groundRules(rules: ProhibitedRule[]): Promise<RuleGrounding[]> {
+  const out: RuleGrounding[] = [];
+  for (const rule of rules) {
+    const name = rule.className ?? rule.label;
+    if (rule.matchedOn === 'drug') {
+      const found = await drugdb.resolveDrug(name);
+      if (found.found) {
+        rule.rxcuis = [found.rxcui];
+        out.push({ status: found.match === 'exact' ? 'exact' : 'partial', matches: [{ id: found.rxcui, name: found.name }] });
+      } else {
+        out.push({ status: found.unavailable ? 'unavailable' : 'none', matches: [], note: found.error });
+      }
+      continue;
+    }
+    const found = await drugdb.resolveClass(name);
+    if (found.unavailable) {
+      out.push({ status: 'unavailable', matches: [], note: found.error });
+      continue;
+    }
+    const matches = found.classes.map((c: { classId: string; name: string; type: string }) => ({ id: c.classId, name: c.name, type: c.type }));
+    if (found.quality === 'exact' || found.quality === 'partial') {
+      rule.classIds = matches.map((m: { id: string }) => m.id);
+    }
+    out.push({
+      status: found.quality,
+      matches,
+      note:
+        found.quality === 'partial'
+          ? `applied, but not every word of "${name}" is in these class names`
+          : found.quality === 'weak'
+            ? `NOT applied: "${name}" only appears inside longer, unrelated class names. Probably not a drug class.`
+            : undefined,
+    });
+  }
+  return out;
+}
+
+/* -------------------------------------------------------------------------- */
 /*  Output                                                                    */
 /* -------------------------------------------------------------------------- */
 
@@ -261,7 +323,28 @@ function confidenceBar(c: number): string {
   return color(`${bar} ${pct}`);
 }
 
-function printReport(x: ProtocolExtraction, raw: RawExtraction, plain: string, meta: string): void {
+function printGrounding(g: RuleGrounding): void {
+  const tag = {
+    exact: green('matched'),
+    partial: yellow('partial'),
+    weak: yellow('weak'),
+    none: red('no match'),
+    unavailable: yellow('rxnorm unavailable'),
+    skipped: dim('not checked'),
+  }[g.status];
+  const shown = g.matches.slice(0, 4).map((m) => `${m.id} ${dim(m.name ?? '')}`);
+  const more = g.matches.length > 4 ? dim(` +${g.matches.length - 4} more`) : '';
+  console.log(`  ${tag}  ${shown.join(dim(' · '))}${more}`);
+  if (g.note) console.log(`  ${' '.repeat(9)}${dim(g.note)}`);
+}
+
+function printReport(
+  x: ProtocolExtraction,
+  raw: RawExtraction,
+  grounding: RuleGrounding[],
+  plain: string,
+  meta: string,
+): void {
   const haystack = squash(plain);
   const scalars: [string, ExtractedField<string>][] = [
     ['studyId', x.studyId],
@@ -295,6 +378,7 @@ function printReport(x: ProtocolExtraction, raw: RawExtraction, plain: string, m
     console.log(`  ${confidenceBar(c)}  ${dim(`${rule.matchedOn} · ${rule.className ?? 'no class'} · §${rule.protocolSection}`)}`);
     if (rule.threshold) console.log(`  threshold  ${rule.threshold}`);
     console.log(`  ${dim(rule.rationale)}`);
+    printGrounding(grounding[i]!);
   });
 
   if (x.notes) console.log(`\n${bold('Notes')}\n${x.notes}`);
@@ -310,6 +394,7 @@ async function main(): Promise<void> {
       model: { type: 'string', default: 'gpt-5.6-luna' },
       effort: { type: 'string', default: 'low' },
       json: { type: 'boolean', default: false },
+      'skip-grounding': { type: 'boolean', default: false },
     },
   });
   const file = path.resolve(positionals[0] ?? DEFAULT_FILE);
@@ -321,6 +406,9 @@ async function main(): Promise<void> {
 
   const { raw, model, usage } = await callModel(doc.forModel, values.model, values.effort);
   const extraction = toExtraction(raw);
+  const grounding: RuleGrounding[] = values['skip-grounding']
+    ? extraction.rules.map(() => ({ status: 'skipped' as const, matches: [] }))
+    : await groundRules(extraction.rules);
 
   if (values.json) {
     console.log(JSON.stringify(extraction, null, 2));
@@ -330,6 +418,7 @@ async function main(): Promise<void> {
   printReport(
     extraction,
     raw,
+    grounding,
     doc.plain,
     `${model} · effort ${values.effort} · ${usage.prompt_tokens ?? '?'} in / ${usage.completion_tokens ?? '?'} out tokens · ${secs}s`,
   );

@@ -1,0 +1,11 @@
+{
+  "name": "drugdb",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Shared drug knowledge: resolve a drug name to an RxNorm concept, classify it (ATC / FDA EPC), and check it against protocol rules. Local SQLite cache in front of NLM RxNav/RxClass.",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js",
+    "cli": "node cli.js"
+  }
+}
