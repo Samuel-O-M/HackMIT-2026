@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Voice Agent</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Voice Agent</h1>
+      <div id="status" class="pills" aria-live="polite">
+        <span class="pill" data-key="deepgram">Deepgram: …</span>
+        <span class="pill" data-key="openai">OpenAI: …</span>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="test" role="tab">🧪 Test area</button>
+      <button class="tab" data-tab="product" role="tab">🧠 Product — Thinker → Talker</button>
+    </nav>
+
+    <main>
+      <p id="error" class="error" hidden></p>
+
+      <!-- ============================ TEST AREA ============================ -->
+      <section id="tab-test" class="tab-panel active">
+        <div class="grid">
+          <div class="card">
+            <h2>1 · Speech → Text <small>(batch, Deepgram)</small></h2>
+            <div class="row">
+              <button id="recordBtn" class="primary">● Record</button>
+              <span id="recordState" class="muted">idle</span>
+            </div>
+            <label class="field">
+              <span>Transcript</span>
+              <textarea id="transcript" rows="4" placeholder="Your speech will appear here…"></textarea>
+            </label>
+            <details>
+              <summary>Raw Deepgram response</summary>
+              <pre id="sttRaw" class="raw"></pre>
+            </details>
+          </div>
+
+          <div class="card">
+            <h2>2 · Live streaming STT <small>(WebSocket)</small></h2>
+            <div class="row">
+              <button id="liveBtn" class="primary">▶ Start live</button>
+              <span id="liveState" class="muted">idle</span>
+            </div>
+            <div id="liveInterim" class="live-interim">…</div>
+            <details open>
+              <summary>Final transcript</summary>
+              <textarea id="liveFinal" rows="4" readonly></textarea>
+            </details>
+            <details>
+              <summary>Event log</summary>
+              <pre id="liveLog" class="raw"></pre>
+            </details>
+          </div>
+
+          <div class="card">
+            <h2>3 · Transcribe a URL <small>(Deepgram)</small></h2>
+            <label class="field">
+              <span>Audio URL</span>
+              <input id="urlInput" type="text" placeholder="https://dpgr.am/spacewalk.wav" />
+            </label>
+            <div class="row">
+              <button id="urlBtn">Transcribe URL</button>
+            </div>
+            <pre id="urlRaw" class="raw"></pre>
+          </div>
+
+          <div class="card">
+            <h2>4 · Chat <small>(OpenAI)</small></h2>
+            <div class="row wrap">
+              <label class="inline">model
+                <select id="chatModel">
+                  <option value="gpt-5.6-luna">gpt-5.6-luna</option>
+                  <option value="gpt-5.6-terra">gpt-5.6-terra</option>
+                  <option value="gpt-5.6-sol">gpt-5.6-sol</option>
+                </select>
+              </label>
+              <label class="inline">reasoning
+                <select id="chatEffort">
+                  <option>none</option><option>low</option><option selected>medium</option>
+                  <option>high</option><option>xhigh</option><option>max</option>
+                </select>
+              </label>
+            </div>
+            <div id="messages" class="messages"></div>
+            <div class="row">
+              <input id="chatInput" type="text" placeholder="Type a message…" />
+              <button id="sendBtn">Send</button>
+              <button id="useTranscriptBtn" class="ghost">Use transcript</button>
+            </div>
+            <label class="check">
+              <input id="autoSpeak" type="checkbox" checked />
+              <span>Auto-speak replies</span>
+            </label>
+          </div>
+
+          <div class="card">
+            <h2>5 · Text → Speech <small>(Deepgram)</small></h2>
+            <label class="field">
+              <span>Text to speak</span>
+              <textarea id="ttsText" rows="2" placeholder="Type something to hear…"></textarea>
+            </label>
+            <div class="row wrap">
+              <label class="inline">voice
+                <select id="ttsVoice"></select>
+              </label>
+              <label class="inline">encoding
+                <select id="ttsEncoding">
+                  <option value="">default (mp3)</option>
+                  <option value="linear16">linear16</option>
+                  <option value="mulaw">mulaw</option>
+                  <option value="alaw">alaw</option>
+                  <option value="flac">flac</option>
+                  <option value="opus">opus</option>
+                </select>
+              </label>
+              <label class="inline">container
+                <select id="ttsContainer">
+                  <option value="">default</option>
+                  <option value="wav">wav</option>
+                  <option value="ogg">ogg</option>
+                </select>
+              </label>
+            </div>
+            <div class="row">
+              <button id="speakBtn">🔊 Speak</button>
+              <button id="stopAudioBtn" class="ghost">Stop audio</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>6 · STT settings <small>(applied to batch + live)</small></h2>
+            <div class="row wrap">
+              <label class="inline">model
+                <select id="sttModel">
+                  <option>nova-3</option>
+                  <option>nova-3-medical</option>
+                  <option>nova-2</option>
+                  <option>nova-2-medical</option>
+                  <option>nova-2-conversationalai</option>
+                  <option>enhanced</option>
+                  <option>base</option>
+                </select>
+              </label>
+              <label class="inline">language<input id="sttLanguage" type="text" value="en" size="5" /></label>
+              <label class="inline">redact
+                <select id="sttRedact">
+                  <option value="">off</option><option>pci</option><option>numbers</option>
+                  <option>aggressive_numbers</option><option>ssn</option>
+                </select>
+              </label>
+            </div>
+            <div class="row wrap">
+              <label class="check"><input id="sttSmart" type="checkbox" checked /><span>smart_format</span></label>
+              <label class="check"><input id="sttPunct" type="checkbox" checked /><span>punctuate</span></label>
+              <label class="check"><input id="sttDiarize" type="checkbox" /><span>diarize</span></label>
+              <label class="check"><input id="sttNumerals" type="checkbox" /><span>numerals</span></label>
+              <label class="check"><input id="liveInterimChk" type="checkbox" checked /><span>interim_results</span></label>
+              <label class="check"><input id="liveVad" type="checkbox" checked /><span>vad_events</span></label>
+              <label class="inline">endpointing<input id="liveEndpointing" type="number" value="300" size="5" /></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================= PRODUCT ============================= -->
+      <section id="tab-product" class="tab-panel">
+        <div class="grid product">
+          <div class="card">
+            <h2>Session</h2>
+            <div class="row wrap">
+              <label class="inline">participant
+                <select id="patientSelect"></select>
+              </label>
+              <button id="newSessionBtn" class="primary">New session</button>
+              <span id="sessionState" class="muted">no session</span>
+            </div>
+            <p class="muted small">
+              Flow: mic → Deepgram STT → <b>Talker</b> (fast, replies now) · <b>Planner</b>
+              (background: reasoning, retrieval, memory) → Deepgram TTS.
+            </p>
+          </div>
+
+          <div class="card">
+            <h2>Conversation</h2>
+            <div id="prodMessages" class="messages tall"></div>
+            <div class="row">
+              <button id="prodRecordBtn" class="primary">● Record</button>
+              <span id="prodRecordState" class="muted">idle</span>
+              <button id="prodUseTranscriptBtn" class="ghost" disabled>Use transcript</button>
+            </div>
+            <label class="field">
+              <span>Last transcript</span>
+              <textarea id="prodTranscript" rows="2" placeholder="spoken words appear here…"></textarea>
+            </label>
+            <div class="row">
+              <input id="prodInput" type="text" placeholder="…or type what the participant says" />
+              <button id="prodSendBtn">Send</button>
+            </div>
+            <label class="check">
+              <input id="prodAutoSpeak" type="checkbox" checked />
+              <span>Auto-speak the Talker's reply, and auto-send after recording</span>
+            </label>
+          </div>
+
+          <div class="card">
+            <h2>Planner state <small>(background; never spoken)</small></h2>
+            <div id="plannerStatus" class="muted small">—</div>
+            <div class="kv"><span>goal</span><div id="thinkGoal" class="muted">—</div></div>
+            <div class="kv"><span>known</span><div id="thinkKnown" class="muted">—</div></div>
+            <div class="kv"><span>missing</span><div id="thinkMissing" class="muted">—</div></div>
+            <div class="kv"><span>next question</span><div id="thinkNext" class="muted">—</div></div>
+            <div class="kv"><span>flags</span><div id="thinkFlags" class="muted">—</div></div>
+            <details open>
+              <summary>Full state JSON</summary>
+              <pre id="thinkRaw" class="raw tall"></pre>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/common.js"></script>
+    <script src="/test.js"></script>
+    <script src="/product.js"></script>
+  </body>
+</html>
