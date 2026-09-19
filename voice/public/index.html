@@ -18,6 +18,7 @@
     <nav class="tabs" role="tablist">
       <button class="tab active" data-tab="test" role="tab">🧪 Test area</button>
       <button class="tab" data-tab="product" role="tab">🧠 Product — Thinker → Talker</button>
+      <button class="tab" data-tab="live" role="tab">🔬 Live brain — 3 views</button>
     </nav>
 
     <main>
@@ -224,10 +225,52 @@
           </div>
         </div>
       </section>
+      <!-- ========================== LIVE BRAIN (3 views) ========================== -->
+      <section id="tab-live" class="tab-panel">
+        <div class="card">
+          <div class="row wrap">
+            <label class="inline">participant <select id="livePatient"></select></label>
+            <button id="liveNewSession" class="primary">New session</button>
+            <span id="liveSessionState" class="muted">no session</span>
+            <label class="check"><input id="liveAutoSpeak" type="checkbox" checked /><span>auto-speak</span></label>
+            <label class="check"><input id="liveVerbose" type="checkbox" /><span>verbose (auto-expand raw JSON)</span></label>
+          </div>
+          <div class="row wrap">
+            <button id="liveRecord" class="primary">● Record</button>
+            <span id="liveRecordState" class="muted">idle</span>
+            <input id="liveInput" type="text" placeholder="…or type what the participant says" />
+            <button id="liveSend">Send</button>
+            <button id="liveRefresh" class="ghost">Refresh</button>
+            <label class="check"><input id="liveAutoSend" type="checkbox" checked /><span>auto-send after recording</span></label>
+          </div>
+        </div>
+
+        <div class="panes">
+          <section class="pane">
+            <h3>1 · Conversation</h3>
+            <p class="muted small">What the participant says ⇄ what the agent says.</p>
+            <div id="liveConversation" class="messages tall"></div>
+          </section>
+
+          <section class="pane">
+            <h3>2 · Talker — how it decided</h3>
+            <p class="muted small">Latest turn: model, latency, tools called, and the planner state it used.</p>
+            <div id="liveTalker" class="stack"></div>
+          </section>
+
+          <section class="pane">
+            <h3>3 · Brain — everything</h3>
+            <p class="muted small">Planner status + state, retrieval, writes, and patient context.</p>
+            <div id="liveBrain" class="stack"></div>
+          </section>
+        </div>
+      </section>
+
     </main>
 
     <script src="/common.js"></script>
     <script src="/test.js"></script>
     <script src="/product.js"></script>
+    <script src="/live.js"></script>
   </body>
 </html>

@@ -157,19 +157,29 @@ class Brain {
     const state = this.getState(sessionId, subjectId);
     const conversation = this.getConversation(sessionId);
 
+    const t0 = Date.now();
     const { say, toolCalls, model } = await talker.respond({
       plannerState: state,
       conversation,
       subjectId,
       sessionId,
     });
+    const latencyMs = Date.now() - t0;
 
     this.saveUtterance(sessionId, 'agent', say);
+
+    const rt = this.runtime(sessionId);
+    rt.lastTurn = {
+      at: new Date().toISOString(),
+      userText,
+      say,
+      talker: { model, latencyMs, toolCalls, stateUsed: state },
+    };
 
     // Fire-and-forget: the patient never waits for the planner.
     const planned = this.schedulePlan(sessionId, subjectId);
 
-    return { say, state, toolCalls, model, sessionId, planning: Boolean(planned) };
+    return { say, state, toolCalls, model, latencyMs, sessionId, planning: Boolean(planned) };
   }
 
   /** Queue a planner run (collapses bursts). Returns the running promise, if any. */
@@ -222,6 +232,7 @@ class Brain {
     this.setState(sessionId, subjectId, next);
     rt.lastPlanModel = model;
     rt.lastPlanAt = new Date().toISOString();
+    rt.lastPlan = { at: rt.lastPlanAt, model, toolCalls, applied, state: next };
     return { state: next, applied, toolCalls };
   }
 
@@ -245,6 +256,46 @@ class Brain {
       errors: rt.plannerErrors.slice(-5),
       lastPlanModel: rt.lastPlanModel,
       lastPlanAt: rt.lastPlanAt,
+    };
+  }
+
+  /** Everything the debug UI needs, in one payload. */
+  debug(sessionId) {
+    const rt = this.runtime(sessionId);
+    const session = patient().get('SELECT * FROM call_sessions WHERE session_id = ?', sessionId) || null;
+    const subjectId = session?.subject_id || null;
+
+    const patient_snapshot = subjectId
+      ? {
+          profile: patient().get(
+            'SELECT subject_id, given_name, family_name, preferred_language FROM patients WHERE subject_id = ?',
+            subjectId
+          ),
+          enrollment: patient().get(
+            `SELECT e.study_id, e.arm, s.nct_id, s.title AS study_title, s.protocol_version
+               FROM enrollments e JOIN studies s ON s.study_id = e.study_id WHERE e.subject_id = ?`,
+            subjectId
+          ),
+          medications: patient().query(
+            'SELECT log_id, canonical_name, rxcui, status, stop_date, start_date_precision, created_by, created_at FROM medications WHERE subject_id = ? ORDER BY log_id',
+            subjectId
+          ),
+          protocol_rules: patient().query('SELECT rule_type, class_id, protocol_section FROM protocol_rules'),
+          advice: patient().query(
+            'SELECT topic_id, advice_text, created_at FROM advice_log WHERE session_id = ? ORDER BY advice_id DESC LIMIT 10',
+            sessionId
+          ),
+        }
+      : null;
+
+    return {
+      session,
+      conversation: this.getConversation(sessionId, 100),
+      state: this.getState(sessionId, subjectId),
+      planner: this.plannerStatus(sessionId),
+      lastTurn: rt.lastTurn || null,
+      lastPlan: rt.lastPlan || null,
+      patient: patient_snapshot,
     };
   }
 

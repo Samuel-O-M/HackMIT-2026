@@ -373,8 +373,19 @@ async function handleBrainTurn(req, res) {
     model: result.model,
     sessionId: result.sessionId,
     planning: result.planning,
+    latencyMs: result.latencyMs,
     toolCalls: (result.toolCalls || []).map((t) => t.name),
   });
+}
+
+async function handleBrainDebug(req, res) {
+  const { searchParams } = new URL(req.url, 'http://localhost');
+  const sessionId = searchParams.get('sessionId');
+  if (!sessionId) {
+    sendJson(res, 400, { error: 'Missing "sessionId".' });
+    return;
+  }
+  sendJson(res, 200, brain.debug(sessionId));
 }
 
 async function handleBrainState(req, res) {
@@ -403,6 +414,7 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/brain/session' && req.method === 'POST') return await handleBrainSession(req, res);
     if (pathname === '/api/brain/turn' && req.method === 'POST') return await handleBrainTurn(req, res);
     if (pathname === '/api/brain/state' && req.method === 'GET') return await handleBrainState(req, res);
+    if (pathname === '/api/brain/debug' && req.method === 'GET') return await handleBrainDebug(req, res);
 
     if (pathname.startsWith('/api/')) {
       sendJson(res, 404, { error: 'Unknown API route.' });

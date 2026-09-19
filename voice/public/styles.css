@@ -130,3 +130,18 @@ pre.tall { max-height: 360px; }
 
 /* recording state */
 button.recording { background: var(--bad); border-color: var(--bad); color: #fff; }
+
+/* ---- 3-pane live view ---- */
+.panes { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 1100px) { .panes { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; } }
+.pane { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; min-width: 0; }
+.pane h3 { margin: 0 0 0.2rem; font-size: 0.95rem; }
+.pane .messages { max-height: 60vh; }
+.stack { display: grid; gap: 0.5rem; }
+.acc { border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem 0.6rem; }
+.acc > summary { cursor: pointer; font-size: 0.85rem; color: var(--text); }
+.acc[open] > summary { margin-bottom: 0.4rem; color: var(--muted); }
+ul.tight { margin: 0.2rem 0; padding-left: 1.1rem; }
+ul.tight li { margin: 0.15rem 0; font-size: 0.88rem; }
+.pillrow { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.pill.warn { color: #f5c451; border-color: color-mix(in srgb, #f5c451 40%, var(--border)); }
