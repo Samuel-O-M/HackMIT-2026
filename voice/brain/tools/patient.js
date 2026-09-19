@@ -21,16 +21,20 @@ const READ_SCOPES = [
 
 function read({ subjectId, sessionId, scope, limit }) {
   const p = patient();
-  if (!subjectId) throw new Error('patient_read requires a subject.');
   const max = Math.min(Number(limit) || 20, 100);
+  const needSubject = () => {
+    if (!subjectId) throw new Error(`patient_read("${scope}") requires a subject.`);
+  };
 
   switch (scope) {
     case 'profile':
+      needSubject();
       return p.get(
         'SELECT subject_id, given_name, family_name, preferred_language FROM patients WHERE subject_id = ?',
         subjectId
       );
     case 'enrollment':
+      needSubject();
       return (
         p.get(
           `SELECT e.study_id, e.arm, e.enrolled_date, s.nct_id, s.title AS study_title, s.protocol_version
@@ -40,6 +44,7 @@ function read({ subjectId, sessionId, scope, limit }) {
         ) || null
       );
     case 'medications':
+      needSubject();
       return p.query(
         `SELECT log_id, reported_text, canonical_name, rxcui, dose, route, frequency,
                 status, start_date, start_date_precision, stop_date, stop_date_precision, ongoing
@@ -49,6 +54,7 @@ function read({ subjectId, sessionId, scope, limit }) {
         subjectId
       );
     case 'protocol_rules': {
+      needSubject();
       const e = p.get('SELECT study_id FROM enrollments WHERE subject_id = ?', subjectId);
       return e
         ? p.query(

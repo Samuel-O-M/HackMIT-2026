@@ -99,7 +99,9 @@ class Brain {
   }
 
   getConversation(sessionId, limit = config.historyTurns) {
-    return patientTools.read({ sessionId, subjectId: this.subjectOf(sessionId), scope: 'transcript', limit });
+    const subjectId = this.subjectOf(sessionId);
+    if (!subjectId) return [];
+    return patientTools.read({ sessionId, subjectId, scope: 'transcript', limit });
   }
 
   subjectOf(sessionId) {
@@ -263,7 +265,18 @@ class Brain {
   debug(sessionId) {
     const rt = this.runtime(sessionId);
     const session = patient().get('SELECT * FROM call_sessions WHERE session_id = ?', sessionId) || null;
-    const subjectId = session?.subject_id || null;
+    if (!session) {
+      return {
+        session: null,
+        conversation: [],
+        state: null,
+        planner: this.plannerStatus(sessionId),
+        lastTurn: rt.lastTurn || null,
+        lastPlan: rt.lastPlan || null,
+        patient: null,
+      };
+    }
+    const subjectId = session.subject_id;
 
     const patient_snapshot = subjectId
       ? {

@@ -230,25 +230,24 @@
         <div class="card">
           <div class="row wrap">
             <label class="inline">participant <select id="livePatient"></select></label>
-            <button id="liveNewSession" class="primary">New session</button>
+            <button id="liveStartCall" class="primary">📞 Start call</button>
+            <button id="liveEndCall" class="ghost" disabled>📴 End call</button>
+            <span id="liveCallStatus" class="pill">idle</span>
             <span id="liveSessionState" class="muted">no session</span>
             <label class="check"><input id="liveAutoSpeak" type="checkbox" checked /><span>auto-speak</span></label>
-            <label class="check"><input id="liveVerbose" type="checkbox" /><span>verbose (auto-expand raw JSON)</span></label>
+            <label class="check"><input id="liveVerbose" type="checkbox" /><span>verbose</span></label>
           </div>
           <div class="row wrap">
-            <button id="liveRecord" class="primary">● Record</button>
-            <span id="liveRecordState" class="muted">idle</span>
             <input id="liveInput" type="text" placeholder="…or type what the participant says" />
             <button id="liveSend">Send</button>
             <button id="liveRefresh" class="ghost">Refresh</button>
-            <label class="check"><input id="liveAutoSend" type="checkbox" checked /><span>auto-send after recording</span></label>
           </div>
         </div>
 
         <div class="panes">
           <section class="pane">
             <h3>1 · Conversation</h3>
-            <p class="muted small">What the participant says ⇄ what the agent says.</p>
+            <p class="muted small">Live call: what the participant says ⇄ what the agent says.</p>
             <div id="liveConversation" class="messages tall"></div>
           </section>
 

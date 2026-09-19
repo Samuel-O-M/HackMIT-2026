@@ -378,6 +378,23 @@ async function handleBrainTurn(req, res) {
   });
 }
 
+async function handleBrainEnd(req, res) {
+  let payload;
+  try {
+    payload = JSON.parse((await readBody(req)).toString('utf8') || '{}');
+  } catch {
+    sendJson(res, 400, { error: 'Invalid JSON body.' });
+    return;
+  }
+  const { sessionId } = payload;
+  if (!sessionId) {
+    sendJson(res, 400, { error: 'Missing "sessionId".' });
+    return;
+  }
+  brain.endSession(sessionId);
+  sendJson(res, 200, { ok: true, sessionId });
+}
+
 async function handleBrainDebug(req, res) {
   const { searchParams } = new URL(req.url, 'http://localhost');
   const sessionId = searchParams.get('sessionId');
@@ -413,6 +430,7 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/patients' && req.method === 'GET') return await handlePatients(req, res);
     if (pathname === '/api/brain/session' && req.method === 'POST') return await handleBrainSession(req, res);
     if (pathname === '/api/brain/turn' && req.method === 'POST') return await handleBrainTurn(req, res);
+    if (pathname === '/api/brain/end' && req.method === 'POST') return await handleBrainEnd(req, res);
     if (pathname === '/api/brain/state' && req.method === 'GET') return await handleBrainState(req, res);
     if (pathname === '/api/brain/debug' && req.method === 'GET') return await handleBrainDebug(req, res);
 
