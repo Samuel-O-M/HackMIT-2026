@@ -239,7 +239,7 @@ function seedPatient() {
   `);
 
   db.prepare('INSERT INTO patients (subject_id, given_name, family_name, dob, phone, preferred_language) VALUES (?,?,?,?,?,?)')
-    .run('0412', 'Alex', 'Rivera', '1958-03-12', '555-0142', 'en');
+    .run('0412', 'John', 'Smith', '1958-03-12', '555-0142', 'en');
   db.prepare('INSERT INTO studies (study_id, nct_id, title, protocol_version) VALUES (?,?,?,?)')
     .run('S1', 'NCT00000000', 'Phase 1 Study of an Investigational Agent (synthetic demo)', 'v3.0');
   db.prepare('INSERT INTO enrollments (subject_id, study_id, enrolled_date, arm) VALUES (?,?,?,?)')
