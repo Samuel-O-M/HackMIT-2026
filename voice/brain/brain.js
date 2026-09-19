@@ -109,6 +109,11 @@ class Brain {
     return row?.subject_id || null;
   }
 
+  identityStatus(sessionId) {
+    const row = patient().get('SELECT identity_status FROM call_sessions WHERE session_id = ?', sessionId);
+    return row?.identity_status || 'unverified';
+  }
+
   saveUtterance(sessionId, speaker, text) {
     if (!text || !String(text).trim()) return;
     const p = patient();
@@ -156,7 +161,7 @@ class Brain {
 
     this.saveUtterance(sessionId, 'patient', userText);
 
-    const state = this.getState(sessionId, subjectId);
+    const state = { ...(this.getState(sessionId, subjectId) || {}), identity_status: this.identityStatus(sessionId) };
     const conversation = this.getConversation(sessionId);
 
     const t0 = Date.now();
@@ -212,7 +217,7 @@ class Brain {
   async runPlan(sessionId, subjectId) {
     const rt = this.runtime(sessionId);
     const conversation = this.getConversation(sessionId, 50);
-    const state = this.getState(sessionId, subjectId);
+    const state = { ...(this.getState(sessionId, subjectId) || {}), identity_status: this.identityStatus(sessionId) };
 
     const { state: next, toolCalls, model } = await thinker.plan({
       plannerState: state,
