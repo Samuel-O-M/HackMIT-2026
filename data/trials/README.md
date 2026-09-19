@@ -1,4 +1,7 @@
-# Trial documents
+# Trials
+
+`trials.json` holds the trials themselves and `protocols.json` their protocol
+documents and prohibited rules. The documents sit in a folder per trial.
 
 One folder per trial, named by its protocol number. Everything a site needs to
 run medication reconciliation for that trial lives in its folder:

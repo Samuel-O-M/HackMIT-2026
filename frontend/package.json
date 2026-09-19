@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b --noEmit",
+    "export:data": "esbuild scripts/export-fixtures.ts --bundle --format=esm --platform=node --packages=external --outfile=node_modules/.tmp-export.mjs && node node_modules/.tmp-export.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
