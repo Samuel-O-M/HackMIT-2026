@@ -358,7 +358,11 @@
       params.set('model', 'nova-3');
       params.set('encoding', 'linear16');
       params.set('sample_rate', String(ctx.sampleRate));
-      params.set('smart_format', 'true');
+      // Keep speech as words. smart_format/numerals rewrite "march twelve
+      // nineteen fifty eight" into "03/12/1958" (and can even mangle it),
+      // which loses fidelity for identity + date checks.
+      params.set('smart_format', 'false');
+      params.set('numerals', 'false');
       params.set('punctuate', 'true');
       params.set('interim_results', 'true');
       params.set('vad_events', 'true');

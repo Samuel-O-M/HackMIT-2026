@@ -143,7 +143,8 @@
       try {
         const data = await window.App.transcribeBlob(blob, {
           model: 'nova-3',
-          smart_format: 'true',
+          smart_format: 'false',
+          numerals: 'false',
           punctuate: 'true',
         });
         $('#prodTranscript').value = data.transcript || '';
