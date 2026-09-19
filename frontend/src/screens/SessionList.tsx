@@ -115,7 +115,7 @@ export function SessionList({ studyId, study, onStartCall, reloadKey }: Props) {
       {sorted.length === 0 ? (
         <div className="empty">
           <h2>No visits scheduled for {studyId}</h2>
-          <p>Visits appear here once they are booked in the study calendar.</p>
+          <p>Visits appear once booked in the study calendar.</p>
           <button className="btn" onClick={() => navigate({ name: 'studies' })}>
             Back to all trials
           </button>

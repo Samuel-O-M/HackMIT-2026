@@ -6,23 +6,8 @@
     "investigationalProduct": "Cemiplimab (REGN2810)",
     "indication": "Advanced cutaneous squamous cell carcinoma",
     "phase": "Phase 2",
-    "enrolledAtSite": 14,
+    "enrolledAtSite": 13,
     "principalInvestigator": "Dr L. Okonkwo",
-    "prohibitedHighlights": [
-      "Chronic immunosuppressants",
-      "Systemic corticosteroids > 10 mg/day",
-      "Live attenuated vaccines"
-    ]
-  },
-  {
-    "studyId": "R2810-ONC-1676",
-    "nctId": "NCT03257267",
-    "shortTitle": "Cemiplimab in recurrent cervical cancer",
-    "investigationalProduct": "Cemiplimab (REGN2810)",
-    "indication": "Recurrent or metastatic platinum-refractory cervical cancer",
-    "phase": "Phase 3",
-    "enrolledAtSite": 9,
-    "principalInvestigator": "Dr M. Ferreira",
     "prohibitedHighlights": [
       "Chronic immunosuppressants",
       "Systemic corticosteroids > 10 mg/day",
@@ -36,8 +21,8 @@
     "investigationalProduct": "Cemiplimab (REGN2810)",
     "indication": "Advanced basal cell carcinoma after hedgehog inhibitor therapy",
     "phase": "Phase 2",
-    "enrolledAtSite": 6,
-    "principalInvestigator": "Dr L. Okonkwo",
+    "enrolledAtSite": 7,
+    "principalInvestigator": "Dr M. Ferreira",
     "prohibitedHighlights": [
       "Chronic immunosuppressants",
       "Systemic corticosteroids > 10 mg/day",
@@ -51,7 +36,7 @@
     "investigationalProduct": "Cemiplimab (REGN2810)",
     "indication": "Metastatic non-small cell lung cancer, PD-L1 high",
     "phase": "Phase 3",
-    "enrolledAtSite": 11,
+    "enrolledAtSite": 4,
     "principalInvestigator": "Dr P. Raghunathan",
     "prohibitedHighlights": [
       "Chronic immunosuppressants",
@@ -60,14 +45,78 @@
     ]
   },
   {
-    "studyId": "R1979-ONC-22102",
-    "nctId": "NCT06149286",
-    "shortTitle": "Odronextamab + lenalidomide in R/R FL and MZL",
-    "investigationalProduct": "Odronextamab + lenalidomide",
-    "indication": "Relapsed/refractory follicular and marginal zone lymphoma",
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "shortTitle": "Cemiplimab in recurrent cervical cancer",
+    "investigationalProduct": "Cemiplimab (REGN2810)",
+    "indication": "Recurrent or metastatic platinum-refractory cervical cancer",
     "phase": "Phase 3",
-    "enrolledAtSite": 4,
+    "enrolledAtSite": 13,
+    "principalInvestigator": "Dr S. Lindqvist",
+    "prohibitedHighlights": [
+      "Chronic immunosuppressants",
+      "Systemic corticosteroids > 10 mg/day",
+      "Live attenuated vaccines"
+    ]
+  },
+  {
+    "studyId": "R2810-ONC-1690",
+    "nctId": "NCT03690869",
+    "shortTitle": "Cemiplimab in paediatric solid and CNS tumours",
+    "investigationalProduct": "Cemiplimab (REGN2810)",
+    "indication": "Relapsed or refractory solid and central nervous system tumours",
+    "phase": "Phase 2",
+    "enrolledAtSite": 3,
+    "principalInvestigator": "Dr A. Haddad",
+    "prohibitedHighlights": [
+      "Chronic immunosuppressants",
+      "Systemic corticosteroids > 10 mg/day",
+      "Live attenuated vaccines"
+    ]
+  },
+  {
+    "studyId": "R2810-ONC-16111",
+    "nctId": "NCT03515629",
+    "shortTitle": "Cemiplimab + ipilimumab + chemotherapy in NSCLC",
+    "investigationalProduct": "Cemiplimab + ipilimumab",
+    "indication": "Advanced non-small cell lung cancer",
+    "phase": "Phase 3",
+    "enrolledAtSite": 8,
+    "principalInvestigator": "Dr L. Okonkwo",
+    "prohibitedHighlights": [
+      "Chronic immunosuppressants",
+      "Systemic corticosteroids > 10 mg/day",
+      "Live attenuated vaccines"
+    ]
+  },
+  {
+    "studyId": "R2810-ONC-16113",
+    "nctId": "NCT03409614",
+    "shortTitle": "Cemiplimab + platinum doublet in NSCLC",
+    "investigationalProduct": "Cemiplimab + chemotherapy",
+    "indication": "Advanced non-small cell lung cancer",
+    "phase": "Phase 3",
+    "enrolledAtSite": 7,
+    "principalInvestigator": "Dr M. Ferreira",
+    "prohibitedHighlights": [
+      "Chronic immunosuppressants",
+      "Systemic corticosteroids > 10 mg/day",
+      "Live attenuated vaccines"
+    ]
+  },
+  {
+    "studyId": "R2810-ONC-ISA-1981",
+    "nctId": "NCT04646005",
+    "shortTitle": "Cemiplimab + ISA101b in HPV16+ OPC",
+    "investigationalProduct": "Cemiplimab + ISA101b",
+    "indication": "Recurrent or metastatic HPV16-positive oropharyngeal cancer",
+    "phase": "Phase 2",
+    "enrolledAtSite": 11,
     "principalInvestigator": "Dr P. Raghunathan",
-    "prohibitedHighlights": []
+    "prohibitedHighlights": [
+      "Chronic immunosuppressants",
+      "Systemic corticosteroids > 10 mg/day",
+      "Live attenuated vaccines"
+    ]
   }
 ]

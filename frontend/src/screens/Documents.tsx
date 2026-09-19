@@ -8,6 +8,7 @@ import type {
 } from '../types/ui';
 import { formatDateTime } from '../lib/dates';
 import { FileDrop } from '../components/FileDrop';
+import { Disclosure } from '../components/Disclosure';
 
 interface Props {
   studyId: string;
@@ -139,11 +140,11 @@ export function Documents({ studyId, study, onToast, onChanged }: Props) {
             <span className="dim">Prohibited screening is off for this trial</span>
           </header>
           <div className="alarm-item alarm-simple">
-            <p className="alarm-why">
+            <Disclosure tone="alarm" label="What this means">
               The agent can still resolve what a participant reports and record it, but it cannot
               tell you whether any of it is prohibited until the protocol is loaded. Every call
               placed for {studyId} until then needs the prohibited check done by hand.
-            </p>
+            </Disclosure>
           </div>
         </section>
       )}
@@ -218,7 +219,7 @@ export function Documents({ studyId, study, onToast, onChanged }: Props) {
                 <div className="rule-body">
                   <b>{rule.label}</b>
                   {rule.threshold && <span className="rule-threshold">{rule.threshold}</span>}
-                  <p>{rule.rationale}</p>
+                  <Disclosure>{rule.rationale}</Disclosure>
                 </div>
                 <span className="rule-section mono">§{rule.protocolSection}</span>
               </li>
@@ -231,8 +232,8 @@ export function Documents({ studyId, study, onToast, onChanged }: Props) {
         title={protocol ? 'Load a new amendment' : 'Load the Clinical Study Protocol'}
         lede={
           protocol
-            ? 'A new version supersedes the one in force and re-reads the prohibited list. Calls already reviewed keep the rules they were checked against.'
-            : 'The prohibited medication list is read from the protocol’s concomitant medications section. Nothing else in the study file is authoritative for it.'
+            ? 'Supersedes the version in force and re-reads the prohibited list.'
+            : 'The prohibited list is read from its concomitant medications section.'
         }
         accept=".pdf,.doc,.docx"
         busy={busyKind === 'protocol'}
@@ -254,7 +255,7 @@ export function Documents({ studyId, study, onToast, onChanged }: Props) {
               <span className="dim">{loaded ? 'Loaded' : 'Not loaded'}</span>
             </div>
             <div className="doc-body">
-              <p className="doc-why">{slot.why}</p>
+              <Disclosure label="What this is for">{slot.why}</Disclosure>
               {loaded && (
                 <div className="doc-loaded">
                   <b>{loaded.filename}</b>

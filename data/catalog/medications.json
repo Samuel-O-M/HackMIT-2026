@@ -1,0 +1,498 @@
+[
+ {
+  "rxcui": "8640",
+  "name": "Prednisone",
+  "atc": "H02AB07",
+  "class": "Systemic corticosteroid",
+  "indication": "Polymyalgia rheumatica",
+  "doses": [
+   "20 mg",
+   "15 mg",
+   "5 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": "Systemic corticosteroid",
+  "doseDependent": true
+ },
+ {
+  "rxcui": "6851",
+  "name": "Methotrexate",
+  "atc": "L04AX03",
+  "class": "Chronic immunosuppressant",
+  "indication": "Rheumatoid arthritis",
+  "doses": [
+   "15 mg",
+   "10 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once weekly"
+  ],
+  "trips": "Chronic immunosuppressant",
+  "doseDependent": false
+ },
+ {
+  "rxcui": "1292422",
+  "name": "Varicella-zoster virus vaccine, live (Oka-Merck)",
+  "atc": "J07BK01",
+  "class": "Live attenuated vaccine",
+  "indication": "Shingles prophylaxis",
+  "doses": [
+   "0.65 mL"
+  ],
+  "route": "Subcutaneous",
+  "frequencies": [
+   "Single dose"
+  ],
+  "trips": "Live attenuated vaccine",
+  "doseDependent": false
+ },
+ {
+  "rxcui": null,
+  "name": "Influenza vaccine, live attenuated (intranasal)",
+  "atc": "J07BB03",
+  "class": "Live attenuated vaccine",
+  "indication": "Influenza prophylaxis",
+  "doses": [
+   "0.2 mL"
+  ],
+  "route": "Intranasal",
+  "frequencies": [
+   "Single dose"
+  ],
+  "trips": "Live attenuated vaccine",
+  "doseDependent": false,
+  "unresolvable": true
+ },
+ {
+  "rxcui": "3008",
+  "name": "Cyclosporine",
+  "atc": "L04AD01",
+  "class": "Chronic immunosuppressant",
+  "indication": "Psoriasis",
+  "doses": [
+   "100 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Twice daily"
+  ],
+  "trips": "Chronic immunosuppressant",
+  "doseDependent": false
+ },
+ {
+  "rxcui": "83367",
+  "name": "Atorvastatin",
+  "atc": "C10AA05",
+  "class": "Statin",
+  "indication": "Hyperlipidaemia",
+  "doses": [
+   "20 mg",
+   "40 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily at night"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "17767",
+  "name": "Amlodipine",
+  "atc": "C08CA01",
+  "class": "Calcium channel blocker",
+  "indication": "Hypertension",
+  "doses": [
+   "5 mg",
+   "10 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "29046",
+  "name": "Lisinopril",
+  "atc": "C09AA03",
+  "class": "ACE inhibitor",
+  "indication": "Hypertension",
+  "doses": [
+   "10 mg",
+   "20 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "6809",
+  "name": "Metformin",
+  "atc": "A10BA02",
+  "class": "Biguanide",
+  "indication": "Type 2 diabetes mellitus",
+  "doses": [
+   "500 mg",
+   "1000 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Twice daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "10582",
+  "name": "Levothyroxine",
+  "atc": "H03AA01",
+  "class": "Thyroid hormone",
+  "indication": "Hypothyroidism",
+  "doses": [
+   "50 mcg",
+   "75 mcg",
+   "100 mcg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "7646",
+  "name": "Omeprazole",
+  "atc": "A02BC01",
+  "class": "Proton pump inhibitor",
+  "indication": "Gastro-oesophageal reflux",
+  "doses": [
+   "20 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "519",
+  "name": "Allopurinol",
+  "atc": "M04AA01",
+  "class": "Xanthine oxidase inhibitor",
+  "indication": "Gout",
+  "doses": [
+   "100 mg",
+   "300 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "281",
+  "name": "Acyclovir",
+  "atc": "J05AB01",
+  "class": "Antiviral",
+  "indication": "Herpes zoster prophylaxis",
+  "doses": [
+   "400 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Twice daily",
+   "Three times daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "26225",
+  "name": "Ondansetron",
+  "atc": "A04AA01",
+  "class": "5-HT3 antagonist",
+  "indication": "Chemotherapy-induced nausea",
+  "doses": [
+   "4 mg",
+   "8 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Twice daily PRN"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "6711",
+  "name": "Melatonin",
+  "atc": null,
+  "class": "Dietary supplement",
+  "indication": "Insomnia",
+  "doses": [
+   "3 mg",
+   "5 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "At bedtime PRN"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "258326",
+  "name": "St. John's wort extract",
+  "atc": null,
+  "class": "Herbal supplement",
+  "indication": "Low mood",
+  "doses": [
+   "300 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "36437",
+  "name": "Sertraline",
+  "atc": "N06AB06",
+  "class": "SSRI",
+  "indication": "Major depressive disorder",
+  "doses": [
+   "50 mg",
+   "100 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "32968",
+  "name": "Clopidogrel",
+  "atc": "B01AC04",
+  "class": "Antiplatelet",
+  "indication": "Secondary cardiovascular prevention",
+  "doses": [
+   "75 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "11289",
+  "name": "Warfarin",
+  "atc": "B01AA03",
+  "class": "Vitamin K antagonist",
+  "indication": "Atrial fibrillation",
+  "doses": [
+   "3 mg",
+   "5 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "82122",
+  "name": "Levofloxacin",
+  "atc": "J01MA12",
+  "class": "Fluoroquinolone antibiotic",
+  "indication": "Respiratory tract infection",
+  "doses": [
+   "500 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "3264",
+  "name": "Dexamethasone",
+  "atc": "H02AB02",
+  "class": "Systemic corticosteroid",
+  "indication": "Antiemetic premedication",
+  "doses": [
+   "4 mg",
+   "8 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": "Systemic corticosteroid",
+  "doseDependent": true
+ },
+ {
+  "rxcui": "161",
+  "name": "Acetaminophen (paracetamol)",
+  "atc": "N02BE01",
+  "class": "Analgesic, non-opioid",
+  "indication": "Pain",
+  "doses": [
+   "500 mg",
+   "1 g"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Up to four times daily PRN"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "5640",
+  "name": "Ibuprofen",
+  "atc": "M01AE01",
+  "class": "NSAID",
+  "indication": "Musculoskeletal pain",
+  "doses": [
+   "200 mg",
+   "400 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Twice daily PRN"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "7258",
+  "name": "Naproxen",
+  "atc": "M01AE02",
+  "class": "NSAID",
+  "indication": "Knee pain",
+  "doses": [
+   "250 mg",
+   "500 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Twice daily PRN"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "2670",
+  "name": "Codeine",
+  "atc": "R05DA04",
+  "class": "Opioid analgesic",
+  "indication": "Pain",
+  "doses": [
+   "30 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Four times daily PRN"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "4603",
+  "name": "Furosemide",
+  "atc": "C03CA01",
+  "class": "Loop diuretic",
+  "indication": "Oedema",
+  "doses": [
+   "20 mg",
+   "40 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "1191",
+  "name": "Aspirin",
+  "atc": "B01AC06",
+  "class": "Antiplatelet",
+  "indication": "Secondary cardiovascular prevention",
+  "doses": [
+   "75 mg",
+   "81 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "236495",
+  "name": "Tamsulosin",
+  "atc": "G04CA02",
+  "class": "Alpha blocker",
+  "indication": "Benign prostatic hyperplasia",
+  "doses": [
+   "0.4 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "36567",
+  "name": "Simvastatin",
+  "atc": "C10AA01",
+  "class": "Statin",
+  "indication": "Hyperlipidaemia",
+  "doses": [
+   "20 mg",
+   "40 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily at night"
+  ],
+  "trips": null
+ },
+ {
+  "rxcui": "8638",
+  "name": "Prednisolone",
+  "atc": "H02AB06",
+  "class": "Systemic corticosteroid",
+  "indication": "Asthma exacerbation",
+  "doses": [
+   "5 mg",
+   "30 mg"
+  ],
+  "route": "Oral",
+  "frequencies": [
+   "Once daily"
+  ],
+  "trips": "Systemic corticosteroid",
+  "doseDependent": true
+ },
+ {
+  "rxcui": "1986820",
+  "name": "Varicella zoster virus glycoprotein E, recombinant (Shingrix)",
+  "atc": "J07BK03",
+  "class": "Recombinant vaccine",
+  "indication": "Shingles prophylaxis",
+  "doses": [
+   "0.5 mL"
+  ],
+  "route": "Intramuscular",
+  "frequencies": [
+   "Two-dose series"
+  ],
+  "trips": null
+ }
+]

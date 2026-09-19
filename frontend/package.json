@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "export:data": "esbuild scripts/export-fixtures.ts --bundle --format=esm --platform=node --packages=external --outfile=node_modules/.tmp-export.mjs && node node_modules/.tmp-export.mjs"
+    "build:data": "node ../scripts/build-data.mjs",
+    "build:db": "node ../db/seed.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

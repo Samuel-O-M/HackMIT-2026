@@ -1,6 +1,7 @@
 import type { ProposedChange } from '../types/contract';
 import type { ProtocolDeviation } from '../types/ui';
 import { displayName } from '../lib/entry';
+import { Disclosure } from './Disclosure';
 
 interface Props {
   changes: ProposedChange[];
@@ -32,9 +33,7 @@ export function ProhibitedAlert({
           {hits.length} prohibited medication{hits.length === 1 ? '' : 's'} reported
         </h2>
         <span className="dim">
-          {filed.size === hits.length
-            ? 'Deviations filed · discuss at the visit before promoting anything'
-            : 'File a deviation and discuss at the visit before promoting anything'}
+          {filed.size === hits.length ? 'Deviations filed' : 'Discuss at the visit'}
         </span>
       </header>
       <ul className="alarm-list">
@@ -52,7 +51,9 @@ export function ProhibitedAlert({
                   Protocol §{hit.protocolSection} · rule <span className="mono">{hit.ruleId}</span>
                 </div>
               </div>
-              <p className="alarm-why">{hit.rationale}</p>
+              <Disclosure tone="alarm" label="Why it is prohibited">
+                {hit.rationale}
+              </Disclosure>
               <div className="alarm-acts">
                 <button className="alarm-jump" onClick={() => onJump(change.changeId)}>
                   Go to change

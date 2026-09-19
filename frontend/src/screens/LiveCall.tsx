@@ -79,10 +79,7 @@ export function LiveCall({ sessionId, session }: Props) {
         <hr className="rule" />
         <div className="empty">
           <h2>There is no call to listen to</h2>
-          <p>
-            This session has no live stream — the call finished long enough ago that its audio and
-            transcript are archived, or it was never placed. The proposed changes are still here.
-          </p>
+          <p>Its transcript is archived, or the call was never placed.</p>
           <button className="btn" onClick={() => navigate({ name: 'review', sessionId })}>
             Go to the review
           </button>

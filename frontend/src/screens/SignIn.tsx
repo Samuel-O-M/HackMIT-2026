@@ -33,11 +33,6 @@ export function SignIn({ onSubmit }: Props) {
 
         <div className="signin-body">
           <h1>Sign in</h1>
-          <p className="signin-lede">
-            Reviewing a reconciliation writes to the study record, so every change is attributed to
-            the coordinator who made it.
-          </p>
-
           <label className="signin-field">
             <span>Username</span>
             <input

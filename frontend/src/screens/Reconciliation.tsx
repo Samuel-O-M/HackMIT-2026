@@ -191,8 +191,7 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
           <div className="empty">
             <h2>Nothing changed since the last visit</h2>
             <p>
-              The call completed at {session.endedAt ? formatDateTime(session.endedAt) : 'an unknown time'} and
-              the participant confirmed their medication log is accurate. There is nothing to promote.
+              {session.endedAt ? formatDateTime(session.endedAt) : 'Call ended'} · nothing to promote.
             </p>
             <button
               className="btn"

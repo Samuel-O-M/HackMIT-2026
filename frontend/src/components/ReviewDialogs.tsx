@@ -4,6 +4,7 @@ import type { Coordinator } from '../auth';
 import { SIGNATURE_MEANING, type DeviationInput } from '../api/transport';
 import { FIELD_LABEL, displayName, type EditableField } from '../lib/entry';
 import { Dialog } from './Dialog';
+import { Disclosure } from './Disclosure';
 
 /* ---------------------------------------------------------------- reason */
 
@@ -39,7 +40,7 @@ export function ReasonForChangeDialog({
   return (
     <Dialog
       title="Reason for change"
-      lede="Part 11 audit trails record who changed a value, when, and why. This reason is written to the trail and cannot be edited afterwards."
+      lede="Written to the audit trail, and not editable afterwards."
       confirmLabel="Save change"
       confirmDisabled={needsNote && note.trim() === ''}
       onConfirm={() => onConfirm(reason)}
@@ -90,7 +91,7 @@ export function QueryDialog({
   return (
     <Dialog
       title="Raise a query"
-      lede="A query blocks this row without accepting or discarding it. Use it for anything you need the participant, the pharmacy, or the data manager to answer before the visit."
+      lede="Blocks this row without accepting or rejecting it."
       confirmLabel="Raise query"
       confirmDisabled={text.trim() === ''}
       onConfirm={() => onConfirm(text.trim())}
@@ -140,7 +141,7 @@ export function DeviationDialog({
   return (
     <Dialog
       title="Log protocol deviation"
-      lede="A prohibited medication is a deviation in a safety-based category. Filing it here creates the record the PI signs and the IRB report draws from."
+      lede="Creates the record the PI signs and the IRB report draws from."
       confirmLabel="Log deviation"
       confirmDisabled={description.trim() === ''}
       onConfirm={() =>
@@ -166,10 +167,7 @@ export function DeviationDialog({
       <label className="field-row">
         <span>Description</span>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
-        <span className="field-hint">
-          Suggested wording, built from the reported entry. Start typing to replace it, or click
-          into it to edit.
-        </span>
+        <span className="field-hint">Suggested wording — start typing to replace it.</span>
       </label>
 
       <label className="check-row">
@@ -212,13 +210,18 @@ export function SignOffDialog({
   return (
     <Dialog
       title="Sign and promote"
-      lede="Promoting writes to the medication log. Part 11 requires a signature carrying your printed name, the time, and what the signature means."
+      lede="Writes to the medication log."
       confirmLabel={`Sign and promote ${count}`}
       confirmDisabled={!nameMatches || !attested}
       onConfirm={onConfirm}
       onCancel={onCancel}
     >
       <p className="dialog-attest">{SIGNATURE_MEANING}</p>
+
+      <Disclosure label="Why a signature">
+        21 CFR 11.50 requires a signature manifestation to carry the signer's printed name, the date
+        and time, and the meaning of the signature. All four are recorded with this promotion.
+      </Disclosure>
 
       <div className="dialog-readback">
         <span>

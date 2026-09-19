@@ -73,7 +73,7 @@
         "targetLogId": null,
         "current": null,
         "proposed": {
-          "rxcui": "1006296",
+          "rxcui": "1292422",
           "canonicalName": "Zoster vaccine, live",
           "indication": "Shingles prophylaxis",
           "dose": "0.65 mL",
@@ -448,8 +448,8 @@
         "targetLogId": null,
         "current": null,
         "proposed": {
-          "rxcui": "1655944",
-          "canonicalName": "Influenza vaccine, live attenuated (intranasal)",
+          "rxcui": null,
+          "canonicalName": null,
           "indication": "Influenza prophylaxis",
           "dose": "0.2 mL",
           "route": "Intranasal",
@@ -462,23 +462,23 @@
           "logId": "NEW-202",
           "reportedText": "I got the flu vaccine last week, the nasal spray one, not the needle"
         },
-        "agentConfidence": 0.94,
-        "agentReasoning": "Participant explicitly distinguished the nasal spray from the injection. The intranasal influenza vaccine is live attenuated, unlike the inactivated injectable, and is prohibited under this protocol.",
+        "agentConfidence": 0.58,
+        "agentReasoning": "Participant explicitly distinguished the nasal spray from the injection. The intranasal influenza vaccine is live attenuated, unlike the inactivated injectable. RxNorm has no concept for it, so it stays unresolved — but the prohibited check matches on class, not on a resolved code, so the finding stands.",
         "toolTrace": [
           {
             "tool": "resolve_drug",
             "input": "flu vaccine, nasal spray",
-            "output": "rxcui=1655944 · Influenza vaccine, live attenuated · confidence 0.96"
+            "output": "no RxNorm concept · class inferred from formulation"
           },
           {
             "tool": "classify_drug",
-            "input": "rxcui=1655944",
+            "input": "intranasal influenza vaccine",
             "output": "ATC J07BB03 · Live attenuated viral vaccine"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Live attenuated vaccine · R2810-ONC-1540",
-            "output": "HIT · rule PR-0034 · §5.7.2"
+            "input": "class=Live attenuated vaccine",
+            "output": "HIT · rule PR-0034"
           }
         ],
         "prohibitedHit": {
@@ -813,6 +813,3388 @@
           {
             "tool": "check_prohibited",
             "input": "rxcui=26225 · R2810-ONC-1624",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-601",
+    "subjectId": "S-403",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "startedAt": {
+      "dayOffset": -3,
+      "time": "13:20"
+    },
+    "endedAt": {
+      "dayOffset": -3,
+      "time": "13:52"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-901",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-601-0",
+        "current": {
+          "logId": "LOG-601-0",
+          "reportedText": "Simvastatin",
+          "rxcui": "36567",
+          "canonicalName": "Simvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2023-11-12",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-601-0",
+          "reportedText": "the hyperlipidaemia one, no change",
+          "rxcui": "36567",
+          "canonicalName": "Simvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2023-11-12",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9741420430457219,
+        "agentReasoning": "Participant confirmed simvastatin is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "simvastatin",
+            "output": "rxcui=36567 · Simvastatin · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=36567",
+            "output": "ATC C10AA01 · Statin"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Statin · R2810-ONC-1540",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-902",
+        "changeType": "modify",
+        "targetLogId": "LOG-601-1",
+        "current": {
+          "logId": "LOG-601-1",
+          "reportedText": "Ibuprofen",
+          "rxcui": "5640",
+          "canonicalName": "Ibuprofen",
+          "indication": "Musculoskeletal pain",
+          "dose": "200 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2024-03-01",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-601-1",
+          "reportedText": "they changed the ibuprofen dose",
+          "rxcui": "5640",
+          "canonicalName": "Ibuprofen",
+          "indication": "Musculoskeletal pain",
+          "dose": "400 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2024-03-01",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.8939612370543182,
+        "agentReasoning": "Participant reports the ibuprofen dose changed from 200 mg to 400 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "ibuprofen",
+            "output": "rxcui=5640 · Ibuprofen · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=5640",
+            "output": "ATC M01AE01 · NSAID"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=NSAID · R2810-ONC-1540",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-903",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-601-u",
+          "reportedText": "something my wife picks up for my joints",
+          "rxcui": null,
+          "canonicalName": null,
+          "indication": "Unspecified",
+          "dose": null,
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": null,
+          "startDatePrecision": "unknown",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.43054694454185666,
+        "agentReasoning": "Participant described a medication they could not name. Colour and form are not enough to identify a product, so no resolution was attempted beyond the failed lookup. The coordinator needs to ask them to bring the bottle to the visit.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "unnamed tablet",
+            "output": "no match above threshold"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"since the spring\"",
+            "output": "unresolved · precision=unknown"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-602",
+    "subjectId": "S-404",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "startedAt": {
+      "dayOffset": 3,
+      "time": "13:05"
+    },
+    "endedAt": {
+      "dayOffset": 3,
+      "time": "13:52"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-904",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-602-0",
+        "current": {
+          "logId": "LOG-602-0",
+          "reportedText": "Amlodipine",
+          "rxcui": "17767",
+          "canonicalName": "Amlodipine",
+          "indication": "Hypertension",
+          "dose": "10 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2025-12-09",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-602-0",
+          "reportedText": "the hypertension one, no change",
+          "rxcui": "17767",
+          "canonicalName": "Amlodipine",
+          "indication": "Hypertension",
+          "dose": "10 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2025-12-09",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9506360635114834,
+        "agentReasoning": "Participant confirmed amlodipine is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "amlodipine",
+            "output": "rxcui=17767 · Amlodipine · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=17767",
+            "output": "ATC C08CA01 · Calcium channel blocker"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Calcium channel blocker · R2810-ONC-1540",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-603",
+    "subjectId": "S-405",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "startedAt": {
+      "dayOffset": 2,
+      "time": "11:20"
+    },
+    "endedAt": {
+      "dayOffset": 2,
+      "time": "11:57"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-905",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-603-0",
+        "current": {
+          "logId": "LOG-603-0",
+          "reportedText": "Levofloxacin",
+          "rxcui": "82122",
+          "canonicalName": "Levofloxacin",
+          "indication": "Respiratory tract infection",
+          "dose": "500 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2023-09-04",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-603-0",
+          "reportedText": "the respiratory tract infection one, no change",
+          "rxcui": "82122",
+          "canonicalName": "Levofloxacin",
+          "indication": "Respiratory tract infection",
+          "dose": "500 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2023-09-04",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9834495157795027,
+        "agentReasoning": "Participant confirmed levofloxacin is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "levofloxacin",
+            "output": "rxcui=82122 · Levofloxacin · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=82122",
+            "output": "ATC J01MA12 · Fluoroquinolone antibiotic"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Fluoroquinolone antibiotic · R2810-ONC-1540",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-906",
+        "changeType": "modify",
+        "targetLogId": "LOG-603-1",
+        "current": {
+          "logId": "LOG-603-1",
+          "reportedText": "Allopurinol",
+          "rxcui": "519",
+          "canonicalName": "Allopurinol",
+          "indication": "Gout",
+          "dose": "100 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2022-05-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-603-1",
+          "reportedText": "they changed the allopurinol dose",
+          "rxcui": "519",
+          "canonicalName": "Allopurinol",
+          "indication": "Gout",
+          "dose": "300 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2022-05-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.913799102557823,
+        "agentReasoning": "Participant reports the allopurinol dose changed from 100 mg to 300 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "allopurinol",
+            "output": "rxcui=519 · Allopurinol · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=519",
+            "output": "ATC M04AA01 · Xanthine oxidase inhibitor"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Xanthine oxidase inhibitor · R2810-ONC-1540",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-907",
+        "changeType": "stop",
+        "targetLogId": "LOG-603-2",
+        "current": {
+          "logId": "LOG-603-2",
+          "reportedText": "Ondansetron",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "4 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2025-05-19",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-603-2",
+          "reportedText": "I came off the chemotherapy-induced nausea one back in July",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "4 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2025-05-19",
+          "startDatePrecision": "day",
+          "stopDate": "2026-07-01",
+          "stopDatePrecision": "month",
+          "ongoing": false
+        },
+        "agentConfidence": 0.7677429087716154,
+        "agentReasoning": "Participant reports stopping ondansetron in July. They could not name a day, so the stop date is held at month precision rather than guessed.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "ondansetron",
+            "output": "rxcui=26225 · Ondansetron · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=26225",
+            "output": "ATC A04AA01 · 5-HT3 antagonist"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=5-HT3 antagonist · R2810-ONC-1540",
+            "output": "no hit"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"back in July\"",
+            "output": "2026-07-01 · precision=month"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-604",
+    "subjectId": "S-406",
+    "studyId": "R2810-ONC-1620",
+    "nctId": "NCT03132636",
+    "startedAt": {
+      "dayOffset": 3,
+      "time": "12:20"
+    },
+    "endedAt": {
+      "dayOffset": 3,
+      "time": "12:48"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-908",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-604-0",
+        "current": {
+          "logId": "LOG-604-0",
+          "reportedText": "Sertraline",
+          "rxcui": "36437",
+          "canonicalName": "Sertraline",
+          "indication": "Major depressive disorder",
+          "dose": "50 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2022-11-25",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-604-0",
+          "reportedText": "the major depressive disorder one, no change",
+          "rxcui": "36437",
+          "canonicalName": "Sertraline",
+          "indication": "Major depressive disorder",
+          "dose": "50 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2022-11-25",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9319691416388378,
+        "agentReasoning": "Participant confirmed sertraline is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "sertraline",
+            "output": "rxcui=36437 · Sertraline · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=36437",
+            "output": "ATC N06AB06 · SSRI"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=SSRI · R2810-ONC-1620",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-909",
+        "changeType": "modify",
+        "targetLogId": "LOG-604-1",
+        "current": {
+          "logId": "LOG-604-1",
+          "reportedText": "Atorvastatin",
+          "rxcui": "83367",
+          "canonicalName": "Atorvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2025-02-18",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-604-1",
+          "reportedText": "they changed the atorvastatin dose",
+          "rxcui": "83367",
+          "canonicalName": "Atorvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "40 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2025-02-18",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.828407888971269,
+        "agentReasoning": "Participant reports the atorvastatin dose changed from 20 mg to 40 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "atorvastatin",
+            "output": "rxcui=83367 · Atorvastatin · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=83367",
+            "output": "ATC C10AA05 · Statin"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Statin · R2810-ONC-1620",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-910",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-604",
+          "reportedText": "another doctor started me on varicella-zoster virus vaccine, live (oka-merck)",
+          "rxcui": "1292422",
+          "canonicalName": "Varicella-zoster virus vaccine, live (Oka-Merck)",
+          "indication": "Shingles prophylaxis",
+          "dose": "0.65 mL",
+          "route": "Subcutaneous",
+          "frequency": "Single dose",
+          "startDate": "2026-08-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9440513544739224,
+        "agentReasoning": "Participant reports varicella-zoster virus vaccine, live (oka-merck), which falls in a class this protocol prohibits throughout treatment.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "varicella-zoster virus vaccine, live (oka-merck)",
+            "output": "rxcui=1292422 · Varicella-zoster virus vaccine, live (Oka-Merck) · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=1292422",
+            "output": "ATC J07BK01 · Live attenuated vaccine"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Live attenuated vaccine · R2810-ONC-1620",
+            "output": "HIT · rule PR-0034 · §7.7.1"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0034",
+          "matchedOn": "class",
+          "className": "Live attenuated vaccine",
+          "protocolSection": "7.7.1",
+          "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted."
+        },
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-911",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-604-u",
+          "reportedText": "something my wife picks up for my joints",
+          "rxcui": null,
+          "canonicalName": null,
+          "indication": "Unspecified",
+          "dose": null,
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": null,
+          "startDatePrecision": "unknown",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.43821017766371373,
+        "agentReasoning": "Participant described a medication they could not name. Colour and form are not enough to identify a product, so no resolution was attempted beyond the failed lookup. The coordinator needs to ask them to bring the bottle to the visit.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "unnamed tablet",
+            "output": "no match above threshold"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"since the spring\"",
+            "output": "unresolved · precision=unknown"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-605",
+    "subjectId": "S-407",
+    "studyId": "R2810-ONC-1620",
+    "nctId": "NCT03132636",
+    "startedAt": {
+      "dayOffset": 4,
+      "time": "09:20"
+    },
+    "endedAt": {
+      "dayOffset": 4,
+      "time": "09:48"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-912",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-605-0",
+        "current": {
+          "logId": "LOG-605-0",
+          "reportedText": "Varicella zoster virus glycoprotein E, recombinant (Shingrix)",
+          "rxcui": "1986820",
+          "canonicalName": "Varicella zoster virus glycoprotein E, recombinant (Shingrix)",
+          "indication": "Shingles prophylaxis",
+          "dose": "0.5 mL",
+          "route": "Intramuscular",
+          "frequency": "Two-dose series",
+          "startDate": "2021-08-25",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-605-0",
+          "reportedText": "the shingles prophylaxis one, no change",
+          "rxcui": "1986820",
+          "canonicalName": "Varicella zoster virus glycoprotein E, recombinant (Shingrix)",
+          "indication": "Shingles prophylaxis",
+          "dose": "0.5 mL",
+          "route": "Intramuscular",
+          "frequency": "Two-dose series",
+          "startDate": "2021-08-25",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9541682280739769,
+        "agentReasoning": "Participant confirmed varicella zoster virus glycoprotein e, recombinant (shingrix) is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "varicella zoster virus glycoprotein e, recombinant (shingrix)",
+            "output": "rxcui=1986820 · Varicella zoster virus glycoprotein E, recombinant (Shingrix) · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=1986820",
+            "output": "ATC J07BK03 · Recombinant vaccine"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Recombinant vaccine · R2810-ONC-1620",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-913",
+        "changeType": "modify",
+        "targetLogId": "LOG-605-1",
+        "current": {
+          "logId": "LOG-605-1",
+          "reportedText": "Sertraline",
+          "rxcui": "36437",
+          "canonicalName": "Sertraline",
+          "indication": "Major depressive disorder",
+          "dose": "50 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-09-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-605-1",
+          "reportedText": "they changed the sertraline dose",
+          "rxcui": "36437",
+          "canonicalName": "Sertraline",
+          "indication": "Major depressive disorder",
+          "dose": "100 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-09-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9106390303466468,
+        "agentReasoning": "Participant reports the sertraline dose changed from 50 mg to 100 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "sertraline",
+            "output": "rxcui=36437 · Sertraline · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=36437",
+            "output": "ATC N06AB06 · SSRI"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=SSRI · R2810-ONC-1620",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-606",
+    "subjectId": "S-408",
+    "studyId": "R2810-ONC-1620",
+    "nctId": "NCT03132636",
+    "startedAt": {
+      "dayOffset": 4,
+      "time": "08:20"
+    },
+    "endedAt": {
+      "dayOffset": 4,
+      "time": "08:52"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-914",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-606-0",
+        "current": {
+          "logId": "LOG-606-0",
+          "reportedText": "Sertraline",
+          "rxcui": "36437",
+          "canonicalName": "Sertraline",
+          "indication": "Major depressive disorder",
+          "dose": "50 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2023-11-17",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-606-0",
+          "reportedText": "the major depressive disorder one, no change",
+          "rxcui": "36437",
+          "canonicalName": "Sertraline",
+          "indication": "Major depressive disorder",
+          "dose": "50 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2023-11-17",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9316931722965092,
+        "agentReasoning": "Participant confirmed sertraline is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "sertraline",
+            "output": "rxcui=36437 · Sertraline · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=36437",
+            "output": "ATC N06AB06 · SSRI"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=SSRI · R2810-ONC-1620",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-915",
+        "changeType": "modify",
+        "targetLogId": "LOG-606-1",
+        "current": {
+          "logId": "LOG-606-1",
+          "reportedText": "Ondansetron",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "4 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2021-08-16",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-606-1",
+          "reportedText": "they changed the ondansetron dose",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "8 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2021-08-16",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9072556598205119,
+        "agentReasoning": "Participant reports the ondansetron dose changed from 4 mg to 8 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "ondansetron",
+            "output": "rxcui=26225 · Ondansetron · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=26225",
+            "output": "ATC A04AA01 · 5-HT3 antagonist"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=5-HT3 antagonist · R2810-ONC-1620",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-607",
+    "subjectId": "S-409",
+    "studyId": "R2810-ONC-1620",
+    "nctId": "NCT03132636",
+    "startedAt": {
+      "dayOffset": 1,
+      "time": "08:20"
+    },
+    "endedAt": {
+      "dayOffset": 1,
+      "time": "08:52"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-916",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-607-0",
+        "current": {
+          "logId": "LOG-607-0",
+          "reportedText": "Allopurinol",
+          "rxcui": "519",
+          "canonicalName": "Allopurinol",
+          "indication": "Gout",
+          "dose": "100 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2025-09-07",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-607-0",
+          "reportedText": "the gout one, no change",
+          "rxcui": "519",
+          "canonicalName": "Allopurinol",
+          "indication": "Gout",
+          "dose": "100 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2025-09-07",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9558401939459146,
+        "agentReasoning": "Participant confirmed allopurinol is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "allopurinol",
+            "output": "rxcui=519 · Allopurinol · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=519",
+            "output": "ATC M04AA01 · Xanthine oxidase inhibitor"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Xanthine oxidase inhibitor · R2810-ONC-1620",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-917",
+        "changeType": "modify",
+        "targetLogId": "LOG-607-1",
+        "current": {
+          "logId": "LOG-607-1",
+          "reportedText": "Lisinopril",
+          "rxcui": "29046",
+          "canonicalName": "Lisinopril",
+          "indication": "Hypertension",
+          "dose": "10 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2023-08-07",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-607-1",
+          "reportedText": "they changed the lisinopril dose",
+          "rxcui": "29046",
+          "canonicalName": "Lisinopril",
+          "indication": "Hypertension",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2023-08-07",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9287729983776807,
+        "agentReasoning": "Participant reports the lisinopril dose changed from 10 mg to 20 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "lisinopril",
+            "output": "rxcui=29046 · Lisinopril · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=29046",
+            "output": "ATC C09AA03 · ACE inhibitor"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=ACE inhibitor · R2810-ONC-1620",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-918",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-607",
+          "reportedText": "another doctor started me on methotrexate",
+          "rxcui": "6851",
+          "canonicalName": "Methotrexate",
+          "indication": "Rheumatoid arthritis",
+          "dose": "15 mg",
+          "route": "Oral",
+          "frequency": "Once weekly",
+          "startDate": "2026-08-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9083885570219717,
+        "agentReasoning": "Participant reports methotrexate, which falls in a class this protocol prohibits throughout treatment.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "methotrexate",
+            "output": "rxcui=6851 · Methotrexate · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=6851",
+            "output": "ATC L04AX03 · Chronic immunosuppressant"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Chronic immunosuppressant · R2810-ONC-1620",
+            "output": "HIT · rule PR-0009 · §7.7.1"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0009",
+          "matchedOn": "class",
+          "className": "Chronic immunosuppressant",
+          "protocolSection": "7.7.1",
+          "rationale": "Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events."
+        },
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-608",
+    "subjectId": "S-410",
+    "studyId": "R2810-ONC-1620",
+    "nctId": "NCT03132636",
+    "startedAt": {
+      "dayOffset": 0,
+      "time": "10:05"
+    },
+    "endedAt": {
+      "dayOffset": 0,
+      "time": "10:48"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-919",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-608-0",
+        "current": {
+          "logId": "LOG-608-0",
+          "reportedText": "Varicella zoster virus glycoprotein E, recombinant (Shingrix)",
+          "rxcui": "1986820",
+          "canonicalName": "Varicella zoster virus glycoprotein E, recombinant (Shingrix)",
+          "indication": "Shingles prophylaxis",
+          "dose": "0.5 mL",
+          "route": "Intramuscular",
+          "frequency": "Two-dose series",
+          "startDate": "2025-10-16",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-608-0",
+          "reportedText": "the shingles prophylaxis one, no change",
+          "rxcui": "1986820",
+          "canonicalName": "Varicella zoster virus glycoprotein E, recombinant (Shingrix)",
+          "indication": "Shingles prophylaxis",
+          "dose": "0.5 mL",
+          "route": "Intramuscular",
+          "frequency": "Two-dose series",
+          "startDate": "2025-10-16",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9460026097577066,
+        "agentReasoning": "Participant confirmed varicella zoster virus glycoprotein e, recombinant (shingrix) is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "varicella zoster virus glycoprotein e, recombinant (shingrix)",
+            "output": "rxcui=1986820 · Varicella zoster virus glycoprotein E, recombinant (Shingrix) · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=1986820",
+            "output": "ATC J07BK03 · Recombinant vaccine"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Recombinant vaccine · R2810-ONC-1620",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-920",
+        "changeType": "modify",
+        "targetLogId": "LOG-608-1",
+        "current": {
+          "logId": "LOG-608-1",
+          "reportedText": "Ibuprofen",
+          "rxcui": "5640",
+          "canonicalName": "Ibuprofen",
+          "indication": "Musculoskeletal pain",
+          "dose": "200 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2022-06-11",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-608-1",
+          "reportedText": "they changed the ibuprofen dose",
+          "rxcui": "5640",
+          "canonicalName": "Ibuprofen",
+          "indication": "Musculoskeletal pain",
+          "dose": "400 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2022-06-11",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.823046077908948,
+        "agentReasoning": "Participant reports the ibuprofen dose changed from 200 mg to 400 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "ibuprofen",
+            "output": "rxcui=5640 · Ibuprofen · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=5640",
+            "output": "ATC M01AE01 · NSAID"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=NSAID · R2810-ONC-1620",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-609",
+    "subjectId": "S-412",
+    "studyId": "R2810-ONC-1624",
+    "nctId": "NCT03088540",
+    "startedAt": {
+      "dayOffset": -1,
+      "time": "10:20"
+    },
+    "endedAt": {
+      "dayOffset": -1,
+      "time": "10:52"
+    },
+    "status": "completed",
+    "changes": [
+      {
+        "changeId": "CH-921",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-609-0",
+        "current": {
+          "logId": "LOG-609-0",
+          "reportedText": "Atorvastatin",
+          "rxcui": "83367",
+          "canonicalName": "Atorvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "40 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2024-06-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-609-0",
+          "reportedText": "the hyperlipidaemia one, no change",
+          "rxcui": "83367",
+          "canonicalName": "Atorvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "40 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2024-06-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9884474298264831,
+        "agentReasoning": "Participant confirmed atorvastatin is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "atorvastatin",
+            "output": "rxcui=83367 · Atorvastatin · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=83367",
+            "output": "ATC C10AA05 · Statin"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Statin · R2810-ONC-1624",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-610",
+    "subjectId": "S-414",
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "startedAt": {
+      "dayOffset": -3,
+      "time": "11:20"
+    },
+    "endedAt": {
+      "dayOffset": -3,
+      "time": "11:57"
+    },
+    "status": "completed",
+    "changes": [
+      {
+        "changeId": "CH-922",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-610-0",
+        "current": {
+          "logId": "LOG-610-0",
+          "reportedText": "Warfarin",
+          "rxcui": "11289",
+          "canonicalName": "Warfarin",
+          "indication": "Atrial fibrillation",
+          "dose": "3 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2023-08-07",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-610-0",
+          "reportedText": "the atrial fibrillation one, no change",
+          "rxcui": "11289",
+          "canonicalName": "Warfarin",
+          "indication": "Atrial fibrillation",
+          "dose": "3 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2023-08-07",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9413271537283436,
+        "agentReasoning": "Participant confirmed warfarin is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "warfarin",
+            "output": "rxcui=11289 · Warfarin · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=11289",
+            "output": "ATC B01AA03 · Vitamin K antagonist"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Vitamin K antagonist · R2810-ONC-1676",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      },
+      {
+        "changeId": "CH-923",
+        "changeType": "modify",
+        "targetLogId": "LOG-610-1",
+        "current": {
+          "logId": "LOG-610-1",
+          "reportedText": "Allopurinol",
+          "rxcui": "519",
+          "canonicalName": "Allopurinol",
+          "indication": "Gout",
+          "dose": "100 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-05-16",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-610-1",
+          "reportedText": "they changed the allopurinol dose",
+          "rxcui": "519",
+          "canonicalName": "Allopurinol",
+          "indication": "Gout",
+          "dose": "300 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-05-16",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.8725933980382978,
+        "agentReasoning": "Participant reports the allopurinol dose changed from 100 mg to 300 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "allopurinol",
+            "output": "rxcui=519 · Allopurinol · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=519",
+            "output": "ATC M04AA01 · Xanthine oxidase inhibitor"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Xanthine oxidase inhibitor · R2810-ONC-1676",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-611",
+    "subjectId": "S-416",
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "startedAt": {
+      "dayOffset": 3,
+      "time": "13:20"
+    },
+    "endedAt": {
+      "dayOffset": 3,
+      "time": "13:57"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-924",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-611-0",
+        "current": {
+          "logId": "LOG-611-0",
+          "reportedText": "Ondansetron",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "8 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2022-02-18",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-611-0",
+          "reportedText": "the chemotherapy-induced nausea one, no change",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "8 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2022-02-18",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.949407300199382,
+        "agentReasoning": "Participant confirmed ondansetron is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "ondansetron",
+            "output": "rxcui=26225 · Ondansetron · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=26225",
+            "output": "ATC A04AA01 · 5-HT3 antagonist"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=5-HT3 antagonist · R2810-ONC-1676",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-925",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-611",
+          "reportedText": "another doctor started me on methotrexate",
+          "rxcui": "6851",
+          "canonicalName": "Methotrexate",
+          "indication": "Rheumatoid arthritis",
+          "dose": "15 mg",
+          "route": "Oral",
+          "frequency": "Once weekly",
+          "startDate": "2026-08-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9345266915624961,
+        "agentReasoning": "Participant reports methotrexate, which falls in a class this protocol prohibits throughout treatment.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "methotrexate",
+            "output": "rxcui=6851 · Methotrexate · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=6851",
+            "output": "ATC L04AX03 · Chronic immunosuppressant"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Chronic immunosuppressant · R2810-ONC-1676",
+            "output": "HIT · rule PR-0009 · §8.10.1"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0009",
+          "matchedOn": "class",
+          "className": "Chronic immunosuppressant",
+          "protocolSection": "8.10.1",
+          "rationale": "Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events."
+        },
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-612",
+    "subjectId": "S-417",
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "startedAt": {
+      "dayOffset": -3,
+      "time": "08:20"
+    },
+    "endedAt": {
+      "dayOffset": -3,
+      "time": "08:52"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-926",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-612-0",
+        "current": {
+          "logId": "LOG-612-0",
+          "reportedText": "St. John's wort extract",
+          "rxcui": "258326",
+          "canonicalName": "St. John's wort extract",
+          "indication": "Low mood",
+          "dose": "300 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2020-10-21",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-612-0",
+          "reportedText": "the low mood one, no change",
+          "rxcui": "258326",
+          "canonicalName": "St. John's wort extract",
+          "indication": "Low mood",
+          "dose": "300 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2020-10-21",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9774698988441378,
+        "agentReasoning": "Participant confirmed st. john's wort extract is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "st. john's wort extract",
+            "output": "rxcui=258326 · St. John's wort extract · confidence 0.97"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Herbal supplement · R2810-ONC-1676",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-927",
+        "changeType": "modify",
+        "targetLogId": "LOG-612-1",
+        "current": {
+          "logId": "LOG-612-1",
+          "reportedText": "Amlodipine",
+          "rxcui": "17767",
+          "canonicalName": "Amlodipine",
+          "indication": "Hypertension",
+          "dose": "5 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2025-08-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-612-1",
+          "reportedText": "they changed the amlodipine dose",
+          "rxcui": "17767",
+          "canonicalName": "Amlodipine",
+          "indication": "Hypertension",
+          "dose": "10 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2025-08-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9315022744890302,
+        "agentReasoning": "Participant reports the amlodipine dose changed from 5 mg to 10 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "amlodipine",
+            "output": "rxcui=17767 · Amlodipine · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=17767",
+            "output": "ATC C08CA01 · Calcium channel blocker"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Calcium channel blocker · R2810-ONC-1676",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-928",
+        "changeType": "stop",
+        "targetLogId": "LOG-612-2",
+        "current": {
+          "logId": "LOG-612-2",
+          "reportedText": "Naproxen",
+          "rxcui": "7258",
+          "canonicalName": "Naproxen",
+          "indication": "Knee pain",
+          "dose": "250 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2021-12-23",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-612-2",
+          "reportedText": "I came off the knee pain one back in July",
+          "rxcui": "7258",
+          "canonicalName": "Naproxen",
+          "indication": "Knee pain",
+          "dose": "250 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2021-12-23",
+          "startDatePrecision": "day",
+          "stopDate": "2026-07-01",
+          "stopDatePrecision": "month",
+          "ongoing": false
+        },
+        "agentConfidence": 0.7186569873150438,
+        "agentReasoning": "Participant reports stopping naproxen in July. They could not name a day, so the stop date is held at month precision rather than guessed.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "naproxen",
+            "output": "rxcui=7258 · Naproxen · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=7258",
+            "output": "ATC M01AE02 · NSAID"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=NSAID · R2810-ONC-1676",
+            "output": "no hit"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"back in July\"",
+            "output": "2026-07-01 · precision=month"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-929",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-612",
+          "reportedText": "another doctor started me on influenza vaccine, live attenuated (intranasal)",
+          "rxcui": null,
+          "canonicalName": null,
+          "indication": "Influenza prophylaxis",
+          "dose": "0.2 mL",
+          "route": "Intranasal",
+          "frequency": "Single dose",
+          "startDate": "2026-08-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.6234328087884933,
+        "agentReasoning": "Participant reports influenza vaccine, live attenuated (intranasal), which falls in a class this protocol prohibits throughout treatment.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "influenza vaccine, live attenuated (intranasal)",
+            "output": "no RxNorm concept above threshold"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "Influenza vaccine, live attenuated (intranasal)",
+            "output": "ATC J07BB03 · Live attenuated vaccine"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Live attenuated vaccine · R2810-ONC-1676",
+            "output": "HIT · rule PR-0034 · §8.10.1"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0034",
+          "matchedOn": "class",
+          "className": "Live attenuated vaccine",
+          "protocolSection": "8.10.1",
+          "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted."
+        },
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-613",
+    "subjectId": "S-418",
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "startedAt": {
+      "dayOffset": -3,
+      "time": "08:05"
+    },
+    "endedAt": {
+      "dayOffset": -3,
+      "time": "08:57"
+    },
+    "status": "completed",
+    "changes": [
+      {
+        "changeId": "CH-930",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-613-0",
+        "current": {
+          "logId": "LOG-613-0",
+          "reportedText": "Amlodipine",
+          "rxcui": "17767",
+          "canonicalName": "Amlodipine",
+          "indication": "Hypertension",
+          "dose": "10 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-02-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-613-0",
+          "reportedText": "the hypertension one, no change",
+          "rxcui": "17767",
+          "canonicalName": "Amlodipine",
+          "indication": "Hypertension",
+          "dose": "10 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-02-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.938007941977121,
+        "agentReasoning": "Participant confirmed amlodipine is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "amlodipine",
+            "output": "rxcui=17767 · Amlodipine · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=17767",
+            "output": "ATC C08CA01 · Calcium channel blocker"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Calcium channel blocker · R2810-ONC-1676",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      },
+      {
+        "changeId": "CH-931",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-613-u",
+          "reportedText": "a yellow capsule, twice a day, I would have to check the box",
+          "rxcui": null,
+          "canonicalName": null,
+          "indication": "Unspecified",
+          "dose": null,
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": null,
+          "startDatePrecision": "unknown",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.3596559482160956,
+        "agentReasoning": "Participant described a medication they could not name. Colour and form are not enough to identify a product, so no resolution was attempted beyond the failed lookup. The coordinator needs to ask them to bring the bottle to the visit.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "unnamed tablet",
+            "output": "no match above threshold"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"a couple of years\"",
+            "output": "unresolved · precision=unknown"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-614",
+    "subjectId": "S-419",
+    "studyId": "R2810-ONC-1690",
+    "nctId": "NCT03690869",
+    "startedAt": {
+      "dayOffset": 2,
+      "time": "11:40"
+    },
+    "endedAt": {
+      "dayOffset": 2,
+      "time": "11:52"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-932",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-614-0",
+        "current": {
+          "logId": "LOG-614-0",
+          "reportedText": "St. John's wort extract",
+          "rxcui": "258326",
+          "canonicalName": "St. John's wort extract",
+          "indication": "Low mood",
+          "dose": "300 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2025-10-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-614-0",
+          "reportedText": "the low mood one, no change",
+          "rxcui": "258326",
+          "canonicalName": "St. John's wort extract",
+          "indication": "Low mood",
+          "dose": "300 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2025-10-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9657412265706807,
+        "agentReasoning": "Participant confirmed st. john's wort extract is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "st. john's wort extract",
+            "output": "rxcui=258326 · St. John's wort extract · confidence 0.97"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Herbal supplement · R2810-ONC-1690",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-933",
+        "changeType": "modify",
+        "targetLogId": "LOG-614-1",
+        "current": {
+          "logId": "LOG-614-1",
+          "reportedText": "Naproxen",
+          "rxcui": "7258",
+          "canonicalName": "Naproxen",
+          "indication": "Knee pain",
+          "dose": "250 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2024-10-21",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-614-1",
+          "reportedText": "they changed the naproxen dose",
+          "rxcui": "7258",
+          "canonicalName": "Naproxen",
+          "indication": "Knee pain",
+          "dose": "500 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2024-10-21",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.8598108404129743,
+        "agentReasoning": "Participant reports the naproxen dose changed from 250 mg to 500 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "naproxen",
+            "output": "rxcui=7258 · Naproxen · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=7258",
+            "output": "ATC M01AE02 · NSAID"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=NSAID · R2810-ONC-1690",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-934",
+        "changeType": "stop",
+        "targetLogId": "LOG-614-2",
+        "current": {
+          "logId": "LOG-614-2",
+          "reportedText": "Tamsulosin",
+          "rxcui": "236495",
+          "canonicalName": "Tamsulosin",
+          "indication": "Benign prostatic hyperplasia",
+          "dose": "0.4 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2022-04-16",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-614-2",
+          "reportedText": "I came off the benign prostatic hyperplasia one back in July",
+          "rxcui": "236495",
+          "canonicalName": "Tamsulosin",
+          "indication": "Benign prostatic hyperplasia",
+          "dose": "0.4 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2022-04-16",
+          "startDatePrecision": "day",
+          "stopDate": "2026-07-01",
+          "stopDatePrecision": "month",
+          "ongoing": false
+        },
+        "agentConfidence": 0.8026531989127397,
+        "agentReasoning": "Participant reports stopping tamsulosin in July. They could not name a day, so the stop date is held at month precision rather than guessed.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "tamsulosin",
+            "output": "rxcui=236495 · Tamsulosin · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=236495",
+            "output": "ATC G04CA02 · Alpha blocker"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Alpha blocker · R2810-ONC-1690",
+            "output": "no hit"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"back in July\"",
+            "output": "2026-07-01 · precision=month"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-935",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-614",
+          "reportedText": "another doctor started me on prednisolone",
+          "rxcui": "8638",
+          "canonicalName": "Prednisolone",
+          "indication": "Asthma exacerbation",
+          "dose": "5 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2026-08-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9518016564939171,
+        "agentReasoning": "Participant reports prednisolone at 5 mg. The protocol permits this class only up to 10 mg/day prednisone equivalent, so this is a dose-threshold breach rather than a blanket ban — a taper may resolve it.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "prednisolone",
+            "output": "rxcui=8638 · Prednisolone · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=8638",
+            "output": "ATC H02AB06 · Systemic corticosteroid"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Systemic corticosteroid · R2810-ONC-1690",
+            "output": "HIT · rule PR-0021 · §6.3"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0021",
+          "matchedOn": "class",
+          "className": "Systemic corticosteroid",
+          "protocolSection": "6.3",
+          "rationale": "Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor."
+        },
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-615",
+    "subjectId": "S-423",
+    "studyId": "R2810-ONC-16111",
+    "nctId": "NCT03515629",
+    "startedAt": {
+      "dayOffset": 4,
+      "time": "12:40"
+    },
+    "endedAt": {
+      "dayOffset": 4,
+      "time": "12:48"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-936",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-615-0",
+        "current": {
+          "logId": "LOG-615-0",
+          "reportedText": "Omeprazole",
+          "rxcui": "7646",
+          "canonicalName": "Omeprazole",
+          "indication": "Gastro-oesophageal reflux",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2021-11-07",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-615-0",
+          "reportedText": "the gastro-oesophageal reflux one, no change",
+          "rxcui": "7646",
+          "canonicalName": "Omeprazole",
+          "indication": "Gastro-oesophageal reflux",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2021-11-07",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.975067960806191,
+        "agentReasoning": "Participant confirmed omeprazole is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "omeprazole",
+            "output": "rxcui=7646 · Omeprazole · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=7646",
+            "output": "ATC A02BC01 · Proton pump inhibitor"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Proton pump inhibitor · R2810-ONC-16111",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-937",
+        "changeType": "modify",
+        "targetLogId": "LOG-615-1",
+        "current": {
+          "logId": "LOG-615-1",
+          "reportedText": "Naproxen",
+          "rxcui": "7258",
+          "canonicalName": "Naproxen",
+          "indication": "Knee pain",
+          "dose": "250 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2020-03-20",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-615-1",
+          "reportedText": "they changed the naproxen dose",
+          "rxcui": "7258",
+          "canonicalName": "Naproxen",
+          "indication": "Knee pain",
+          "dose": "500 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2020-03-20",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.836927575180307,
+        "agentReasoning": "Participant reports the naproxen dose changed from 250 mg to 500 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "naproxen",
+            "output": "rxcui=7258 · Naproxen · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=7258",
+            "output": "ATC M01AE02 · NSAID"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=NSAID · R2810-ONC-16111",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-938",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-615",
+          "reportedText": "another doctor started me on varicella-zoster virus vaccine, live (oka-merck)",
+          "rxcui": "1292422",
+          "canonicalName": "Varicella-zoster virus vaccine, live (Oka-Merck)",
+          "indication": "Shingles prophylaxis",
+          "dose": "0.65 mL",
+          "route": "Subcutaneous",
+          "frequency": "Single dose",
+          "startDate": "2026-08-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9232891511567868,
+        "agentReasoning": "Participant reports varicella-zoster virus vaccine, live (oka-merck), which falls in a class this protocol prohibits throughout treatment.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "varicella-zoster virus vaccine, live (oka-merck)",
+            "output": "rxcui=1292422 · Varicella-zoster virus vaccine, live (Oka-Merck) · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=1292422",
+            "output": "ATC J07BK01 · Live attenuated vaccine"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Live attenuated vaccine · R2810-ONC-16111",
+            "output": "HIT · rule PR-0034 · §7.7.1"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0034",
+          "matchedOn": "class",
+          "className": "Live attenuated vaccine",
+          "protocolSection": "7.7.1",
+          "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted."
+        },
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-616",
+    "subjectId": "S-424",
+    "studyId": "R2810-ONC-16111",
+    "nctId": "NCT03515629",
+    "startedAt": {
+      "dayOffset": -3,
+      "time": "08:40"
+    },
+    "endedAt": {
+      "dayOffset": -3,
+      "time": "08:52"
+    },
+    "status": "completed",
+    "changes": [
+      {
+        "changeId": "CH-939",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-616-0",
+        "current": {
+          "logId": "LOG-616-0",
+          "reportedText": "Amlodipine",
+          "rxcui": "17767",
+          "canonicalName": "Amlodipine",
+          "indication": "Hypertension",
+          "dose": "10 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2020-07-10",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-616-0",
+          "reportedText": "the hypertension one, no change",
+          "rxcui": "17767",
+          "canonicalName": "Amlodipine",
+          "indication": "Hypertension",
+          "dose": "10 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2020-07-10",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9734828736959026,
+        "agentReasoning": "Participant confirmed amlodipine is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "amlodipine",
+            "output": "rxcui=17767 · Amlodipine · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=17767",
+            "output": "ATC C08CA01 · Calcium channel blocker"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Calcium channel blocker · R2810-ONC-16111",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      },
+      {
+        "changeId": "CH-940",
+        "changeType": "modify",
+        "targetLogId": "LOG-616-1",
+        "current": {
+          "logId": "LOG-616-1",
+          "reportedText": "Simvastatin",
+          "rxcui": "36567",
+          "canonicalName": "Simvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2020-04-15",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-616-1",
+          "reportedText": "they changed the simvastatin dose",
+          "rxcui": "36567",
+          "canonicalName": "Simvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "40 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2020-04-15",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.8642941775918006,
+        "agentReasoning": "Participant reports the simvastatin dose changed from 20 mg to 40 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "simvastatin",
+            "output": "rxcui=36567 · Simvastatin · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=36567",
+            "output": "ATC C10AA01 · Statin"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Statin · R2810-ONC-16111",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-617",
+    "subjectId": "S-425",
+    "studyId": "R2810-ONC-16111",
+    "nctId": "NCT03515629",
+    "startedAt": {
+      "dayOffset": -3,
+      "time": "08:20"
+    },
+    "endedAt": {
+      "dayOffset": -3,
+      "time": "08:52"
+    },
+    "status": "completed",
+    "changes": [
+      {
+        "changeId": "CH-941",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-617-0",
+        "current": {
+          "logId": "LOG-617-0",
+          "reportedText": "Ondansetron",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "4 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2021-09-22",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-617-0",
+          "reportedText": "the chemotherapy-induced nausea one, no change",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "4 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2021-09-22",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9805565407220275,
+        "agentReasoning": "Participant confirmed ondansetron is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "ondansetron",
+            "output": "rxcui=26225 · Ondansetron · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=26225",
+            "output": "ATC A04AA01 · 5-HT3 antagonist"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=5-HT3 antagonist · R2810-ONC-16111",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      },
+      {
+        "changeId": "CH-942",
+        "changeType": "modify",
+        "targetLogId": "LOG-617-1",
+        "current": {
+          "logId": "LOG-617-1",
+          "reportedText": "Acetaminophen (paracetamol)",
+          "rxcui": "161",
+          "canonicalName": "Acetaminophen (paracetamol)",
+          "indication": "Pain",
+          "dose": "500 mg",
+          "route": "Oral",
+          "frequency": "Up to four times daily PRN",
+          "startDate": "2024-04-11",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-617-1",
+          "reportedText": "they changed the acetaminophen (paracetamol) dose",
+          "rxcui": "161",
+          "canonicalName": "Acetaminophen (paracetamol)",
+          "indication": "Pain",
+          "dose": "1 g",
+          "route": "Oral",
+          "frequency": "Up to four times daily PRN",
+          "startDate": "2024-04-11",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.8206536882836372,
+        "agentReasoning": "Participant reports the acetaminophen (paracetamol) dose changed from 500 mg to 1 g. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "acetaminophen (paracetamol)",
+            "output": "rxcui=161 · Acetaminophen (paracetamol) · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=161",
+            "output": "ATC N02BE01 · Analgesic, non-opioid"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Analgesic, non-opioid · R2810-ONC-16111",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      },
+      {
+        "changeId": "CH-943",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-617",
+          "reportedText": "another doctor started me on dexamethasone",
+          "rxcui": "3264",
+          "canonicalName": "Dexamethasone",
+          "indication": "Antiemetic premedication",
+          "dose": "4 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2026-08-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9589727821643464,
+        "agentReasoning": "Participant reports dexamethasone at 4 mg. The protocol permits this class only up to 10 mg/day prednisone equivalent, so this is a dose-threshold breach rather than a blanket ban — a taper may resolve it.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "dexamethasone",
+            "output": "rxcui=3264 · Dexamethasone · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=3264",
+            "output": "ATC H02AB02 · Systemic corticosteroid"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Systemic corticosteroid · R2810-ONC-16111",
+            "output": "HIT · rule PR-0021 · §7.7.1"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0021",
+          "matchedOn": "class",
+          "className": "Systemic corticosteroid",
+          "protocolSection": "7.7.1",
+          "rationale": "Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor."
+        },
+        "reviewStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-618",
+    "subjectId": "S-427",
+    "studyId": "R2810-ONC-16113",
+    "nctId": "NCT03409614",
+    "startedAt": {
+      "dayOffset": 3,
+      "time": "13:20"
+    },
+    "endedAt": {
+      "dayOffset": 3,
+      "time": "13:48"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-944",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-618-0",
+        "current": {
+          "logId": "LOG-618-0",
+          "reportedText": "Codeine",
+          "rxcui": "2670",
+          "canonicalName": "Codeine",
+          "indication": "Pain",
+          "dose": "30 mg",
+          "route": "Oral",
+          "frequency": "Four times daily PRN",
+          "startDate": "2025-05-12",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-618-0",
+          "reportedText": "the pain one, no change",
+          "rxcui": "2670",
+          "canonicalName": "Codeine",
+          "indication": "Pain",
+          "dose": "30 mg",
+          "route": "Oral",
+          "frequency": "Four times daily PRN",
+          "startDate": "2025-05-12",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9410912542417645,
+        "agentReasoning": "Participant confirmed codeine is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "codeine",
+            "output": "rxcui=2670 · Codeine · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=2670",
+            "output": "ATC R05DA04 · Opioid analgesic"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Opioid analgesic · R2810-ONC-16113",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-945",
+        "changeType": "modify",
+        "targetLogId": "LOG-618-1",
+        "current": {
+          "logId": "LOG-618-1",
+          "reportedText": "Ondansetron",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "4 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2021-02-23",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-618-1",
+          "reportedText": "they changed the ondansetron dose",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "8 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2021-02-23",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9064405626244842,
+        "agentReasoning": "Participant reports the ondansetron dose changed from 4 mg to 8 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "ondansetron",
+            "output": "rxcui=26225 · Ondansetron · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=26225",
+            "output": "ATC A04AA01 · 5-HT3 antagonist"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=5-HT3 antagonist · R2810-ONC-16113",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-619",
+    "subjectId": "S-429",
+    "studyId": "R2810-ONC-16113",
+    "nctId": "NCT03409614",
+    "startedAt": {
+      "dayOffset": -2,
+      "time": "11:05"
+    },
+    "endedAt": {
+      "dayOffset": -2,
+      "time": "11:48"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-946",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-619-0",
+        "current": {
+          "logId": "LOG-619-0",
+          "reportedText": "Levofloxacin",
+          "rxcui": "82122",
+          "canonicalName": "Levofloxacin",
+          "indication": "Respiratory tract infection",
+          "dose": "500 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2020-04-24",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-619-0",
+          "reportedText": "the respiratory tract infection one, no change",
+          "rxcui": "82122",
+          "canonicalName": "Levofloxacin",
+          "indication": "Respiratory tract infection",
+          "dose": "500 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2020-04-24",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9776517522940412,
+        "agentReasoning": "Participant confirmed levofloxacin is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "levofloxacin",
+            "output": "rxcui=82122 · Levofloxacin · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=82122",
+            "output": "ATC J01MA12 · Fluoroquinolone antibiotic"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Fluoroquinolone antibiotic · R2810-ONC-16113",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-620",
+    "subjectId": "S-430",
+    "studyId": "R2810-ONC-16113",
+    "nctId": "NCT03409614",
+    "startedAt": {
+      "dayOffset": 1,
+      "time": "13:20"
+    },
+    "endedAt": {
+      "dayOffset": 1,
+      "time": "13:57"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-947",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-620-0",
+        "current": {
+          "logId": "LOG-620-0",
+          "reportedText": "Acyclovir",
+          "rxcui": "281",
+          "canonicalName": "Acyclovir",
+          "indication": "Herpes zoster prophylaxis",
+          "dose": "400 mg",
+          "route": "Oral",
+          "frequency": "Twice daily",
+          "startDate": "2023-10-09",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-620-0",
+          "reportedText": "the herpes zoster prophylaxis one, no change",
+          "rxcui": "281",
+          "canonicalName": "Acyclovir",
+          "indication": "Herpes zoster prophylaxis",
+          "dose": "400 mg",
+          "route": "Oral",
+          "frequency": "Twice daily",
+          "startDate": "2023-10-09",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9765085754077882,
+        "agentReasoning": "Participant confirmed acyclovir is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "acyclovir",
+            "output": "rxcui=281 · Acyclovir · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=281",
+            "output": "ATC J05AB01 · Antiviral"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Antiviral · R2810-ONC-16113",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-948",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "logId": "NEW-620",
+          "reportedText": "another doctor started me on methotrexate",
+          "rxcui": "6851",
+          "canonicalName": "Methotrexate",
+          "indication": "Rheumatoid arthritis",
+          "dose": "10 mg",
+          "route": "Oral",
+          "frequency": "Once weekly",
+          "startDate": "2026-08-14",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9318191042193211,
+        "agentReasoning": "Participant reports methotrexate, which falls in a class this protocol prohibits throughout treatment.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "methotrexate",
+            "output": "rxcui=6851 · Methotrexate · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=6851",
+            "output": "ATC L04AX03 · Chronic immunosuppressant"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Chronic immunosuppressant · R2810-ONC-16113",
+            "output": "HIT · rule PR-0009 · §7.7.1"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0009",
+          "matchedOn": "class",
+          "className": "Chronic immunosuppressant",
+          "protocolSection": "7.7.1",
+          "rationale": "Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events."
+        },
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-621",
+    "subjectId": "S-432",
+    "studyId": "R2810-ONC-ISA-1981",
+    "nctId": "NCT04646005",
+    "startedAt": {
+      "dayOffset": 5,
+      "time": "09:40"
+    },
+    "endedAt": {
+      "dayOffset": 5,
+      "time": "09:57"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-949",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-621-0",
+        "current": {
+          "logId": "LOG-621-0",
+          "reportedText": "Ondansetron",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "4 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2022-09-12",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-621-0",
+          "reportedText": "the chemotherapy-induced nausea one, no change",
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "4 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2022-09-12",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9585133322887123,
+        "agentReasoning": "Participant confirmed ondansetron is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "ondansetron",
+            "output": "rxcui=26225 · Ondansetron · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=26225",
+            "output": "ATC A04AA01 · 5-HT3 antagonist"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=5-HT3 antagonist · R2810-ONC-ISA-1981",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-950",
+        "changeType": "modify",
+        "targetLogId": "LOG-621-1",
+        "current": {
+          "logId": "LOG-621-1",
+          "reportedText": "Lisinopril",
+          "rxcui": "29046",
+          "canonicalName": "Lisinopril",
+          "indication": "Hypertension",
+          "dose": "10 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-03-12",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-621-1",
+          "reportedText": "they changed the lisinopril dose",
+          "rxcui": "29046",
+          "canonicalName": "Lisinopril",
+          "indication": "Hypertension",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-03-12",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.8472783170267939,
+        "agentReasoning": "Participant reports the lisinopril dose changed from 10 mg to 20 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "lisinopril",
+            "output": "rxcui=29046 · Lisinopril · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=29046",
+            "output": "ATC C09AA03 · ACE inhibitor"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=ACE inhibitor · R2810-ONC-ISA-1981",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-951",
+        "changeType": "stop",
+        "targetLogId": "LOG-621-2",
+        "current": {
+          "logId": "LOG-621-2",
+          "reportedText": "Simvastatin",
+          "rxcui": "36567",
+          "canonicalName": "Simvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "40 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2021-01-27",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-621-2",
+          "reportedText": "I came off the hyperlipidaemia one back in July",
+          "rxcui": "36567",
+          "canonicalName": "Simvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "40 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2021-01-27",
+          "startDatePrecision": "day",
+          "stopDate": "2026-07-01",
+          "stopDatePrecision": "month",
+          "ongoing": false
+        },
+        "agentConfidence": 0.7243550296430475,
+        "agentReasoning": "Participant reports stopping simvastatin in July. They could not name a day, so the stop date is held at month precision rather than guessed.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "simvastatin",
+            "output": "rxcui=36567 · Simvastatin · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=36567",
+            "output": "ATC C10AA01 · Statin"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Statin · R2810-ONC-ISA-1981",
+            "output": "no hit"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"back in July\"",
+            "output": "2026-07-01 · precision=month"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-622",
+    "subjectId": "S-433",
+    "studyId": "R2810-ONC-ISA-1981",
+    "nctId": "NCT04646005",
+    "startedAt": {
+      "dayOffset": -1,
+      "time": "13:20"
+    },
+    "endedAt": {
+      "dayOffset": -1,
+      "time": "13:57"
+    },
+    "status": "completed",
+    "changes": [
+      {
+        "changeId": "CH-952",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-622-0",
+        "current": {
+          "logId": "LOG-622-0",
+          "reportedText": "Furosemide",
+          "rxcui": "4603",
+          "canonicalName": "Furosemide",
+          "indication": "Oedema",
+          "dose": "40 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2023-11-21",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-622-0",
+          "reportedText": "the oedema one, no change",
+          "rxcui": "4603",
+          "canonicalName": "Furosemide",
+          "indication": "Oedema",
+          "dose": "40 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2023-11-21",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9478060999978334,
+        "agentReasoning": "Participant confirmed furosemide is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "furosemide",
+            "output": "rxcui=4603 · Furosemide · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=4603",
+            "output": "ATC C03CA01 · Loop diuretic"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Loop diuretic · R2810-ONC-ISA-1981",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-623",
+    "subjectId": "S-434",
+    "studyId": "R2810-ONC-ISA-1981",
+    "nctId": "NCT04646005",
+    "startedAt": {
+      "dayOffset": -3,
+      "time": "10:20"
+    },
+    "endedAt": {
+      "dayOffset": -3,
+      "time": "10:52"
+    },
+    "status": "completed",
+    "changes": [
+      {
+        "changeId": "CH-953",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-623-0",
+        "current": {
+          "logId": "LOG-623-0",
+          "reportedText": "Simvastatin",
+          "rxcui": "36567",
+          "canonicalName": "Simvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "40 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2024-03-01",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-623-0",
+          "reportedText": "the hyperlipidaemia one, no change",
+          "rxcui": "36567",
+          "canonicalName": "Simvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "40 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2024-03-01",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9312129349680618,
+        "agentReasoning": "Participant confirmed simvastatin is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "simvastatin",
+            "output": "rxcui=36567 · Simvastatin · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=36567",
+            "output": "ATC C10AA01 · Statin"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Statin · R2810-ONC-ISA-1981",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      },
+      {
+        "changeId": "CH-954",
+        "changeType": "stop",
+        "targetLogId": "LOG-623-2",
+        "current": {
+          "logId": "LOG-623-2",
+          "reportedText": "Clopidogrel",
+          "rxcui": "32968",
+          "canonicalName": "Clopidogrel",
+          "indication": "Secondary cardiovascular prevention",
+          "dose": "75 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-11-21",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-623-2",
+          "reportedText": "I came off the secondary cardiovascular prevention one back in July",
+          "rxcui": "32968",
+          "canonicalName": "Clopidogrel",
+          "indication": "Secondary cardiovascular prevention",
+          "dose": "75 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-11-21",
+          "startDatePrecision": "day",
+          "stopDate": "2026-07-01",
+          "stopDatePrecision": "month",
+          "ongoing": false
+        },
+        "agentConfidence": 0.8093261014577001,
+        "agentReasoning": "Participant reports stopping clopidogrel in July. They could not name a day, so the stop date is held at month precision rather than guessed.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "clopidogrel",
+            "output": "rxcui=32968 · Clopidogrel · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=32968",
+            "output": "ATC B01AC04 · Antiplatelet"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Antiplatelet · R2810-ONC-ISA-1981",
+            "output": "no hit"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"back in July\"",
+            "output": "2026-07-01 · precision=month"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-624",
+    "subjectId": "S-436",
+    "studyId": "R2810-ONC-ISA-1981",
+    "nctId": "NCT04646005",
+    "startedAt": {
+      "dayOffset": -1,
+      "time": "12:40"
+    },
+    "endedAt": {
+      "dayOffset": -1,
+      "time": "12:57"
+    },
+    "status": "completed",
+    "changes": [
+      {
+        "changeId": "CH-955",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-624-0",
+        "current": {
+          "logId": "LOG-624-0",
+          "reportedText": "Codeine",
+          "rxcui": "2670",
+          "canonicalName": "Codeine",
+          "indication": "Pain",
+          "dose": "30 mg",
+          "route": "Oral",
+          "frequency": "Four times daily PRN",
+          "startDate": "2022-12-19",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "proposed": {
+          "logId": "LOG-624-0",
+          "reportedText": "the pain one, no change",
+          "rxcui": "2670",
+          "canonicalName": "Codeine",
+          "indication": "Pain",
+          "dose": "30 mg",
+          "route": "Oral",
+          "frequency": "Four times daily PRN",
+          "startDate": "2022-12-19",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true
+        },
+        "agentConfidence": 0.9654530969029292,
+        "agentReasoning": "Participant confirmed codeine is unchanged. All logged fields match what was reported.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "codeine",
+            "output": "rxcui=2670 · Codeine · confidence 0.97"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=2670",
+            "output": "ATC R05DA04 · Opioid analgesic"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Opioid analgesic · R2810-ONC-ISA-1981",
             "output": "no hit"
           }
         ],

@@ -4,6 +4,7 @@ import type { NewStudyInput, ProtocolExtraction, Study } from '../types/ui';
 import { extractProtocolDetails, hasProtocolExtractor } from '../agents/protocolExtractor';
 import { navigate } from '../router';
 import { FileDrop } from '../components/FileDrop';
+import { Disclosure } from '../components/Disclosure';
 import { ExtractedInput } from '../components/ExtractedInput';
 
 interface Props {
@@ -100,8 +101,7 @@ export function NewTrial({ onToast, onCreated }: Props) {
         <div>
           <h1>Open a trial</h1>
           <p className="phead-sub">
-            Start with the Clinical Study Protocol. The trial's details and its prohibited
-            medication list are both read from it.
+            The trial's details and prohibited list are read from its protocol.
           </p>
         </div>
         <div className="phead-right">
@@ -116,13 +116,7 @@ export function NewTrial({ onToast, onCreated }: Props) {
       {!extraction ? (
         <FileDrop
           title="Upload the Clinical Study Protocol"
-          lede={
-            <>
-              This is the document that defines which medications are prohibited — the list sits in
-              its concomitant medications section. Drop the file here and the details below will be
-              filled in for you to check.
-            </>
-          }
+          lede="Drop it here and the details below are filled in for you to check."
           accept=".pdf,.doc,.docx"
           busy={reading}
           busyLabel="Reading the protocol…"
@@ -139,16 +133,16 @@ export function NewTrial({ onToast, onCreated }: Props) {
                 ? `Read from ${file?.name}`
                 : 'Extraction agent not wired'}
             </b>
-            <p>
+            <Disclosure label="What this means">
               {extraction.notes ??
                 'Check every field against the document before confirming. Nothing here is written until you do.'}
-            </p>
-            {extraction.source === 'stub' && !hasProtocolExtractor() && (
-              <p className="extract-seam">
-                Wire it by calling <span className="mono">registerProtocolExtractor()</span> in{' '}
-                <span className="mono">src/agents/protocolExtractor.ts</span>.
-              </p>
-            )}
+              {extraction.source === 'stub' && !hasProtocolExtractor() && (
+                <p className="extract-seam">
+                  Wire it by calling <span className="mono">registerProtocolExtractor()</span> in{' '}
+                  <span className="mono">src/agents/protocolExtractor.ts</span>.
+                </p>
+              )}
+            </Disclosure>
           </section>
 
           <section className="panel form-panel">
@@ -227,7 +221,7 @@ export function NewTrial({ onToast, onCreated }: Props) {
                     <div className="rule-body">
                       <b>{rule.label}</b>
                       {rule.threshold && <span className="rule-threshold">{rule.threshold}</span>}
-                      <p>{rule.rationale}</p>
+                      <Disclosure>{rule.rationale}</Disclosure>
                     </div>
                     <span className="rule-section mono">§{rule.protocolSection}</span>
                   </li>

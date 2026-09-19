@@ -1320,3 +1320,19 @@ input, select, textarea {
   padding-top: var(--s4);
   border-top: 1px solid var(--line);
 }
+
+/* ---------- disclosure ---------- */
+
+.detail { margin-top: var(--s1); }
+.detail-body {
+  margin-top: var(--s2);
+  padding-left: var(--s3);
+  border-left: 1px solid var(--line-2);
+  font-size: var(--t-12);
+  color: var(--ink-2);
+  max-width: 78ch;
+}
+.detail[data-tone='alarm'] .disclose-btn { color: var(--alarm-ink-3); }
+.detail[data-tone='alarm'] .disclose-btn:hover { color: var(--alarm); }
+.detail[data-tone='alarm'] .disclose-btn i { border-left-color: var(--alarm-ink-3); }
+.detail[data-tone='alarm'] .detail-body { border-left-color: var(--alarm-dim); color: var(--alarm-ink-2); }
