@@ -114,6 +114,22 @@ class Brain {
     return row?.identity_status || 'unverified';
   }
 
+  /**
+   * Once identity is verified, strip any identity/DOB asks from the state the
+   * Talker sees, so it can never be handed self-contradictory instructions.
+   */
+  stateForTalker(sessionId, subjectId) {
+    const state = { ...(this.getState(sessionId, subjectId) || {}), identity_status: this.identityStatus(sessionId) };
+    if (state.identity_status !== 'verified') return state;
+    const isIdentity = (s) => /identity|date of birth|\bdob\b|birth/i.test(String(s));
+    return {
+      ...state,
+      missing: (state.missing || []).filter((m) => !isIdentity(m)),
+      next_questions: (state.next_questions || []).filter((q) => !isIdentity(q)),
+      retrieval: (state.retrieval || []).filter((r) => !isIdentity(r)),
+    };
+  }
+
   saveUtterance(sessionId, speaker, text) {
     if (!text || !String(text).trim()) return;
     const p = patient();
@@ -161,7 +177,7 @@ class Brain {
 
     this.saveUtterance(sessionId, 'patient', userText);
 
-    const state = { ...(this.getState(sessionId, subjectId) || {}), identity_status: this.identityStatus(sessionId) };
+    const state = this.stateForTalker(sessionId, subjectId);
     const conversation = this.getConversation(sessionId);
 
     const t0 = Date.now();
