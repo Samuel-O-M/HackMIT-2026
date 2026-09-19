@@ -14,7 +14,7 @@
   let currentConversation = [];
   let interim = '';
   let pendingFinals = [];
-  let flushTimer = null;
+  let flushInterval = null;
   let queue = [];
   let turnBusy = false;
   let agentSpeaking = false;
@@ -79,8 +79,13 @@
     notifyChannel(kind);
   }
 
-  // How long to keep waiting for more speech after a non-final "final".
-  const fallbackMs = () => (Number($('#liveEndpointing').value) || 800) + 400;
+  // We reply only after a sustained silence that WE measure — not on Deepgram's
+  // speech_final (which fires at short pauses and caused the interruption).
+  const silenceToReplyMs = () => Number($('#liveUtteranceEnd').value) || 1500;
+  let lastVoiceAt = 0;
+  const noteVoice = () => {
+    lastVoiceAt = Date.now();
+  };
 
   // ---------------------------------------------------------------- rendering
   let convSig = null;
@@ -366,9 +371,9 @@
   }
 
   // ---- live STT → auto-send each finished utterance ----
-  function scheduleFlush(ms = 900) {
-    if (flushTimer) clearTimeout(flushTimer);
-    flushTimer = setTimeout(flushFinals, ms);
+  function maybeFlush() {
+    if (!call || agentSpeaking || !pendingFinals.length) return;
+    if (Date.now() - lastVoiceAt >= silenceToReplyMs()) flushFinals();
   }
 
   function flushFinals() {
@@ -386,17 +391,15 @@
       if (msg.is_final) {
         pendingFinals.push(t);
         interim = '';
-        // Only end the turn on a real end-of-speech; otherwise keep waiting
-        // so we don't "pre-shoot" a reply mid-sentence.
-        scheduleFlush(msg.speech_final ? 150 : fallbackMs());
+        noteVoice(); // keep resetting the silence clock while they talk
       } else {
         interim = t;
+        noteVoice();
         if (call && !agentSpeaking) setCallStatus('listening…');
       }
       renderConversation(currentConversation);
-    } else if (msg.type === 'UtteranceEnd') {
-      scheduleFlush(200);
     } else if (msg.type === 'SpeechStarted') {
+      noteVoice();
       if (call && !agentSpeaking) setCallStatus('listening…');
     }
   }
@@ -461,6 +464,7 @@
       processor.connect(ctx.destination);
 
       call = { ws, ctx, stream, source, processor };
+      flushInterval = setInterval(maybeFlush, 200);
       $('#liveStartCall').disabled = true;
       $('#liveEndCall').disabled = false;
       setCallStatus('listening…');
@@ -477,6 +481,10 @@
     }
     const { ws, ctx, stream, source, processor } = call;
     call = null;
+    if (flushInterval) {
+      clearInterval(flushInterval);
+      flushInterval = null;
+    }
     try { processor.disconnect(); } catch {}
     try { source.disconnect(); } catch {}
     try { stream.getTracks().forEach((t) => t.stop()); } catch {}
