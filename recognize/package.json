@@ -1,0 +1,13 @@
+{
+  "name": "recognize",
+  "private": true,
+  "type": "module",
+  "description": "Experiment: extract protocol details from a PDF/DOCX with an LLM.",
+  "scripts": {
+    "extract": "node extract.ts"
+  },
+  "dependencies": {
+    "mammoth": "^1.8.0",
+    "unpdf": "^0.12.1"
+  }
+}

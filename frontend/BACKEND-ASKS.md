@@ -48,6 +48,7 @@ implementation waiting on these routes.
 | `GET` | `/sessions/:id/queries` | `DataQuery[]` |
 | `POST` | `/sessions/:id/changes/:changeId/deviations` | `DeviationInput` → `ProtocolDeviation` |
 | `GET` | `/sessions/:id/deviations` | `ProtocolDeviation[]` |
+| `GET` | `/sessions/:id/transcript` | `TranscriptTurn[]` — full call transcript; each turn's `yields` names the change ids it produced. Powers the hover-to-see-context on the "Heard:" quote |
 | `POST` | `/sessions/:id/promote` | body gains **`signature`** — required |
 | `GET` | `/sessions/:id/stream` | SSE of `CallEvent`, incl. `{type:'unavailable'}` |
 
