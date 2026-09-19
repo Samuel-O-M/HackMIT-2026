@@ -1,0 +1,257 @@
+[
+  {
+    "sessionId": "SES-2026-0431",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "reconStatus": "awaiting_review",
+    "changeCount": 7,
+    "prohibitedCount": 2,
+    "unresolvedCount": 1,
+    "subjectId": "S-014",
+    "visitName": "Cycle 5 Day 1",
+    "visitAt": {
+      "dayOffset": 0,
+      "time": "10:30"
+    }
+  },
+  {
+    "sessionId": "SES-2026-0432",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "reconStatus": "in_progress",
+    "changeCount": 2,
+    "prohibitedCount": 1,
+    "unresolvedCount": 0,
+    "subjectId": "S-021",
+    "visitName": "Cycle 3 Day 1",
+    "visitAt": {
+      "dayOffset": 0,
+      "time": "11:15"
+    }
+  },
+  {
+    "sessionId": "SES-2026-0433",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "reconStatus": "awaiting_review",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-033",
+    "visitName": "Cycle 9 Day 1",
+    "visitAt": {
+      "dayOffset": 0,
+      "time": "14:00"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-047",
+    "visitName": "Screening",
+    "visitAt": {
+      "dayOffset": 0,
+      "time": "16:00"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-052",
+    "visitName": "Cycle 2 Day 1",
+    "visitAt": {
+      "dayOffset": 1,
+      "time": "09:00"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-019",
+    "visitName": "Cycle 5 Day 1",
+    "visitAt": {
+      "dayOffset": 1,
+      "time": "13:30"
+    }
+  },
+  {
+    "sessionId": "SES-2026-0429",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "reconStatus": "completed",
+    "changeCount": 1,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-008",
+    "visitName": "Cycle 7 Day 1",
+    "visitAt": {
+      "dayOffset": -2,
+      "time": "11:30"
+    }
+  },
+  {
+    "sessionId": "SES-2026-0512",
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "reconStatus": "awaiting_review",
+    "changeCount": 3,
+    "prohibitedCount": 1,
+    "unresolvedCount": 0,
+    "subjectId": "S-102",
+    "visitName": "Cycle 4 Day 1",
+    "visitAt": {
+      "dayOffset": 0,
+      "time": "13:00"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-109",
+    "visitName": "Cycle 8 Day 1",
+    "visitAt": {
+      "dayOffset": 0,
+      "time": "15:15"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-114",
+    "visitName": "Screening",
+    "visitAt": {
+      "dayOffset": 1,
+      "time": "10:45"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-103",
+    "visitName": "Cycle 12 Day 1",
+    "visitAt": {
+      "dayOffset": 2,
+      "time": "09:30"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R2810-ONC-1620",
+    "nctId": "NCT03132636",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-305",
+    "visitName": "Cycle 4 Day 1",
+    "visitAt": {
+      "dayOffset": 1,
+      "time": "11:00"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R2810-ONC-1620",
+    "nctId": "NCT03132636",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-311",
+    "visitName": "Cycle 2 Day 1",
+    "visitAt": {
+      "dayOffset": 2,
+      "time": "14:20"
+    }
+  },
+  {
+    "sessionId": "SES-2026-0498",
+    "studyId": "R2810-ONC-1624",
+    "nctId": "NCT03088540",
+    "reconStatus": "completed",
+    "changeCount": 1,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-201",
+    "visitName": "Cycle 6 Day 1",
+    "visitAt": {
+      "dayOffset": -3,
+      "time": "14:00"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R2810-ONC-1624",
+    "nctId": "NCT03088540",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-207",
+    "visitName": "Cycle 3 Day 1",
+    "visitAt": {
+      "dayOffset": 3,
+      "time": "10:00"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R1979-ONC-22102",
+    "nctId": "NCT06149286",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-401",
+    "visitName": "Cycle 2 Day 1",
+    "visitAt": {
+      "dayOffset": 1,
+      "time": "15:30"
+    }
+  },
+  {
+    "sessionId": null,
+    "studyId": "R1979-ONC-22102",
+    "nctId": "NCT06149286",
+    "reconStatus": "not_started",
+    "changeCount": 0,
+    "prohibitedCount": 0,
+    "unresolvedCount": 0,
+    "subjectId": "S-407",
+    "visitName": "Screening",
+    "visitAt": {
+      "dayOffset": 2,
+      "time": "11:45"
+    }
+  }
+]

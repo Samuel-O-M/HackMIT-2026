@@ -1,0 +1,824 @@
+[
+  {
+    "sessionId": "SES-2026-0431",
+    "subjectId": "S-014",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "startedAt": {
+      "dayOffset": 0,
+      "time": "08:42"
+    },
+    "endedAt": {
+      "dayOffset": 0,
+      "time": "08:45"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-101",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "rxcui": "8640",
+          "canonicalName": "Prednisone",
+          "indication": "Polymyalgia rheumatica",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2026-09-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "NEW-101",
+          "reportedText": "my other doctor put me on prednisone for the joint pain, twenty milligrams"
+        },
+        "agentConfidence": 0.93,
+        "agentReasoning": "Participant named prednisone and a dose of 20 mg once daily, started by a physician outside the study. The protocol permits systemic corticosteroids only up to 10 mg/day prednisone equivalent; 20 mg is double that limit. This is a dose-threshold breach rather than a blanket ban — the drug itself is allowed, the dose is not, so the coordinator may be able to resolve it with a taper rather than a withdrawal.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "prednisone",
+            "output": "rxcui=8640 · Prednisone · confidence 0.99"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=8640",
+            "output": "ATC H02AB07 · Systemic corticosteroid (glucocorticoid)"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Systemic corticosteroid · dose=20 mg/day · R2810-ONC-1540",
+            "output": "HIT · rule PR-0021 · §5.7.2 · exceeds 10 mg/day prednisone-equivalent limit"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"about two and a half weeks ago\"",
+            "output": "2026-09-02 · precision=day"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0021",
+          "matchedOn": "class",
+          "className": "Systemic corticosteroid",
+          "protocolSection": "5.7.2",
+          "rationale": "Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor."
+        },
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-107",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "rxcui": "1006296",
+          "canonicalName": "Zoster vaccine, live",
+          "indication": "Shingles prophylaxis",
+          "dose": "0.65 mL",
+          "route": "Subcutaneous",
+          "frequency": "Single dose",
+          "startDate": "2026-08-01",
+          "startDatePrecision": "month",
+          "stopDate": "2026-08-01",
+          "stopDatePrecision": "month",
+          "ongoing": false,
+          "logId": "NEW-107",
+          "reportedText": "I had the shingles jab at the pharmacy in August, just the one shot"
+        },
+        "agentConfidence": 0.61,
+        "agentReasoning": "Participant reports a shingles vaccination as a single dose. Two products exist: Zostavax, which is live attenuated and prohibited, and Shingrix, which is recombinant and permitted. The single-dose detail points to Zostavax, since Shingrix is a two-dose series — but the participant did not name the brand and may simply not have had the second dose yet. This resolution is an inference from dosing schedule alone. The brand must be confirmed against the pharmacy record before this is treated as a deviation.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "shingles jab, single shot",
+            "output": "ambiguous · Zostavax (live) 0.61 / Shingrix (recombinant) 0.37"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=1006296",
+            "output": "ATC J07BK01 · Live attenuated viral vaccine"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Live attenuated vaccine · R2810-ONC-1540",
+            "output": "HIT · rule PR-0034 · §5.7.2"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"in August\"",
+            "output": "2026-08-01 · precision=month"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0034",
+          "matchedOn": "class",
+          "className": "Live attenuated vaccine",
+          "protocolSection": "5.7.2",
+          "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted."
+        },
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-102",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "rxcui": null,
+          "canonicalName": null,
+          "indication": "Stomach complaint, unspecified",
+          "dose": null,
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": null,
+          "startDatePrecision": "unknown",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "NEW-102",
+          "reportedText": "and there is a little blue pill I take for my stomach, I could not tell you the name"
+        },
+        "agentConfidence": 0.41,
+        "agentReasoning": "Participant described an unnamed blue tablet taken once daily for a stomach complaint. Colour and indication are not enough to identify a product — famotidine, omeprazole and dicyclomine all ship as blue tablets. No resolution was attempted beyond the failed lookup. This needs the coordinator to ask the participant to bring the bottle to the visit.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "blue pill for stomach",
+            "output": "no match above threshold (best 0.31 · famotidine)"
+          },
+          {
+            "tool": "resolve_drug",
+            "input": "blue pill stomach once daily",
+            "output": "no match above threshold"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"a long time now\"",
+            "output": "unresolved · precision=unknown"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-103",
+        "changeType": "modify",
+        "targetLogId": "LOG-0041",
+        "current": {
+          "rxcui": "519",
+          "canonicalName": "Allopurinol",
+          "indication": "Gout",
+          "dose": "300 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2026-03-11",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0041",
+          "reportedText": "Allopurinol"
+        },
+        "proposed": {
+          "rxcui": "519",
+          "canonicalName": "Allopurinol",
+          "indication": "Gout",
+          "dose": "100 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2026-03-11",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0041",
+          "reportedText": "they cut the allopurinol down to one small tablet in June"
+        },
+        "agentConfidence": 0.86,
+        "agentReasoning": "Participant reports the allopurinol was reduced in June to \"one small tablet\". Allopurinol is supplied as 100 mg and 300 mg tablets; the logged dose is 300 mg, so the smaller tablet is 100 mg. Route, frequency and start date are unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "allopurinol",
+            "output": "rxcui=519 · Allopurinol · confidence 0.99"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=519",
+            "output": "ATC M04AA01 · Xanthine oxidase inhibitor"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "rxcui=519 · R2810-ONC-1540",
+            "output": "no hit"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"in June\"",
+            "output": "2026-06-01 · precision=month (dose change, not start)"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-104",
+        "changeType": "stop",
+        "targetLogId": "LOG-0038",
+        "current": {
+          "rxcui": "7646",
+          "canonicalName": "Omeprazole",
+          "indication": "Gastro-oesophageal reflux",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-11-03",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0038",
+          "reportedText": "Omeprazole"
+        },
+        "proposed": {
+          "rxcui": "7646",
+          "canonicalName": "Omeprazole",
+          "indication": "Gastro-oesophageal reflux",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2024-11-03",
+          "startDatePrecision": "day",
+          "stopDate": "2026-07-01",
+          "stopDatePrecision": "month",
+          "ongoing": false,
+          "logId": "LOG-0038",
+          "reportedText": "I came off the reflux one back in July, it was not doing much"
+        },
+        "agentConfidence": 0.78,
+        "agentReasoning": "Participant reports stopping \"the reflux one\" in July. Omeprazole is the only acid-suppression medication on the log, so the reference resolves by context. They could not name a day, so the stop date is held at month precision rather than guessed.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "the reflux one",
+            "output": "rxcui=7646 · Omeprazole · via log context · confidence 0.83"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"back in July\"",
+            "output": "2026-07-01 · precision=month"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "rxcui=7646 · R2810-ONC-1540",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-105",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-0036",
+        "current": {
+          "rxcui": "83367",
+          "canonicalName": "Atorvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2021-06-15",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0036",
+          "reportedText": "Atorvastatin"
+        },
+        "proposed": {
+          "rxcui": "83367",
+          "canonicalName": "Atorvastatin",
+          "indication": "Hyperlipidaemia",
+          "dose": "20 mg",
+          "route": "Oral",
+          "frequency": "Once daily at night",
+          "startDate": "2021-06-15",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0036",
+          "reportedText": "the cholesterol tablet, yes, same as before, one at night"
+        },
+        "agentConfidence": 0.97,
+        "agentReasoning": "Participant confirmed the statin is unchanged and still taken nightly. All logged fields match what was reported. No edit is proposed; the entry is carried forward so the log shows it was reviewed at this visit.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "the cholesterol tablet",
+            "output": "rxcui=83367 · Atorvastatin · via log context · confidence 0.95"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "rxcui=83367 · R2810-ONC-1540",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-106",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "rxcui": "6711",
+          "canonicalName": "Melatonin",
+          "indication": "Insomnia",
+          "dose": "5 mg",
+          "route": "Oral",
+          "frequency": "At bedtime PRN",
+          "startDate": "2024-01-01",
+          "startDatePrecision": "year",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "NEW-106",
+          "reportedText": "melatonin, the gummies, on and off for sleep, years now"
+        },
+        "agentConfidence": 0.63,
+        "agentReasoning": "Participant reports intermittent melatonin gummies for sleep. The 5 mg dose is inferred from the most common gummy strength, not stated — the participant did not know it. The start date resolved only to a year. Both inferences are worth a second question at the visit.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "melatonin gummies",
+            "output": "rxcui=6711 · Melatonin · confidence 0.91"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=6711",
+            "output": "Dietary supplement · hormone"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "rxcui=6711 · R2810-ONC-1540",
+            "output": "no hit"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"years now\"",
+            "output": "2024-01-01 · precision=year · low certainty"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-0432",
+    "subjectId": "S-021",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "startedAt": {
+      "dayOffset": 0,
+      "time": "09:05"
+    },
+    "endedAt": null,
+    "status": "in_progress",
+    "changes": [
+      {
+        "changeId": "CH-201",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-0102",
+        "current": {
+          "rxcui": "10582",
+          "canonicalName": "Levothyroxine",
+          "indication": "Hypothyroidism",
+          "dose": "75 mcg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2019-02-20",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0102",
+          "reportedText": "Levothyroxine"
+        },
+        "proposed": {
+          "rxcui": "10582",
+          "canonicalName": "Levothyroxine",
+          "indication": "Hypothyroidism",
+          "dose": "75 mcg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2019-02-20",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0102",
+          "reportedText": "the thyroid one, every morning, no change"
+        },
+        "agentConfidence": 0.96,
+        "agentReasoning": "Participant confirmed the thyroid medication is unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "the thyroid one",
+            "output": "rxcui=10582 · Levothyroxine · via log context"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "rxcui=10582 · R2810-ONC-1676",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-202",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "rxcui": "1655944",
+          "canonicalName": "Influenza vaccine, live attenuated (intranasal)",
+          "indication": "Influenza prophylaxis",
+          "dose": "0.2 mL",
+          "route": "Intranasal",
+          "frequency": "Single dose",
+          "startDate": "2026-09-10",
+          "startDatePrecision": "day",
+          "stopDate": "2026-09-10",
+          "stopDatePrecision": "day",
+          "ongoing": false,
+          "logId": "NEW-202",
+          "reportedText": "I got the flu vaccine last week, the nasal spray one, not the needle"
+        },
+        "agentConfidence": 0.94,
+        "agentReasoning": "Participant explicitly distinguished the nasal spray from the injection. The intranasal influenza vaccine is live attenuated, unlike the inactivated injectable, and is prohibited under this protocol.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "flu vaccine, nasal spray",
+            "output": "rxcui=1655944 · Influenza vaccine, live attenuated · confidence 0.96"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=1655944",
+            "output": "ATC J07BB03 · Live attenuated viral vaccine"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Live attenuated vaccine · R2810-ONC-1540",
+            "output": "HIT · rule PR-0034 · §5.7.2"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0034",
+          "matchedOn": "class",
+          "className": "Live attenuated vaccine",
+          "protocolSection": "5.7.2",
+          "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted."
+        },
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-0433",
+    "subjectId": "S-033",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "startedAt": {
+      "dayOffset": -1,
+      "time": "15:20"
+    },
+    "endedAt": {
+      "dayOffset": -1,
+      "time": "15:22"
+    },
+    "status": "awaiting_review",
+    "changes": []
+  },
+  {
+    "sessionId": "SES-2026-0429",
+    "subjectId": "S-008",
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "startedAt": {
+      "dayOffset": -2,
+      "time": "11:02"
+    },
+    "endedAt": {
+      "dayOffset": -2,
+      "time": "11:04"
+    },
+    "status": "completed",
+    "changes": [
+      {
+        "changeId": "CH-091",
+        "changeType": "modify",
+        "targetLogId": "LOG-0011",
+        "current": {
+          "rxcui": "281",
+          "canonicalName": "Acyclovir",
+          "indication": "Herpes zoster prophylaxis",
+          "dose": "400 mg",
+          "route": "Oral",
+          "frequency": "Twice daily",
+          "startDate": "2026-04-09",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0011",
+          "reportedText": "Acyclovir"
+        },
+        "proposed": {
+          "rxcui": "281",
+          "canonicalName": "Acyclovir",
+          "indication": "Herpes zoster prophylaxis",
+          "dose": "400 mg",
+          "route": "Oral",
+          "frequency": "Three times daily",
+          "startDate": "2026-04-09",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0011",
+          "reportedText": "they put the acyclovir up to three a day"
+        },
+        "agentConfidence": 0.91,
+        "agentReasoning": "Participant reports the antiviral prophylaxis frequency was increased to three times daily.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "acyclovir",
+            "output": "rxcui=281 · Acyclovir · confidence 0.99"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "rxcui=281 · R2810-ONC-1540",
+            "output": "no hit · required prophylaxis under §6.4"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-0512",
+    "subjectId": "S-102",
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "startedAt": {
+      "dayOffset": 0,
+      "time": "09:20"
+    },
+    "endedAt": {
+      "dayOffset": 0,
+      "time": "09:22"
+    },
+    "status": "awaiting_review",
+    "changes": [
+      {
+        "changeId": "CH-301",
+        "changeType": "add",
+        "targetLogId": null,
+        "current": null,
+        "proposed": {
+          "rxcui": "6851",
+          "canonicalName": "Methotrexate",
+          "indication": "Rheumatoid arthritis",
+          "dose": "15 mg",
+          "route": "Oral",
+          "frequency": "Once weekly",
+          "startDate": "2026-08-15",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "NEW-301",
+          "reportedText": "my rheumatologist started me on methotrexate, one dose a week on Sundays"
+        },
+        "agentConfidence": 0.91,
+        "agentReasoning": "Participant reports weekly oral methotrexate started by a rheumatologist for rheumatoid arthritis. Low-dose weekly methotrexate is a chronic immunosuppressant, which this protocol prohibits. Note the dosing: methotrexate is weekly, and a daily entry would be a dosing error worth catching separately.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "methotrexate",
+            "output": "rxcui=6851 · Methotrexate · confidence 0.98"
+          },
+          {
+            "tool": "classify_drug",
+            "input": "rxcui=6851",
+            "output": "ATC L04AX03 · Immunosuppressant; antimetabolite"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "class=Chronic immunosuppressant · CEM-2014",
+            "output": "HIT · rule PR-0009 · §5.7.2"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"middle of August\"",
+            "output": "2026-08-15 · precision=day"
+          }
+        ],
+        "prohibitedHit": {
+          "ruleId": "PR-0009",
+          "matchedOn": "class",
+          "className": "Chronic immunosuppressant",
+          "protocolSection": "8.10.1",
+          "rationale": "Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events."
+        },
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-302",
+        "changeType": "modify",
+        "targetLogId": "LOG-0210",
+        "current": {
+          "rxcui": "10582",
+          "canonicalName": "Levothyroxine",
+          "indication": "Hypothyroidism",
+          "dose": "50 mcg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2026-05-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0210",
+          "reportedText": "Levothyroxine"
+        },
+        "proposed": {
+          "rxcui": "10582",
+          "canonicalName": "Levothyroxine",
+          "indication": "Hypothyroidism",
+          "dose": "75 mcg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2026-05-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0210",
+          "reportedText": "the thyroid tablet went up after my last blood test, I take the 75 now"
+        },
+        "agentConfidence": 0.87,
+        "agentReasoning": "Participant reports the levothyroxine dose was increased to 75 mcg after a thyroid function test. Levothyroxine was started during treatment and a dose increase may reflect immune-related thyroiditis, so the timing is worth checking against the adverse event log.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "the thyroid tablet",
+            "output": "rxcui=10582 · Levothyroxine · via log context · confidence 0.94"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "rxcui=10582 · CEM-2014",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      },
+      {
+        "changeId": "CH-303",
+        "changeType": "confirm_unchanged",
+        "targetLogId": "LOG-0208",
+        "current": {
+          "rxcui": "17767",
+          "canonicalName": "Amlodipine",
+          "indication": "Hypertension",
+          "dose": "5 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2020-01-20",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0208",
+          "reportedText": "Amlodipine"
+        },
+        "proposed": {
+          "rxcui": "17767",
+          "canonicalName": "Amlodipine",
+          "indication": "Hypertension",
+          "dose": "5 mg",
+          "route": "Oral",
+          "frequency": "Once daily",
+          "startDate": "2020-01-20",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0208",
+          "reportedText": "blood pressure one, no change, same as always"
+        },
+        "agentConfidence": 0.95,
+        "agentReasoning": "Participant confirmed the antihypertensive is unchanged.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "blood pressure one",
+            "output": "rxcui=17767 · Amlodipine · via log context"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "rxcui=17767 · CEM-2014",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "pending"
+      }
+    ]
+  },
+  {
+    "sessionId": "SES-2026-0498",
+    "subjectId": "S-201",
+    "studyId": "R2810-ONC-1624",
+    "nctId": "NCT03088540",
+    "startedAt": {
+      "dayOffset": -3,
+      "time": "13:40"
+    },
+    "endedAt": {
+      "dayOffset": -3,
+      "time": "13:42"
+    },
+    "status": "completed",
+    "changes": [
+      {
+        "changeId": "CH-401",
+        "changeType": "stop",
+        "targetLogId": "LOG-0301",
+        "current": {
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "8 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2026-06-02",
+          "startDatePrecision": "day",
+          "stopDate": null,
+          "stopDatePrecision": "unknown",
+          "ongoing": true,
+          "logId": "LOG-0301",
+          "reportedText": "Ondansetron"
+        },
+        "proposed": {
+          "rxcui": "26225",
+          "canonicalName": "Ondansetron",
+          "indication": "Chemotherapy-induced nausea",
+          "dose": "8 mg",
+          "route": "Oral",
+          "frequency": "Twice daily PRN",
+          "startDate": "2026-06-02",
+          "startDatePrecision": "day",
+          "stopDate": "2026-07-31",
+          "stopDatePrecision": "day",
+          "ongoing": false,
+          "logId": "LOG-0301",
+          "reportedText": "I stopped the nausea tablets, I have not needed them since the end of July"
+        },
+        "agentConfidence": 0.89,
+        "agentReasoning": "Participant reports stopping the antiemetic at the end of July as nausea resolved.",
+        "toolTrace": [
+          {
+            "tool": "resolve_drug",
+            "input": "the nausea tablets",
+            "output": "rxcui=26225 · Ondansetron · via log context"
+          },
+          {
+            "tool": "resolve_date",
+            "input": "\"end of July\"",
+            "output": "2026-07-31 · precision=day"
+          },
+          {
+            "tool": "check_prohibited",
+            "input": "rxcui=26225 · R2810-ONC-1624",
+            "output": "no hit"
+          }
+        ],
+        "prohibitedHit": null,
+        "reviewStatus": "accepted"
+      }
+    ]
+  }
+]

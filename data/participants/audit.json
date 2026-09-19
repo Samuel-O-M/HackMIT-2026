@@ -1,0 +1,156 @@
+{
+  "SES-2026-0431": [
+    {
+      "eventId": "EV-4101",
+      "at": {
+        "dayOffset": 0,
+        "time": "08:42"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-014",
+      "reason": null
+    },
+    {
+      "eventId": "EV-4102",
+      "at": {
+        "dayOffset": 0,
+        "time": "08:45"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "7 proposed changes staged for review · 2 prohibited findings",
+      "reason": null
+    }
+  ],
+  "SES-2026-0433": [
+    {
+      "eventId": "EV-4201",
+      "at": {
+        "dayOffset": -1,
+        "time": "15:20"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-033",
+      "reason": null
+    },
+    {
+      "eventId": "EV-4202",
+      "at": {
+        "dayOffset": -1,
+        "time": "15:22"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "No changes — participant reports no concomitant medications",
+      "reason": null
+    }
+  ],
+  "SES-2026-0512": [
+    {
+      "eventId": "EV-4301",
+      "at": {
+        "dayOffset": 0,
+        "time": "09:20"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-102",
+      "reason": null
+    },
+    {
+      "eventId": "EV-4302",
+      "at": {
+        "dayOffset": 0,
+        "time": "09:22"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "3 proposed changes staged for review · 1 prohibited finding",
+      "reason": null
+    }
+  ],
+  "SES-2026-0498": [
+    {
+      "eventId": "EV-4401",
+      "at": {
+        "dayOffset": -3,
+        "time": "13:40"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-201",
+      "reason": null
+    },
+    {
+      "eventId": "EV-4402",
+      "at": {
+        "dayOffset": -3,
+        "time": "13:42"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "1 proposed change staged for review",
+      "reason": null
+    }
+  ],
+  "SES-2026-0429": [
+    {
+      "eventId": "EV-4001",
+      "at": {
+        "dayOffset": -2,
+        "time": "11:02"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-008",
+      "reason": null
+    },
+    {
+      "eventId": "EV-4002",
+      "at": {
+        "dayOffset": -2,
+        "time": "11:04"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "1 proposed change staged for review",
+      "reason": null
+    },
+    {
+      "eventId": "EV-4003",
+      "at": {
+        "dayOffset": -2,
+        "time": "13:40"
+      },
+      "actor": "ayushim",
+      "action": "change_accepted",
+      "changeId": "CH-091",
+      "detail": "Acyclovir · frequency Twice daily → Three times daily",
+      "reason": "Participant clarified at review"
+    },
+    {
+      "eventId": "EV-4004",
+      "at": {
+        "dayOffset": -2,
+        "time": "13:41"
+      },
+      "actor": "ayushim",
+      "action": "promoted",
+      "changeId": null,
+      "detail": "1 change promoted to the medication log · signed by Ayushi Mehrotra at 2026-09-17T17:41:00.000Z",
+      "reason": "I have reviewed these changes against the source and approve their entry into the medication log."
+    }
+  ]
+}

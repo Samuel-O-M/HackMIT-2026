@@ -42,5 +42,9 @@ function protocolDocs(): Plugin {
 
 export default defineConfig({
   plugins: [react(), protocolDocs()],
-  server: { port: 5173 },
+  server: {
+    port: 5173,
+    // The fixtures live in the repo's data/ directory, one level up.
+    fs: { allow: ['..'] },
+  },
 });
