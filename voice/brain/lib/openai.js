@@ -4,6 +4,31 @@
 
 const config = require('../config');
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** fetch with a hard timeout and retries on network errors / 5xx / 429. */
+async function fetchWithRetry(url, options, { retries = 3, timeoutMs = 30000 } = {}) {
+  let lastErr;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      if ((res.status >= 500 || res.status === 429) && attempt < retries) {
+        await sleep(500 * 2 ** attempt);
+        continue;
+      }
+      return res;
+    } catch (err) {
+      clearTimeout(timer);
+      lastErr = err;
+      if (attempt < retries) await sleep(500 * 2 ** attempt);
+    }
+  }
+  throw lastErr;
+}
+
 async function request(messages, { model, effort, json, tools }) {
   const body = { model, messages };
   if (effort) body.reasoning_effort = effort;
@@ -14,7 +39,7 @@ async function request(messages, { model, effort, json, tools }) {
     body.tool_choice = 'auto';
   }
 
-  return fetch('https://api.openai.com/v1/chat/completions', {
+  return fetchWithRetry('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${config.openaiKey}`,

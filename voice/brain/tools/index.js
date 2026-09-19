@@ -79,6 +79,27 @@ const patientUpdateSchema = {
   },
 };
 
+const verifyIdentitySchema = {
+  type: 'function',
+  function: {
+    name: 'verify_identity',
+    description:
+      "Check the participant's stated name + date of birth against the record. Call this " +
+      'instead of comparing the date yourself. Returns only verified/not-verified and ' +
+      'attempts left — never the record value. On mismatch, do not reveal or hint at it.',
+    parameters: {
+      type: 'object',
+      properties: {
+        given_name: { type: 'string' },
+        family_name: { type: 'string' },
+        name: { type: 'string', description: 'full name as stated, if given' },
+        dob: { type: 'string', description: 'date of birth exactly as the participant said it' },
+      },
+      required: ['dob'],
+    },
+  },
+};
+
 const ALL = {
   health_search: { schema: healthSearchSchema, run: (args) => health.search(args.query) },
   patient_read: {
@@ -89,11 +110,22 @@ const ALL = {
     schema: patientUpdateSchema,
     run: (args, ctx) => patientData.update({ ...args, subjectId: ctx.subjectId, sessionId: ctx.sessionId }),
   },
+  verify_identity: {
+    schema: verifyIdentitySchema,
+    run: (args, ctx) => patientData.verifyIdentity({ ...args, subjectId: ctx.subjectId, sessionId: ctx.sessionId }),
+  },
 };
 
 function schemasFor(which) {
-  if (which === 'thinker') return [ALL.health_search.schema, ALL.patient_read.schema];
-  return [ALL.health_search.schema, ALL.patient_read.schema, ALL.patient_update.schema];
+  if (which === 'thinker') {
+    return [ALL.health_search.schema, ALL.patient_read.schema, ALL.verify_identity.schema];
+  }
+  return [
+    ALL.health_search.schema,
+    ALL.patient_read.schema,
+    ALL.patient_update.schema,
+    ALL.verify_identity.schema,
+  ];
 }
 
 async function dispatch(name, args, ctx) {
