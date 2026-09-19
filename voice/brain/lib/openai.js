@@ -4,6 +4,16 @@
 
 const config = require('../config');
 
+// This host has IPv6 addresses but no public IPv6 route (Tailscale ULA only),
+// yet DNS returns AAAA records. Prefer IPv4 so Node's Happy-Eyeballs doesn't
+// waste attempts on unreachable IPv6 endpoints.
+const dns = require('node:dns');
+try {
+  dns.setDefaultResultOrder('ipv4first');
+} catch {
+  /* older node */
+}
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /** fetch with a hard timeout and retries on network errors / 5xx / 429. */
