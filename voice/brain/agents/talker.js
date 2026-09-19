@@ -14,7 +14,9 @@ const { chatWithTools } = require('../lib/openai');
 const { formatConversation } = require('../lib/format');
 const { schemasFor, dispatch } = require('../tools');
 
-const SYSTEM_PROMPT = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'talker.md'), 'utf8');
+const POLICY = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'policy.md'), 'utf8');
+const ROLE = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'talker.md'), 'utf8');
+const SYSTEM_PROMPT = `${POLICY}\n\n---\n\n${ROLE}`;
 
 function cleanSpoken(text) {
   let out = String(text || '').trim();

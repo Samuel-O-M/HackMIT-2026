@@ -29,10 +29,16 @@ const PATIENT_DB = path.join(__dirname, 'patient.db');
 // general_health.db  (read-only)
 // ---------------------------------------------------------------------------
 function seedGeneral() {
-  if (fs.existsSync(GENERAL_DB)) fs.rmSync(GENERAL_DB);
   const db = new DatabaseSync(GENERAL_DB);
 
   db.exec(`
+    DROP TABLE IF EXISTS guidance;
+    DROP TABLE IF EXISTS topics;
+    DROP TABLE IF EXISTS rxnorm_synonyms;
+    DROP TABLE IF EXISTS rxnorm_ingredients;
+    DROP TABLE IF EXISTS rxclass_members;
+    DROP TABLE IF EXISTS rxclass_classes;
+
     -- General, non-personal guidance (the only trusted prose source)
     CREATE TABLE topics (
       topic_id TEXT PRIMARY KEY,
@@ -149,10 +155,19 @@ function seedGeneral() {
 // patient.db  (read + controlled write)
 // ---------------------------------------------------------------------------
 function seedPatient() {
-  if (fs.existsSync(PATIENT_DB)) fs.rmSync(PATIENT_DB);
   const db = new DatabaseSync(PATIENT_DB);
 
   db.exec(`
+    DROP TABLE IF EXISTS advice_log;
+    DROP TABLE IF EXISTS planner_state;
+    DROP TABLE IF EXISTS utterances;
+    DROP TABLE IF EXISTS call_sessions;
+    DROP TABLE IF EXISTS protocol_rules;
+    DROP TABLE IF EXISTS medications;
+    DROP TABLE IF EXISTS enrollments;
+    DROP TABLE IF EXISTS studies;
+    DROP TABLE IF EXISTS patients;
+
     CREATE TABLE patients (
       subject_id         TEXT PRIMARY KEY,
       given_name         TEXT NOT NULL,

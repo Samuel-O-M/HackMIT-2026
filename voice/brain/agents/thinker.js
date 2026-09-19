@@ -21,7 +21,9 @@ const { chat, parseJson } = require('../lib/openai');
 const { formatConversation } = require('../lib/format');
 const { dispatch } = require('../tools');
 
-const SYSTEM_PROMPT = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'thinker.md'), 'utf8');
+const POLICY = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'policy.md'), 'utf8');
+const ROLE = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'thinker.md'), 'utf8');
+const SYSTEM_PROMPT = `${POLICY}\n\n---\n\n${ROLE}`;
 
 function buildContext({ plannerState, conversation }) {
   const state = plannerState ? JSON.stringify(plannerState, null, 2) : '(none yet)';

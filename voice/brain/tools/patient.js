@@ -30,7 +30,7 @@ function read({ subjectId, sessionId, scope, limit }) {
     case 'profile':
       needSubject();
       return p.get(
-        'SELECT subject_id, given_name, family_name, preferred_language FROM patients WHERE subject_id = ?',
+        'SELECT subject_id, given_name, family_name, dob, phone, preferred_language FROM patients WHERE subject_id = ?',
         subjectId
       );
     case 'enrollment':
