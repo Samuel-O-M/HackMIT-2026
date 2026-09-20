@@ -847,6 +847,9 @@ html[data-mode="phone"],
 html[data-mode="phone"] body {
   height: 100%;
   overscroll-behavior: none;
+  /* The call screen is a fixed frame: nothing on it scrolls. Messages that
+     outgrow the conversation fade out at the top instead (see #conversation). */
+  overflow: hidden;
 }
 
 html[data-mode="phone"] body {
@@ -1000,7 +1003,11 @@ html[data-mode="phone"] #start svg { width: 31px; height: 31px; }
 
 /* ---------------------------------------------------------- call */
 html[data-mode="phone"] #callView {
-  min-height: 100dvh;
+  /* A fixed frame, not a minimum: as messages arrive the layout never grows,
+     so the name, the avatar and the controls stay where they are. */
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
   width: 100%;
   gap: 0;
   color: #fff;
@@ -1075,12 +1082,14 @@ html[data-mode="phone"] #conversation {
   order: 3;
   flex: 1 1 auto;
   min-height: 0;
+  /* Newest at the bottom; older ones ride up and out. No scrollbar here and
+     no scrollbar on the page — the fade at the top is the only exit. */
   justify-content: flex-end;
   gap: 0.4rem;
   padding: 0.75rem 0;
-  overflow-y: auto;
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 16%);
-  mask-image: linear-gradient(to bottom, transparent, #000 16%);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%);
+  mask-image: linear-gradient(to bottom, transparent, #000 22%);
 }
 html[data-mode="phone"] #conversation .msg,
 html[data-mode="phone"] #conversation .msg.agent,
@@ -1222,7 +1231,6 @@ html[data-mode="phone"] .error { bottom: calc(env(safe-area-inset-bottom) + 1rem
   html[data-mode="phone"] .phone-party { font-size: 1.45rem; }
   html[data-mode="phone"] .orb { width: 84px; height: 84px; margin-top: 0.6rem; }
   html[data-mode="phone"] .orb-initials { font-size: 1.5rem; }
-  html[data-mode="phone"] #conversation { max-height: 18vh; }
   html[data-mode="phone"] .dock-row { gap: 6px 12px; }
   html[data-mode="phone"] .dock-row .pill-btn { font-size: 0.72rem; gap: 4px; }
   html[data-mode="phone"] .dock-row .pill-btn svg { padding: 13px; }
