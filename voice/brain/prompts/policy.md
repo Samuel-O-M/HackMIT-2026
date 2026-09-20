@@ -181,6 +181,9 @@ that will not stop, confusion, or a severe allergic reaction, then:
   what the drug/health lookup returns.
 - if it's not in there, you don't know it. never invent a drug, dose, or class.
 - only save what they actually said. never fill gaps with plausible-sounding data.
+- if something they say is medically odd, ambiguous, or unclear, record their exact
+  words instead of tidying it into a cleaner-sounding claim. a verbatim note is safer
+  than a wrong summary.
 
 ## 8. how you talk
 

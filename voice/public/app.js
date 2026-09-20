@@ -28,7 +28,6 @@
   let flushInterval = null;
   let pollTimer = null;
   let lastVoiceAt = 0;
-  let conversation = [];
   let levelTimer = null;
   let currentState = 'idle';
   let callStartedAt = 0;
@@ -204,61 +203,108 @@
   }
 
   // ------------------------------------------------------------- conversation
-  let convSig = null;
+  // The screen owns the conversation. It used to mirror the server's copy by
+  // polling, and that was the choppiness: a phrase vanished the instant the
+  // speech engine finalised it and came back a second or two later when the poll
+  // caught up; overlapping polls could put an older snapshot over a newer one;
+  // and every change wiped and rebuilt all the bubbles, replaying each one's
+  // entrance animation. Now each bubble is created once and updated in place.
+  const bubbles = new Map(); // id -> { el, body }
+  let bubbleSeq = 0;
+  let typingEl = null;
+
+  const thread = () => $('#conversation');
+
+  /** Run a DOM change, then keep the newest message in view — unless they scrolled up to read. */
+  function keepPinned(change) {
+    const box = thread();
+    const pinned = box.scrollHeight - box.scrollTop - box.clientHeight < 140;
+    change();
+    if (pinned) box.scrollTop = box.scrollHeight;
+  }
+
+  /** Insert above the thinking dots, which always stay last. */
+  const beforeTyping = () => (typingEl && typingEl.parentNode ? typingEl : null);
+
+  function resetConversation() {
+    thread().textContent = '';
+    bubbles.clear();
+    typingEl = null;
+    bubbleSeq = 0;
+    updateTyping();
+  }
+
+  function addBubble(id, speaker) {
+    const el = document.createElement('div');
+    el.className = 'msg ' + (speaker === 'patient' ? 'patient' : 'agent');
+    const who = document.createElement('span');
+    who.className = 'who';
+    who.textContent = speaker === 'patient' ? 'You' : 'Study team';
+    const body = document.createElement('span');
+    body.className = 'body';
+    el.append(who, body);
+    keepPinned(() => thread().insertBefore(el, beforeTyping()));
+    const bubble = { el, body };
+    bubbles.set(id, bubble);
+    return bubble;
+  }
+
+  /** Create the bubble if it is new; otherwise change its text in place. */
+  function setBubble(id, speaker, text, { draft = false } = {}) {
+    const bubble = bubbles.get(id) || addBubble(id, speaker);
+    keepPinned(() => {
+      if (bubble.body.textContent !== text) bubble.body.textContent = text;
+      bubble.el.classList.toggle('interim', draft);
+    });
+    return bubble;
+  }
+
+  function removeBubble(id) {
+    const bubble = bubbles.get(id);
+    if (!bubble) return;
+    bubble.el.remove();
+    bubbles.delete(id);
+  }
+
+  /** What they are saying right now: phrases already finalised plus the one in progress. */
+  function renderDraft() {
+    const text = [...pendingFinals, interim].filter(Boolean).join(' ').trim();
+    if (text) setBubble('draft', 'patient', text, { draft: true });
+    else removeBubble('draft');
+  }
+
+  /** Their words are final: the live draft becomes a real message, in place. Typed messages have no draft. */
+  function commitPatient(text) {
+    const id = `p${++bubbleSeq}`;
+    const draft = bubbles.get('draft');
+    if (draft) {
+      bubbles.delete('draft');
+      bubbles.set(id, draft);
+    }
+    setBubble(id, 'patient', text);
+  }
+
+  function addNote(text) {
+    keepPinned(() => {
+      const note = document.createElement('div');
+      note.className = 'msg system';
+      note.textContent = text;
+      thread().insertBefore(note, beforeTyping());
+    });
+  }
 
   /** Three bouncing dots while the agent is composing a reply. */
   function updateTyping() {
-    const box = $('#conversation');
-    const existing = box.querySelector('.typing');
-    if (currentState === 'thinking' && !existing) {
-      const t = document.createElement('div');
-      t.className = 'typing';
-      t.setAttribute('aria-label', 'The study team is thinking');
-      for (let i = 0; i < 3; i++) t.appendChild(document.createElement('i'));
-      box.appendChild(t);
-      box.scrollTop = box.scrollHeight;
-    } else if (currentState !== 'thinking' && existing) {
-      existing.remove();
+    const on = currentState === 'thinking' || currentState === 'connecting';
+    if (on && !(typingEl && typingEl.parentNode)) {
+      typingEl = document.createElement('div');
+      typingEl.className = 'typing';
+      typingEl.setAttribute('aria-label', 'The study team is thinking');
+      for (let i = 0; i < 3; i++) typingEl.appendChild(document.createElement('i'));
+      keepPinned(() => thread().appendChild(typingEl));
+    } else if (!on && typingEl && typingEl.parentNode) {
+      typingEl.remove();
     }
-  }
-
-  function renderConversation() {
-    const sig = JSON.stringify(conversation) + '||' + interim;
-    if (sig === convSig) return;
-    convSig = sig;
-
-    const box = $('#conversation');
-    box.textContent = '';
-
-    if (!conversation.length && !interim) {
-      const p = document.createElement('div');
-      p.className = 'msg system';
-      p.textContent = 'The call has started. Say hello whenever you are ready.';
-      box.appendChild(p);
-    } else {
-      for (const turn of conversation) {
-        const div = document.createElement('div');
-        div.className = 'msg ' + (turn.speaker === 'patient' ? 'patient' : 'agent');
-        const who = document.createElement('span');
-        who.className = 'who';
-        who.textContent = turn.speaker === 'patient' ? 'You' : 'Study team';
-        div.appendChild(who);
-        div.appendChild(document.createTextNode(turn.transcript));
-        box.appendChild(div);
-      }
-      if (interim) {
-        const div = document.createElement('div');
-        div.className = 'msg patient interim';
-        const who = document.createElement('span');
-        who.className = 'who';
-        who.textContent = 'You';
-        div.appendChild(who);
-        div.appendChild(document.createTextNode(interim));
-        box.appendChild(div);
-      }
-    }
-    updateTyping();
-    box.scrollTop = box.scrollHeight;
   }
 
   // ------------------------------------------------------------- session log (dev)
@@ -388,17 +434,11 @@
 
   let brainSig = null;
   async function refresh() {
-    if (!sessionId) return;
+    // Developer panes only. The conversation on screen is not read back from the
+    // server: that round trip was the lag (see "conversation" above).
+    if (!sessionId || devPanel.hidden) return;
     try {
       const data = await fetchJson(`/api/brain/debug?sessionId=${encodeURIComponent(sessionId)}`);
-      if (Array.isArray(data.conversation)) {
-        conversation = data.conversation;
-        renderConversation();
-      }
-      // The grounding/brain/log panes are developer-only. The conversation
-      // above must refresh in patient mode too, otherwise the agent's reply is
-      // never shown (and the transcript looks silent).
-      if (devPanel.hidden) return;
       const sig = JSON.stringify({
         p: data.patient ?? null, t: data.lastTurn?.talker?.toolCalls ?? null,
         s: data.state ?? null, pl: data.planner ?? null, lp: data.lastPlan ?? null, ch: data.channel ?? null,
@@ -540,13 +580,13 @@
       wake();
     };
 
-    async function play(audio, kind) {
+    async function play(audio, kind, text) {
       if (!started) {
         started = true;
         agentSpeaking = true;
         setState('speaking');
       }
-      onSound?.(kind, audio.dataset.fillerId);
+      onSound?.(kind, audio.dataset.fillerId, text);
       await playAudio(audio);
       lastEndAt = Date.now();
     }
@@ -566,14 +606,14 @@
           const remaining = lastEndAt + breath - Date.now();
           if (remaining > 0) await sleep(remaining);
         }
-        await play(audio, item.kind);
+        await play(audio, item.kind, item.text);
       }
     })();
 
     return {
       /** A chunk of the real reply: synthesise now, play in order. */
       say(text) {
-        push({ kind: 'say', audio: synthesize(text) });
+        push({ kind: 'say', text, audio: synthesize(text) });
       },
       /** A pre-recorded backchannel clip, played in order with no synthesis wait. Returns its text, or null. */
       filler(kind, opts) {
@@ -629,9 +669,18 @@
     const speechEndAt = sentAt - lastVoiceAt < 10000 ? lastVoiceAt : sentAt;
     log(opening ? 'turn.opening' : 'turn.sent', opening ? {} : { text });
 
+    let fullSay = '';
     let firstSound = false;
     let firstWords = false;
-    const speech = createSpeech((kind, id) => {
+    // The reply appears sentence by sentence as each one starts to be spoken, so
+    // the words follow the voice instead of arriving whole, early or late.
+    const agentId = `a${++bubbleSeq}`;
+    let shown = '';
+    const speech = createSpeech((kind, id, text) => {
+      if (kind === 'say' && text) {
+        shown = shown ? `${shown} ${text}` : text;
+        setBubble(agentId, 'agent', shown);
+      }
       const sinceEnd = Date.now() - speechEndAt;
       if (!firstSound) {
         firstSound = true;
@@ -672,7 +721,7 @@
           log('turn.wait', { sound: said });
         } else if (e.type === 'done') {
           log('turn.replied', { say: e.say, tools: e.toolCalls, firstChunkMs: e.firstChunkMs, latencyMs: e.latencyMs });
-          refresh(); // the full reply is saved now; show it while it is still being spoken
+          fullSay = e.say;
         } else if (e.type === 'error') {
           throw new Error(e.error);
         }
@@ -681,10 +730,14 @@
       showError('Brain: ' + err.message);
     } finally {
       await speech.finish();
+      // If a sentence's audio failed it was never shown; make sure the whole
+      // reply is on screen once the turn is over.
+      if (fullSay && fullSay !== shown) setBubble(agentId, 'agent', fullSay);
       if (opening) {
         greeting = false;
         pendingFinals = [];
         interim = '';
+        renderDraft();
       }
       setState(call ? (muted ? 'muted' : 'listening') : 'idle');
     }
@@ -694,6 +747,7 @@
   function enqueueTurn(text, { stt = false } = {}) {
     const t = (text || '').trim();
     if (!t) return;
+    commitPatient(t);
     queue.push({ text: t, stt });
     pump();
   }
@@ -753,7 +807,7 @@
         noteVoice();
         if (call && !agentSpeaking && !muted) setState('listening');
       }
-      renderConversation();
+      renderDraft();
     } else if (msg.type === 'SpeechStarted') {
       noteVoice();
       log('stt.speech_started', {});
@@ -810,15 +864,14 @@
       turnsDone = 0;
       lastHadOpener = false;
 
-      conversation = [];
       interim = '';
       pendingFinals = [];
       queue = [];
-      convSig = brainSig = null;
+      brainSig = null;
       logCount = 0;
       $('#logList').textContent = '';
       $('#logCount').textContent = '0 events';
-      renderConversation();
+      resetConversation();
 
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const params = new URLSearchParams();
@@ -919,7 +972,7 @@
     if (muted) {
       interim = '';
       pendingFinals = [];
-      renderConversation();
+      renderDraft();
       setState('muted');
     } else {
       setState('listening');
@@ -949,11 +1002,7 @@
     setState('idle');
     log('mic.stop', {});
 
-    const sys = document.createElement('div');
-    sys.className = 'msg system';
-    sys.textContent = 'The call has ended. Start a new call any time from the first screen.';
-    $('#conversation').appendChild(sys);
-    $('#conversation').scrollTop = $('#conversation').scrollHeight;
+    addNote('The call has ended. Start a new call any time from the first screen.');
 
     if (sessionId) {
       try {

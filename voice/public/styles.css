@@ -380,7 +380,8 @@ html[data-theme="dark"] .icon-sun { display: none; }
   flex-direction: column;
   gap: 0.75rem;
   min-height: 220px;
-  scroll-behavior: smooth;
+  /* Instant, not smooth: text grows word by word and a smooth scroll lags behind it. */
+  scroll-behavior: auto;
 }
 
 .msg {
