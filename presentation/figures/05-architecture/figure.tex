@@ -32,7 +32,8 @@
 \begin{tikzpicture}[x=1mm,y=1mm]
 \path[use as bounding box] (0,0) rectangle (160,90);
 
-\node[headline] at (16,82) {The agent proposes. A coordinator decides.};
+\node[headline] at (16,82) {How a call becomes a record};
+\node[subline]  at (16,75.5) {The agent proposes. A coordinator decides.};
 
 % ---- stages -------------------------------------------------------------
 \foreach \x/\title/\what in {%
@@ -55,31 +56,25 @@
 \node[anchor=west, font=\fontsize{6}{7.2}\selectfont\sffamily\bfseries\color{ink}] at (96,74.5)
   {the agent never writes past here};
 
-\node[anchor=north, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}] at (52,44) {the agent};
-\node[anchor=north, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}] at (124,44) {the coordinator};
 
 % ---- the two stores -----------------------------------------------------
-\dbshape{26}{16}{9.5}{17}{surfii}
-\node[anchor=north, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (26,13) {Call store};
-\node[anchor=north, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiii}] at (26,9.5) {transient \textperiodcentered\ 15 tables};
+\dbshape{40}{24}{10}{17}{surfii}
+\node[anchor=north, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (40,21) {Call store};
+\node[anchor=north, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiii}] at (40,17) {transient};
 
-\node[anchor=north west, font=\fontsize{6}{7.6}\selectfont\ttfamily\color{inkii}, align=left] at (40,33)
-  {staged\_changes\\ staged\_symptoms\\ staged\_adherence\\ utterances};
-\node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiv}] at (40,12)
+\node[anchor=north, font=\fontsize{6}{7.4}\selectfont\sffamily\color{inkii}, align=center, text width=52mm] at (40,12)
   {what the call heard, before anyone has seen it};
 
-\dbshape{104}{16}{9.5}{17}{surfiii}
-\node[anchor=north, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (104,13) {Trial record};
-\node[anchor=north, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiii}] at (104,9.5) {durable \textperiodcentered\ 17 tables};
+\dbshape{118}{24}{10}{17}{surfiii}
+\node[anchor=north, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (118,21) {Trial record};
+\node[anchor=north, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiii}] at (118,17) {durable};
 
-\node[anchor=north west, font=\fontsize{6}{7.6}\selectfont\ttfamily\color{inkii}, align=left] at (118,33)
-  {proposed\_changes\\ conmed\_entries\\ promotions\\ audit\_events};
-\node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiv}] at (118,12)
+\node[anchor=north, font=\fontsize{6}{7.4}\selectfont\sffamily\color{inkii}, align=center, text width=52mm] at (118,12)
   {the log, and who changed it};
 
 % which stage writes where
-\draw[flow] (74,48) -- (36,36);
-\draw[flow] (134,48) -- (114,36);
+\draw[flow] (76,47) -- (48,43);
+\draw[flow] (134,47) -- (126,43);
 
 \end{tikzpicture}
 \end{document}
