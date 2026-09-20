@@ -1,13 +1,13 @@
-% Slide 05b — the realtime agent.
+% Slide 05b — inside the voice agent.
 %
-% Turn-taking drawn as disjoint speech bursts: the participant speaks, the
-% agent answers, never at once. The waveform lanes carry that claim better
-% than any sentence could, so they stay; what changed is the panel underneath.
+% Turn-taking drawn as disjoint speech bursts: the person speaks, the agent
+% answers, never at once. The lanes carry that claim better than a sentence
+% could.
 %
-% It used to list three prompt filenames, which is not architecture. The
-% interesting claim is that there are two models — the Talker cannot wait for
-% a planner, so it streams while the Thinker reasons between turns — and that
-% every medical claim resolves to a lookup rather than to the model's memory.
+% The lookups along the bottom are written as the question each one answers.
+% They were the function names — check_prohibited, drug_safety — which mean
+% something only to someone who has read the repository, and a slide is not
+% the place to learn an API.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
@@ -21,15 +21,15 @@
       ({#1+\i*2.0},{#2-\h*0.5}) rectangle ({#1+\i*2.0+1.0},{#2+\h*0.5});
   }}
 
-\node[headline] at (16,82) {Turn by turn, and the agent never waits};
-\node[subline]  at (16,75.5) {Two models: one speaks, one thinks between turns.};
+\node[headline] at (16,82) {Inside the voice agent};
+\node[subline]  at (16,75.5) {One model speaks. A second thinks between turns, so the line is never waiting.};
 
-% ---- participant --------------------------------------------------------
+% ---- who is speaking ----------------------------------------------------
 \fill[patient, rounded corners=2.2pt] (14,58) rectangle (116,70);
-\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,64) {Participant};
-\burst{44}{64}{white}{3,6,4,8,5,7,4,6}
-\burst{76}{64}{white}{4,7,3,8,5,6,4,7}
-\burst{100}{64}{white}{4,7,5,8,4,6}
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,64) {The person on the call};
+\burst{62}{64}{white}{3,6,4,8,5,7,4,6}
+\burst{86}{64}{white}{4,7,3,8,5,6,4,7}
+\burst{104}{64}{white}{4,7,5,8}
 
 \draw[flow] (116,64) -- (120,64);
 \fill[surf, rounded corners=2pt] (120,57.5) rectangle (150,70.5);
@@ -37,11 +37,10 @@
 \node[anchor=center] at (135,65.5) {\includegraphics[height=4mm]{shared/marks/deepgram.pdf}};
 \node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{ink}] at (135,60.5) {speech in};
 
-% ---- the agent ----------------------------------------------------------
 \fill[brand, rounded corners=2.2pt] (14,42) rectangle (116,54);
-\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,48) {ReconMed agent};
-\burst{60}{48}{white}{5,8,4,7,6,4,8,5}
-\burst{92}{48}{white}{6,4,8,5,7}
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,48) {The study team's agent};
+\burst{72}{48}{white}{5,8,4,7,6,4,8,5}
+\burst{96}{48}{white}{6,4,8,5,7}
 
 \draw[flow] (116,48) -- (120,48);
 \fill[surf, rounded corners=2pt] (120,41.5) rectangle (150,54.5);
@@ -50,35 +49,39 @@
 \node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{ink}] at (135,44.5) {speech out};
 
 % ---- the two models -----------------------------------------------------
-\fill[surf, rounded corners=2pt] (14,16) rectangle (116,38);
-\draw[line, line width=0.4pt, rounded corners=2pt] (14,16) rectangle (116,38);
+\fill[surf, rounded corners=2pt] (14,20) rectangle (116,38);
+\draw[line, line width=0.4pt, rounded corners=2pt] (14,20) rectangle (116,38);
 
-\fill[brand, rounded corners=1.5pt] (18,20) rectangle (60,34);
-\node[anchor=north west, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{white}] at (21,32) {Talker};
-\node[anchor=north west, font=\fontsize{5.6}{6.9}\selectfont\sffamily\color{white}, align=left, text width=36mm] at (21,27.5)
-  {streams a clause at a time, so the line is never silent};
+\fill[brand, rounded corners=1.5pt] (18,23) rectangle (58,35);
+\node[anchor=north west, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{white}] at (21,33.5) {Talker};
+\node[anchor=north west, font=\fontsize{5.6}{6.9}\selectfont\sffamily\color{white}, align=left, text width=34mm] at (21,29.5)
+  {speaks as soon as it has a clause};
 
-\node[anchor=center] at (67,29.5) {\includegraphics[height=6mm]{shared/marks/i-brain.pdf}};
-\draw[flow] (61,31) -- (63.5,31);
-\draw[{Stealth[length=1.4mm,width=1.1mm]}-, draw=lineii, line width=0.6pt] (61,25) -- (63.5,25);
+\node[anchor=center] at (65,29) {\includegraphics[height=6mm]{shared/marks/i-brain.pdf}};
+\draw[flow] (59,31) -- (61.5,31);
+\draw[{Stealth[length=1.4mm,width=1.1mm]}-, draw=lineii, line width=0.6pt] (59,26) -- (61.5,26);
 
-\node[anchor=north west, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (76,32) {Thinker};
-\node[anchor=north west, font=\fontsize{5.6}{6.9}\selectfont\sffamily\color{inkii}, align=left, text width=36mm] at (76,27.5)
-  {plans between turns, off the critical path};
+\node[anchor=north west, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (74,33.5) {Thinker};
+\node[anchor=north west, font=\fontsize{5.6}{6.9}\selectfont\sffamily\color{inkii}, align=left, text width=38mm] at (74,29.5)
+  {works out what to ask next, off the critical path};
 
-\draw[flow] (116,27) -- (120,27);
-\fill[surf, rounded corners=2pt] (120,20.5) rectangle (150,33.5);
-\draw[line, line width=0.4pt, rounded corners=2pt] (120,20.5) rectangle (150,33.5);
-\node[anchor=center] at (135,28.5) {\includegraphics[height=5.5mm]{shared/marks/openai.pdf}};
-\node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{ink}] at (135,23.5) {GPT-5.6 Luna};
+\draw[flow] (116,29) -- (120,29);
+\fill[surf, rounded corners=2pt] (120,22.5) rectangle (150,35.5);
+\draw[line, line width=0.4pt, rounded corners=2pt] (120,22.5) rectangle (150,35.5);
+\node[anchor=center] at (135,30.5) {\includegraphics[height=5.5mm]{shared/marks/openai.pdf}};
+\node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{ink}] at (135,25.5) {GPT-5.6 Luna};
 
-% ---- what a claim has to resolve against -------------------------------
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (14,10)
-  {Every medical claim resolves to a lookup:};
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\ttfamily\color{inkii}] at (66,10)
-  {check\_prohibited \textperiodcentered\ drug\_safety \textperiodcentered\ check\_behaviour};
-\node[anchor=west, font=\fontsize{5.4}{6.5}\selectfont\sffamily\color{inkiv}] at (14,5)
-  {RxNorm \textperiodcentered\ RxClass \textperiodcentered\ the openFDA label \textperiodcentered\ the protocol's own rules. Prompts are files, swappable without a deploy.};
+% ---- what it is allowed to look up -------------------------------------
+\node[anchor=west, font=\fontsize{6.4}{7.7}\selectfont\sffamily\bfseries\color{ink}] at (14,15)
+  {It may not answer from memory. Three questions, three sources:};
+
+\foreach \x/\q/\src in {%
+  14/{Is this drug banned here?}/{the trial's own protocol},
+  62/{What side effects are known?}/{the drug's FDA label},
+  110/{Is alcohol or smoking allowed?}/{the protocol's non-drug rules}} {
+  \node[anchor=north west, font=\fontsize{6}{7.4}\selectfont\sffamily\color{ink}, align=left, text width=44mm] at (\x,10) {\q};
+  \node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiv}, align=left, text width=44mm] at (\x,5.5) {\src};
+}
 
 \end{tikzpicture}
 \end{document}
