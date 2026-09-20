@@ -245,6 +245,20 @@ async function chatWithToolsStream({ messages, tools, model, effort, maxRounds =
       toolCalls.push({ name: call.function?.name, args, result });
       messages.push({ role: 'tool', tool_call_id: call.id, content: JSON.stringify(result).slice(0, 8000) });
     }
+
+    // A tool round ends with the model's draft already in the transcript as its
+    // own message. Left alone, the next round re-answers from scratch and says
+    // the same words again — the participant hears every sentence twice. Tell it
+    // to continue instead. Re-added after EVERY round, not just the first: a
+    // turn can chain several tools, and only the first round was covered.
+    if (spoken.trim()) {
+      messages.push({
+        role: 'user',
+        content:
+          'Everything you have written so far was already spoken aloud to the participant. ' +
+          'Do not repeat any of it. Continue from exactly where you stopped, adding only what is new.',
+      });
+    }
   }
   return { text: spoken, model, toolCalls, usage: {} };
 }

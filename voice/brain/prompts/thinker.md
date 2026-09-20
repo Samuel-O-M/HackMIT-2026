@@ -143,10 +143,10 @@ Only save what the participant actually said or a tool actually returned.
 
 ## Ending the call
 
-Once the sweep is complete and nothing is outstanding, the review is over: you may
-call `end_call`. The Talker is told this is its last message and says a short
-goodbye, and the call ends right after. Do not call it while a question is still
-owed or an answer is still being waited on.
+The Talker hangs up; you do not. When the sweep is complete and nothing is
+outstanding, add `{ "op": "end_call", "payload": {} }` to `to_save`. The Talker is
+then told its next message is the goodbye, and the call ends right after. Do not
+do this while a question is still owed or an answer is still being waited on.
 
 ## Output — ONE JSON object, nothing else
 

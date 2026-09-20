@@ -10,8 +10,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const config = require('../config');
-const { chat, chatWithTools, chatWithToolsStream } = require('../lib/openai');
-const { createChunker, speakable } = require('../lib/speech');
+const { chatWithTools, chatWithToolsStream } = require('../lib/openai');
 const { formatConversation } = require('../lib/format');
 const { schemasFor, dispatch } = require('../tools');
 const patientTools = require('../tools/patient');
@@ -20,40 +19,60 @@ const POLICY = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'policy.md'
 const ROLE = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'talker.md'), 'utf8');
 const SYSTEM_PROMPT = `${POLICY}\n\n---\n\n${ROLE}`;
 
-/**
- * One short, spoken line to cover a lookup while the model works.
- * A tiny, no-reasoning call to the same fast model — so the wording varies and
- * sounds human, instead of a fixed "okay" clip.
- */
-const HOLD_PROMPT =
-  'You are a warm phone agent in the middle of a call. The participant has just ' +
-  'spoken and you need a moment to look something up. Reply with ONE short, natural ' +
-  'sentence (at most about ten words) that holds the line, in your own words, and vary ' +
-  'it. No quotes, no markdown. For example: "I understand, give me a second to check.", ' +
-  '"Sorry about that, let me check something.", "One moment, let me look at that."';
-
-async function holdLine(conversation) {
-  try {
-    const { text } = await chat(
-      [
-        { role: 'system', content: HOLD_PROMPT },
-        { role: 'user', content: `Recent conversation:\n${formatConversation(conversation)}\n\nOne holding line:` },
-      ],
-      { model: config.talkerModel, effort: config.talkerEffort }
-    );
-    const line = cleanSpoken(text);
-    return line && line.split(/\s+/).length <= 18 ? line : null;
-  } catch {
-    return null;
-  }
-}
-
 function cleanSpoken(text) {
   let out = String(text || '').trim();
   out = out.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim();
   if (out.startsWith('"') && out.endsWith('"') && out.length > 1) out = out.slice(1, -1).trim();
   out = out.replace(/^(agent|assistant|say|speak|output)\s*[:\-]\s*/i, '').trim();
+  out = dedupeSpoken(out);
   return out;
+}
+
+/**
+ * The tool loop can make the model restate its own words — sometimes glued
+ * together with stray text between the copies ("…right?InvalidWhat…"). For
+ * each sentence, look for a long phrase that appears twice: cut at the second
+ * copy, then drop any unpunctuated tail the cut left behind. A sentence is
+ * never spoken twice.
+ */
+function dedupeSpoken(text) {
+  const seen = new Set();
+  const kept = [];
+  for (const raw of String(text || '').split(/(?<=[.!?])\s+/)) {
+    let sentence = raw.trim();
+    if (!sentence) continue;
+
+    // Normalised view of this sentence (letters/digits/spaces) with a map back
+    // to original indices, so a match in the normalised text can be cut out of
+    // the real one.
+    let norm = '';
+    const map = [];
+    for (let i = 0; i < sentence.length; i++) {
+      const ch = sentence[i].toLowerCase();
+      if (/[a-z0-9 ]/.test(ch)) {
+        norm += ch;
+        map.push(i);
+      }
+    }
+    const WIN = 20;
+    for (let p = 0; p + WIN <= norm.length; p++) {
+      const q = norm.indexOf(norm.slice(p, p + WIN), p + WIN);
+      // The second copy sits in the back half and starts well after the first.
+      if (q !== -1 && q >= norm.length / 2 && q > p + WIN) {
+        sentence = sentence.slice(0, map[q]).trim();
+        // The cut can leave stray characters after the final punctuation.
+        const tail = sentence.match(/[^.!?]*$/);
+        if (tail && tail.index > 0) sentence = sentence.slice(0, tail.index).trim();
+        break;
+      }
+    }
+
+    const key = sentence.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+    if (key && seen.has(key)) continue;
+    if (key) seen.add(key);
+    kept.push(sentence);
+  }
+  return kept.join(' ');
 }
 
 function buildContext({ plannerState, conversation, patientRecord, opening = false, closing = false }) {
@@ -138,9 +157,13 @@ async function respond({ plannerState, conversation, subjectId, sessionId, closi
 
 /**
  * Same turn as respond(), but speech is handed out as it is written.
- * `onChunk({ text })` fires for each short piece that is ready to be spoken.
+ * `onChunk({ text })` fires for each sentence that is ready to be spoken.
  * `onChunk({ wait: true })` fires once if the model reaches for a tool before
  * saying anything, so the client can fill the silence with a small noise.
+ *
+ * Deliberately simple: sentences are cut out of the finished text and sent to
+ * TTS one at a time. No incremental parsing of the stream — that path produced
+ * duplicated and clipped speech, and the finished text is always right.
  */
 async function respondStream({ plannerState, conversation, subjectId, sessionId, onChunk, opening = false, closing = false }) {
   let patientRecord = null;
@@ -154,16 +177,6 @@ async function respondStream({ plannerState, conversation, subjectId, sessionId,
     { role: 'user', content: buildContext({ plannerState, conversation, patientRecord, opening, closing }) },
   ];
 
-  let count = 0;
-  let waited = false;
-  const send = (text) => {
-    const clean = speakable(text, { first: count === 0 });
-    if (!clean) return;
-    count++;
-    onChunk({ text: clean });
-  };
-  const chunker = createChunker((piece) => send(piece));
-
   const { text, toolCalls, model } = await chatWithToolsStream({
     messages,
     tools: schemasFor('talker'),
@@ -171,25 +184,25 @@ async function respondStream({ plannerState, conversation, subjectId, sessionId,
     effort: config.talkerEffort,
     maxRounds: config.maxToolRounds,
     execute: (name, args) => dispatch(name, args, { subjectId, sessionId }),
-    onText: (delta) => chunker.push(delta),
     // Speak whatever the model already wrote before the tool wait; if it wrote
     // nothing, tell the client there is a wait to cover.
     onToolStart: ({ spokenSoFar }) => {
-      chunker.flush();
-      if (!spokenSoFar.trim() && !waited) {
-        waited = true;
-        // Cover the lookup with a short spoken line from the model itself
-        // (no reasoning), instead of a pre-recorded "okay" clip.
-        holdLine(conversation)
-          .then((line) => {
-            if (line && count === 0) send(line);
-          })
-          .catch(() => {});
-      }
+      if (!spokenSoFar.trim()) onChunk({ wait: true });
     },
   });
-  chunker.flush();
-  return { say: cleanSpoken(text), toolCalls, model };
+
+  const say = cleanSpoken(text);
+  // Take the finished text, split it by ".", speak each piece.
+  for (const sentence of splitSentences(say)) onChunk({ text: sentence });
+  return { say, toolCalls, model };
+}
+
+/** Split into sentences on "." (with abbreviations kept whole). */
+function splitSentences(text) {
+  return String(text || '')
+    .split(/(?<=\.)\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 module.exports = { respond, respondStream, cleanSpoken, SYSTEM_PROMPT };

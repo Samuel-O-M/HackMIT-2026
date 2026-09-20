@@ -991,6 +991,10 @@
       $('#sessionPill').textContent = `session ${sessionId.slice(0, 8)}… · ${subjectId}`;
       $('#sessionPill').className = 'pill ok';
       log('session.start', { sessionId, subjectId });
+      // A fresh call starts clean: a previous call that ended mid-turn can leave
+      // the speech/pump guards set, which would silently swallow the opening turn.
+      agentSpeaking = false;
+      turnBusy = false;
       turnsDone = 0;
       lastHadOpener = false;
 
@@ -1095,7 +1099,7 @@
 
       if (pollTimer) clearInterval(pollTimer);
       pollTimer = setInterval(refresh, 1600);
-      await refresh();
+      refresh(); // fire-and-forget: never let a slow poll delay the opening turn
 
       // The agent places the call, so it speaks first.
       queue.push({ opening: true });

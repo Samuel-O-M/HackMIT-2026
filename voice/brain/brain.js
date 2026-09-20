@@ -298,9 +298,16 @@ class Brain {
       sessionId,
     });
 
-    // Apply writes from `to_save` through controlled functions.
+    // Apply writes from `to_save` through controlled functions. `end_call` is
+    // not a write: it is the planner asking for the call to wrap up, which the
+    // next Talker turn turns into a goodbye.
     const applied = [];
     for (const entry of next.to_save || []) {
+      if (entry.op === 'end_call') {
+        endSignal.request(sessionId);
+        applied.push({ ok: true, op: 'end_call', ending: true });
+        continue;
+      }
       try {
         applied.push(patientTools.update({ subjectId, sessionId, op: entry.op, payload: entry.payload }));
       } catch (err) {
