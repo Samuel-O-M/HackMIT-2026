@@ -16,10 +16,24 @@ at inference time, nothing leaves the machine. Weights are downloaded into
 > Deepgram/OpenAI path in `voice/server.js` is untouched. See
 > [Use it from the voice app](#use-it-from-the-voice-app) for the two-line switch.
 
+## TL;DR — make it work
+
+The weights are ~5 GB and **cannot be committed to GitHub** (2.5 GB per file vs.
+GitHub's 100 MB limit), so a clone downloads them once:
+
+```bash
+git clone git@github.com:Samuel-O-M/HackMIT-2026.git && cd HackMIT-2026/local-ai
+./setup.sh --test     # uv envs + weights (~5 GB); --test also runs the round-trip
+```
+
+Then start the servers (`tts/` on `:5002`, `stt/` on `:5001`) and follow
+[Use it from the voice app](#use-it-from-the-voice-app).
+
 ## Layout
 
 ```
 local-ai/
+  setup.sh   one-shot: create both envs + download weights (see TL;DR)
   tts/    Qwen3-TTS wrapper + HTTP server + tests      (own uv env)
   stt/    Parakeet wrapper + HTTP server + tests       (own uv env)
   scripts/roundtrip.py   TTS -> wav -> STT cross-check
@@ -35,7 +49,7 @@ them share an env is how you lose an afternoon. `uv` manages both.
 
 - [`uv`](https://docs.astral.sh/uv/) (fetches Python 3.12 automatically)
 - `ffmpeg` on `PATH` (only STT needs it, to decode webm/ogg/mp4)
-- ~6 GB free disk for weights + environments
+- ~9 GB free disk for weights (~5 GB) + environments (~3.5 GB)
 
 ## Quick start
 
