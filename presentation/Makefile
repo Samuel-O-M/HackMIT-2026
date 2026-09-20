@@ -1,4 +1,4 @@
-# Reconmed presentation — build.
+# ReconMed presentation — build.
 #
 #   make            build the deck (and everything it needs)
 #   make figures    compile every figures/*/figure.tex to figure.pdf

@@ -1,0 +1,54 @@
+% Slide 04d — the intervention already works; the cost is the problem.
+%
+% This is the closest published analogue to what ReconMed does: pharmacists
+% ringing trial participants between visits, 25,829 calls across 12 trials.
+% Nearly half the calls produced an intervention, and half the participants
+% had a medication-use issue caught this way.
+%
+% The argument the slide has to make is not "calling works" — that is settled
+% here — but that a pharmacist on every call is what stopped it scaling. So
+% the human cost is the last line, not a footnote.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {Calling participants between visits already works};
+\node[subline]  at (16,75.5) {25,829 pharmacist calls across 12 clinical trials \textemdash\ Martinez et al., 2017};
+
+% ---- the headline proportion -------------------------------------------
+\fill[surf, rounded corners=2.5pt] (16,30) rectangle (66,66);
+\node[anchor=north west, font=\fontsize{26}{28}\selectfont\displayfont\bfseries\color{brand}] at (21,62) {45.5\%};
+\node[anchor=north west, font=\fontsize{6.6}{8}\selectfont\sffamily\color{inkii}, align=left, text width=42mm] at (21,49)
+  {of those calls produced at least one intervention};
+\node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}, align=left, text width=42mm] at (21,40)
+  {Around 55\% were rated high-impact \textemdash\ affecting trial outcomes or adherence.};
+
+% ---- what the calls caught, per participant ----------------------------
+\node[anchor=west, font=\fontsize{6.4}{7.6}\selectfont\sffamily\bfseries\color{ink}] at (76,66)
+  {Participants with an issue found by phone};
+
+% label / percent — bar scaled at 0.9mm per percent
+\foreach \y/\pct/\lab in {57/52.8/{adverse events}, 47/52.1/{medication use against protocol}, 37/28.8/{concurrent medications}} {
+  \node[anchor=west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkii}] at (76,\y+3.4) {\lab};
+  \fill[lineii, rounded corners=1pt] (76,\y-2) rectangle (76+\pct*0.9,\y+1.4);
+  \node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (76+\pct*0.9+2,\y-0.3) {\pct\%};
+}
+
+% The two that are ours.
+\fill[brand, rounded corners=1pt] (76,45) rectangle (76+52.1*0.9,48.4);
+\fill[brand, rounded corners=1pt] (76,35) rectangle (76+28.8*0.9,38.4);
+
+% ---- the catch ----------------------------------------------------------
+\draw[line, line width=0.5pt] (16,24) -- (144,24);
+\node[anchor=north west, font=\fontsize{7.6}{9.2}\selectfont\sffamily\bfseries\color{ink}] at (16,19)
+  {A pharmacist made every one of those calls.};
+\node[anchor=north west, font=\fontsize{6.6}{8}\selectfont\sffamily\color{inkii}] at (16,14.5)
+  {That is why it is not standard practice. ReconMed makes the call, and a coordinator reviews only what it found.};
+
+\node[anchor=west, font=\fontsize{5.4}{6.4}\selectfont\sffamily\color{inkiv}] at (16,6)
+  {Martinez et al., \textit{Clinical Therapeutics} 39(3), 2017. 3,873 participants; 12 trials in type 2 diabetes.};
+
+\end{tikzpicture}
+\end{document}

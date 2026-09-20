@@ -1,6 +1,6 @@
-# Reconmed — presentation
+# ReconMed — presentation
 
-The Regeneron track deck for **Reconmed · Automated patient reconciliation**.
+The Regeneron track deck for **ReconMed · Automated patient reconciliation**.
 
 Each slide is a single image, built in its own folder as a standalone LaTeX
 figure and compiled to a **backgroundless PDF**. The deck (`slides/main.tex`) is
@@ -35,7 +35,7 @@ presentation/
 │   ├── base.tex         preamble for figures *and* slides
 │   ├── theme.tex        base + transparent page background (figures only)
 │   └── marks/           vector assets, included at any size:
-│                        Reconmed mark, OpenAI, Deepgram, Lucide icons
+│                        ReconMed mark, OpenAI, Deepgram, Lucide icons
 │                        (brain, database, file, clock, shield, stethoscope),
 │                        and the QR code
 ├── figures/
@@ -73,7 +73,7 @@ shows through. Panels that should read as surfaces get an explicit `surf` fill.
 
 ## Brand
 
-**Reconmed** — automated patient reconciliation. (The clinical shorthand for
+**ReconMed** — automated patient reconciliation. (The clinical shorthand for
 concomitant medication, "conmed/conmeds", is a separate term and is still used
 where it means the medication itself.)
 

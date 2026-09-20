@@ -1,4 +1,4 @@
-% Reconmed — the deck.
+% ReconMed — the deck.
 %
 % Design intent: each slide is a single external figure built in its own folder
 % and compiled to a backgroundless PDF. Beamer contributes almost nothing but
@@ -31,10 +31,11 @@
 % Slides are placed full-bleed, in order — one external figure per slide.
 \slidefig{figures/01-title/figure.pdf}        % 01 title
 \slidefig{figures/02-problem/figure.pdf}      % 02 the list is stale
+\slidefig{figures/02b-scale/figure.pdf}       % 02b how common deviations are
 \slidefig{figures/03-cost/figure.pdf}         % 03 found late
 \slidefig{figures/04-shift/figure.pdf}        % 04 ask days before
-\slidefig{figures/04b-time/figure.pdf}        % 04b hours back
 \slidefig{figures/04c-doctor-vs-agent/figure.pdf} % 04c two ways to keep the record
+\slidefig{figures/04d-evidence/figure.pdf}    % 04d calling already works
 \slidefig{figures/05-architecture/figure.pdf} % 05 the pipeline
 \slidefig{figures/05b-voice-agent/figure.pdf} % 05b the realtime agent
 \slidefig{figures/06-hallucination/figure.pdf}% 06 the model is not the truth
@@ -45,16 +46,17 @@
 \slidefig{figures/10-readiness/figure.pdf}    % 10 it runs offline
 \slidefig{figures/11-demo/figure.pdf}         % 11 demo
 \slidefig{figures/12-impact/figure.pdf}       % 12 impact and close
+\slidefig{figures/13-sources/figure.pdf}   % 13 sources
 
 % close
 \begin{frame}[plain]
   \centering
   \vfill
   {\reconmedmark[16mm]}\\[7mm]
-  {\fontsize{34}{38}\selectfont\displayfont\bfseries\textcolor{brand}{Reconmed}}\\[2.5mm]
+  {\fontsize{34}{38}\selectfont\displayfont\bfseries\textcolor{brand}{ReconMed}}\\[2.5mm]
   {\fontsize{13}{16}\selectfont\textcolor{inkii}{Automated patient reconciliation}}\\[16mm]
   {\fontsize{11}{13}\selectfont\textcolor{inkiii}{Thank you \textperiodcentered\ questions}}\\[1.5mm]
-  {\fontsize{10}{12}\selectfont\textcolor{inkiii}{HackMIT 2026 \textperiodcentered\ Regeneron Track}}
+  {\fontsize{10}{12}\selectfont\textcolor{inkiii}{HackMIT 2026}}
   \vfill
 \end{frame}
 

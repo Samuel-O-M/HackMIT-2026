@@ -1,0 +1,53 @@
+% Slide 02b — how common deviations actually are.
+%
+% The deck asserted that stale medication lists are costly without ever showing
+% a number. This is the number, from the largest published benchmark: 187
+% protocols supplied by ~20 sponsors and CROs to Tufts CSDD.
+%
+% Bars carry ONE variable — share of patients affected — drawn at 1% = 1mm, so
+% the dashed oncology reference sits at a literal 40mm and needs no axis. The
+% mean deviation count rides below as a caption rather than above as a second
+% series: stacking two numbers on one bar made the reference line read as
+% decoration.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {By Phase III, one participant in three has a protocol deviation};
+\node[subline]  at (16,75.5) {187 protocols from 20 sponsors and CROs \textemdash\ Tufts CSDD, 2022};
+
+% ---- oncology reference -------------------------------------------------
+\draw[lineii, line width=0.4pt, dash pattern=on 1.2pt off 1.2pt] (24,68) -- (132,68);
+\node[anchor=west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\bfseries\color{ink}] at (133,68) {40\%};
+\node[anchor=west, font=\fontsize{5.6}{6.6}\selectfont\sffamily\color{inkiii}] at (133,64.6) {oncology};
+
+% ---- bars: share of patients with >=1 deviation -------------------------
+\foreach \x/\pct/\dev/\ph in {44/15.3/8.7/{Phase I}, 78/30.0/75.3/{Phase II}} {
+  \fill[lineii, rounded corners=1.5pt] (\x-13,28) rectangle (\x+13,28+\pct);
+  \node[anchor=south, font=\fontsize{9}{11}\selectfont\sffamily\bfseries\color{ink}] at (\x,28+\pct+2.5) {\pct\%};
+  \node[anchor=north, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (\x,25) {\ph};
+  \node[anchor=north, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (\x,21) {\dev\ deviations};
+  \node[anchor=north, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (\x,17.8) {per protocol};
+}
+
+% Phase III carries the weight.
+\fill[brand, rounded corners=1.5pt] (99,28) rectangle (125,60.8);
+\node[anchor=south, font=\fontsize{9}{11}\selectfont\sffamily\bfseries\color{brand}] at (112,63.3) {32.8\%};
+\node[anchor=north, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (112,25) {Phase III};
+\node[anchor=north, font=\fontsize{6}{7.2}\selectfont\sffamily\bfseries\color{ink}] at (112,21) {118.5 deviations};
+\node[anchor=north, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (112,17.8) {per protocol};
+
+\draw[line, line width=0.5pt] (24,28) -- (132,28);
+\node[anchor=west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}] at (16,33)
+  {share of enrolled};
+\node[anchor=west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}] at (16,29.8)
+  {patients affected};
+
+% ---- source -------------------------------------------------------------
+\node[anchor=west, font=\fontsize{5.4}{6.4}\selectfont\sffamily\color{inkiv}] at (16,9)
+  {Getz et al., \textit{Therapeutic Innovation \& Regulatory Science} 56:632\textendash636, 2022. All deviation types, not medication-specific.};
+
+\end{tikzpicture}
+\end{document}

@@ -1,40 +1,50 @@
-% Slide 03 — the cost.
-% The same error is worth a few minutes at the visit and a corrective action
-% months later. Shown as an escalating staircase, in weight rather than alarm.
+% Slide 03 — what finding it late actually costs.
+%
+% This was three unlabelled bars asserting "expensive" with no number and no
+% source, which is the weakest kind of chart: it asks to be believed. The
+% escalation is the same; every step now carries a published figure.
+%
+% The I-SPY COVID numbers are the strongest published account of retrospective
+% verification cost, and the 0.36% is the sting: enormous effort, almost
+% nothing found, because by then the errors are cold.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
 \begin{tikzpicture}[x=1mm,y=1mm]
 \path[use as bounding box] (0,0) rectangle (160,90);
 
-\node[headline] at (16,82) {Cheap to fix at the visit. Expensive to find later.};
+\node[headline] at (16,82) {The same error, found later, costs \$4,862};
+\node[subline]  at (16,75.5) {Retrospective verification of one phase 2 trial \textemdash\ I-SPY COVID, 2025};
 
-% time
-\draw[flow] (14,70) -- (146,70);
-\node[anchor=east, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkiii}] at (146,73) {time since the visit};
+\draw[flow] (16,68) -- (144,68);
+\node[anchor=east, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (144,71) {time since the visit};
 
-% baseline
-\draw[line, line width=0.5pt] (14,24) -- (146,24);
+% ---- escalating steps, each with its published figure ------------------
+\fill[lineii, rounded corners=1.5pt] (18,26)  rectangle (58,38);
+\node[anchor=north west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (21,35.5) {on the call};
+\node[anchor=north west, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkii}] at (21,31.5) {corrected before it is a record};
 
-% escalating steps
-\fill[lineii, rounded corners=1.5pt] (20,24)  rectangle (56,38);
-\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (24,27) {coordinator};
+\fill[inkiv, rounded corners=1.5pt]  (62,26)  rectangle (102,52);
+\node[anchor=north west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (65,49.5) {at monitoring};
+\node[anchor=north west, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkii}] at (65,45.5) {1,461 site hours answering};
+\node[anchor=north west, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkii}] at (65,42.2) {queries on one trial};
 
-\fill[inkiv, rounded corners=1.5pt]  (62,24)  rectangle (98,52);
-\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (66,27) {monitor};
+\fill[ink, rounded corners=1.5pt]   (106,26) rectangle (146,66);
+\node[anchor=north west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{white}] at (109,63.5) {retrospective SDV};
+\node[anchor=north west, font=\fontsize{11}{13}\selectfont\displayfont\bfseries\color{white}] at (109,58) {\$6.1M};
+\node[anchor=north west, font=\fontsize{6}{7.2}\selectfont\sffamily\color{white}] at (109,48) {61,073 person-hours,};
+\node[anchor=north west, font=\fontsize{6}{7.2}\selectfont\sffamily\color{white}] at (109,44.7) {for 30\% of one trial};
 
-\fill[ink, rounded corners=1.5pt]   (104,24) rectangle (140,68);
-\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{white}] at (108,27) {auditor \textperiodcentered\ IRB};
+\draw[line, line width=0.5pt] (16,26) -- (146,26);
 
-% what happens at each
-\node[anchor=north west, font=\fontsize{6.8}{8}\selectfont\sffamily\bfseries\color{inkii}] at (20,22)  {at the visit};
-\node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}]      at (20,18) {fixed before it matters};
+% ---- the sting ----------------------------------------------------------
+\node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}] at (16,19)
+  {All of that verification found errors in 0.36\% of the fields it checked.};
+\node[anchor=north west, font=\fontsize{6.4}{7.7}\selectfont\sffamily\color{inkii}] at (16,14)
+  {Checking everything late is the expensive way to learn almost nothing. Catching it on the call is the cheap way.};
 
-\node[anchor=north west, font=\fontsize{6.8}{8}\selectfont\sffamily\bfseries\color{inkii}] at (62,22)  {at monitoring (SDV)};
-\node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}]      at (62,18) {data query \textperiodcentered\ protocol deviation};
-
-\node[anchor=north west, font=\fontsize{6.8}{8}\selectfont\sffamily\bfseries\color{inkii}] at (104,22)  {at inspection};
-\node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}]      at (104,18) {finding \textperiodcentered\ corrective action};
+\node[anchor=west, font=\fontsize{5.4}{6.4}\selectfont\sffamily\color{inkiv}] at (16,6)
+  {\textit{Communications Medicine} 5, 2025 \textperiodcentered\ 333 of 1,111 patients, 10,101 of 44,486 eCRFs verified.};
 
 \end{tikzpicture}
 \end{document}
