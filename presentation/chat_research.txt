@@ -1,0 +1,308 @@
+DO NOT MODIFY THIS. THIS IS DATA AND A RESEARCH THAT CHAGPT HAS COMPLETED. THIS IS NOT MEANT TO BE MODIFIED, ONLY TO BE READ, AND PROBABLY CROSS VERIFY ANY OF THIS ONLINE. THIS COULD BE GOOD FOR A FIRST SLIDE IN THE PRESENTATION: 
+
+FOCUS ON USING THE DATA AND VISUALIZING IT NICELY, NOT THE ACTUAL WORDING FROM CHAT : 
+
+## 1. Headline
+
+**Medication Drift Becomes Trial Risk at Scale**
+
+## 2. The slide
+
+* **32.8%** — **Phase III patients with protocol deviations** — Tufts CSDD, 2022. Across **67 Phase III protocols** supplied by 20 major/mid-sized sponsors and CROs; mean **118.5 deviations per Phase III protocol**. ([PubMed Central (PMC)][1])
+* **20 flags / 95 visits** — **Potential prohibited concomitant medications found** — University of Michigan, 2017. Audit covered **25 drug/biologic trials**; patients averaged **5.44 conmeds per visit**. ([PubMed Central (PMC)][2])
+* **$40K/day** — **Direct Phase II/III trial operating cost** — Tufts CSDD, 2024. Based on budgets from **447 protocols**, collected 2016–2021 and normalized to 2023 USD; Phase III alone averaged **$55,716/day**. ([Tufts CSDD][3])
+* **FDA, 2026** — **Conmed interactions can threaten participant safety** — Final FDA oncology guidance says concomitant-medication restrictions should target clinically relevant DDIs and overlapping toxicities that affect safety. ([HHS.gov][4])
+
+**Takeaway:** **Reconmed moves medication errors upstream—before visits, queries, deviations, and rework.**
+
+## 3. Backups
+
+1. **42.4% used a prohibited drug in one RCT.** In a 92-patient diabetes trial, drug-level testing later found undisclosed prohibited metformin use in **39/92 participants (42.4%)**; the authors concluded it introduced a confounder that **invalidated the trial results**. Extremely strong failure-case example, but **not a prevalence estimate across trials**. *Clinical Therapeutics*, 2017. ([PubMed][5])
+
+2. **45.5% of 25,829 trial calls triggered intervention.** Across **12 diabetes clinical trials**, pharmacists made 25,829 participant calls; 11,765 calls had ≥1 intervention, affecting **3,573 patients (92.3%)**. Interventions included **3,341 medication-use protocol violations (12.9%)** and **1,630 concurrent-medication issues (5.9%)**. *Clinical Therapeutics*, 2017. ([PubMed][6])
+
+3. **Manual transcription cost sites ~8 hours/patient/study.** In a Lilly–MSK–Yale proof of concept spanning **seven oncology protocols**, direct electronic data exchange reduced site effort by **8 hours per patient per study**, queries by **2.5 per patient per visit**, and measured transcription errors from **6.7% to 0%**. Peer-reviewed *Journal of the Society for Clinical Data Management*, 2021. ([Clinical Data Management Journal][7])
+
+4. **Queries can consume hours per participant.** A prospective comparison across **6 randomized trials / 126 patients** found targeted SDV produced **587 additional queries**; assuming 30 minutes to handle each query, that represented **294 staff-hours, or 2.4 ± 1.7 hours per patient**. *British Journal of Clinical Pharmacology*, 2019. ([PubMed Central (PMC)][8])
+
+5. **Post-hoc monitoring reached $6.1M for 333 patients.** In I-SPY COVID, retrospective SDV of 333 participants consumed an estimated **61,073 person-hours and $6.1 million**, including **1,461 site hours responding to queries**; cost worked out to **$4,862 per data-field error identified**. *Communications Medicine*, 2025. ([Nature][9])
+
+## 4. Sources
+
+**Getz et al., “Benchmarking Protocol Deviations and Their Variation by Major Disease Categories,” Therapeutic Innovation & Regulatory Science, 2022.**
+20 companies; 187 protocols overall; Phase III n=67. [Full paper via PubMed Central](https://pmc.ncbi.nlm.nih.gov/articles/PMC8979478/?utm_source=chatgpt.com)
+
+**Redic et al., “Potential role of a pharmacist to enhance medication-related aspects of clinical trials…,” Contemporary Clinical Trials Communications, 2017.**
+The authors report: **“There were 20 potential protocol prohibited medications identified.”** [Full paper via PubMed Central](https://pmc.ncbi.nlm.nih.gov/articles/PMC5936711/?utm_source=chatgpt.com)
+
+**Smith, DiMasi & Getz, “Quantifying the Value of a Day of Delay in Drug Development,” Tufts CSDD, 2024.**
+447 trial budgets; ~$40K/day Phase II/III direct cost. [Tufts CSDD white paper](https://csdd.tufts.edu/sites/default/files/2025-02/Aug2024%20Day%20of%20Delay%20White%20Paper%20Final.pdf?utm_source=chatgpt.com)
+
+**FDA, “Cancer Clinical Trial Eligibility Criteria: Washout Periods and Concomitant Medications,” final guidance, July 2026.**
+FDA states patients should be excluded for concomitant medications when relevant DDIs or overlapping toxicities affect safety. [Final FDA/HHS guidance](https://www.hhs.gov/guidance/sites/default/files/hhs-guidance-documents/FDA/final_cct_eligibility_-_washout_con_meds_2025-247_0.pdf?utm_source=chatgpt.com)
+
+**Martinez et al., “Frequency and Impact of Pharmacist Interventions in Clinical Trial Patients With Diabetes,” Clinical Therapeutics, 2017.** [PubMed record](https://pubmed.ncbi.nlm.nih.gov/28285724/?utm_source=chatgpt.com)
+
+**Buckley et al., “Direct Data Extraction and Exchange of Local Labs…,” Journal of the Society for Clinical Data Management, 2021.** [Peer-reviewed paper](https://www.jscdm.org/article/id/21/?utm_source=chatgpt.com)
+
+**Fougerou-Leurent et al., “Impact of a targeted monitoring on data-quality and data-management workload…,” British Journal of Clinical Pharmacology, 2019.** [Full paper via PubMed Central](https://pmc.ncbi.nlm.nih.gov/articles/PMC6955406/?utm_source=chatgpt.com)
+
+**“Systematic data capture reduces the need for source data verification,” Communications Medicine, 2025.** [Nature article](https://www.nature.com/articles/s43856-025-01126-9?utm_source=chatgpt.com)
+
+**FDA, ICH E6(R3) Good Clinical Practice, 2025.** Requires data-integrity controls, timely error correction, traceability, and appropriate reconciliation during electronic data transfer. ([U.S. Food and Drug Administration][10])
+
+**FDA, Electronic Records/Electronic Signatures guidance.** FDA states changes to clinical-trial electronic records should preserve the original information and audit-trail documentation should identify **who, when, and why**. ([U.S. Food and Drug Administration][11])
+
+## 5. Confidence notes
+
+**High confidence:** the **32.8% deviation rate** is peer-reviewed Tufts CSDD research using data supplied by 20 sponsors/CROs. Caveat: protocols were approved **2013–2018**, the sample was a convenience sample, and the figure covers *all* protocol deviations, not medication-specific deviations. ([PubMed Central (PMC)][1])
+
+**Moderate confidence / highly relevant:** the **20 prohibited-conmed flags in 95 visits** is peer-reviewed and directly matches Reconmed's problem, but it is a **small, single-center retrospective pilot**. The authors explicitly say the prohibited-medication deviations were *potential* because they could not confirm retrospectively that each listed medication was actually being taken. ([PubMed Central (PMC)][2])
+
+**High confidence on magnitude, careful on interpretation:** **$40K/day** comes from Tufts CSDD's analysis of 447 actual protocol budgets. It is the **average direct cost of keeping a Phase II/III trial running for another day**, not proof that one conmed discrepancy itself causes a one-day delay. Do not phrase it as “each medication error costs $40K.” ([Tufts CSDD][3])
+
+**Authoritative:** the FDA 2026 conmed guidance is **final**, not draft, though specifically written for oncology trials. ICH E6(R3) and FDA electronic-record guidance provide the broader data-integrity/audit-trail basis. ([U.S. Food and Drug Administration][12])
+
+I would **not use the frequently repeated “$100 per data query” claim on the main slide**. A peer-reviewed ASPREE paper mentions it as a conventional estimate, but cites prior literature rather than establishing it itself; ASPREE's own optimized system actually resolved queries for **$8–10 each**. ([PubMed Central (PMC)][13]) Similarly, I did **not find a defensible modern primary estimate for “cost per protocol deviation” or “cost per CAPA”** that I would put in front of judges as a universal figure.
+
+[1]: https://pmc.ncbi.nlm.nih.gov/articles/PMC8979478/?utm_source=chatgpt.com "Benchmarking Protocol Deviations and Their Variation by Major Disease Categories - PMC"
+[2]: https://pmc.ncbi.nlm.nih.gov/articles/PMC5936711/ "Potential role of a pharmacist to enhance medication-related aspects of clinical trials conducted in a dedicated clinical research unit - PMC"
+[3]: https://csdd.tufts.edu/sites/default/files/2025-02/Aug2024%20Day%20of%20Delay%20White%20Paper%20Final.pdf "Day of Delay White Paper Final"
+[4]: https://www.hhs.gov/guidance/sites/default/files/hhs-guidance-documents/FDA/final_cct_eligibility_-_washout_con_meds_2025-247_0.pdf "Cancer Clinical Trial Eligibility Criteria: Washout Periods and Concomitant Medications - Guidance for Industry, IRBs, and Clinical Investigators"
+[5]: https://pubmed.ncbi.nlm.nih.gov/28923291/?utm_source=chatgpt.com "Use of Prohibited Medication, a Potentially Overlooked Confounder in Clinical Trials: Omarigliptin (Once-weekly DPP-4 Inhibitor) Monotherapy Trial in 18- to 45-year-olds - PubMed"
+[6]: https://pubmed.ncbi.nlm.nih.gov/28285724/ "Frequency and Impact of Pharmacist Interventions in Clinical Trial Patients With Diabetes - PubMed"
+[7]: https://www.jscdm.org/article/id/21/ "Buckley | Direct Data Extraction and Exchange of Local Labs for Clinical Research Protocols: A Partnership with Sites, Biopharmaceutical Firms, and Clinical Research Organizations | Journal of the Society for Clinical Data Management"
+[8]: https://pmc.ncbi.nlm.nih.gov/articles/PMC6955406/?utm_source=chatgpt.com "Impact of a targeted monitoring on data‐quality and data‐management workload of randomized controlled trials: A prospective comparative study - PMC"
+[9]: https://www.nature.com/articles/s43856-025-01126-9 "Systematic data capture reduces the need for source data verification: exploratory analysis from a phase 2 multicenter randomized controlled platform trial | Communications Medicine"
+[10]: https://www.fda.gov/media/169090/download?utm_source=chatgpt.com "E6(R3) Good Clinical Practice Guidance for Industry | September 2025"
+[11]: https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/fda-bioresearch-monitoring-information/guidance-industry-computerized-systems-used-clinical-trials?utm_source=chatgpt.com "Guidance for Industry - COMPUTERIZED SYSTEMS USED IN CLINICAL TRIALS | FDA"
+[12]: https://www.fda.gov/about-fda/oncology-center-excellence/oncology-center-excellence-guidance-documents?utm_source=chatgpt.com "Oncology Center of Excellence Guidance Documents | FDA"
+[13]: https://pmc.ncbi.nlm.nih.gov/articles/PMC6902598/?utm_source=chatgpt.com "Overcoming challenges to data quality in the ASPREE clinical trial - PMC"
+
+
+Yes. There are several **actual datasets** here that are much better for visualization than isolated “32.8%” callouts.
+
+### 1. Best graph: What important trial deviations actually are
+
+**343 Phase II–III trials, 7,047 randomized participants, 649 important protocol deviations, 2014–2024.** Peer-reviewed in *Therapeutic Innovation & Regulatory Science*, 2025. ([pubmed.ncbi.nlm.nih.gov][1])
+
+| Deviation category             |  Count | % of important deviations |
+| ------------------------------ | -----: | ------------------------: |
+| Study procedures               |    289 |                 **44.5%** |
+| Informed consent               |    120 |                 **18.5%** |
+| Study intervention             |     94 |                 **14.5%** |
+| Eligibility                    |     88 |                 **13.6%** |
+| **Concomitant medication**     | **33** |                  **5.1%** |
+| Safety/adverse-event reporting |     21 |                  **3.2%** |
+| Discontinuation                |      4 |                  **0.6%** |
+
+This sums to exactly **100%**, so it works perfectly as a donut or horizontal bar chart.
+
+Even better, within the same dataset there were medication-specific deviations:
+
+| Medication-related deviation |  Count | % of all important deviations |
+| ---------------------------- | -----: | ----------------------------: |
+| Medication dosing            |     52 |                      **8.0%** |
+| **Concomitant medication**   | **33** |                      **5.1%** |
+| Medication assignment        |     18 |                      **2.8%** |
+| Medication storage           |      8 |                      **1.2%** |
+
+Don't add these percentages together with the 14.5% “study intervention” category in the same pie—the dosing/assignment/storage rows are subcategories of study intervention. ([ResearchGate][2])
+
+---
+
+### 2. Very strong graph: Deviations explode with trial phase
+
+Tufts CSDD analyzed **187 protocols** provided by major/mid-sized pharma companies and CROs. ([PubMed Central (PMC)][3])
+
+| Phase     | Mean deviations / protocol | Patients with ≥1 deviation |
+| --------- | -------------------------: | -------------------------: |
+| Phase I   |                    **8.7** |                  **15.3%** |
+| Phase II  |                   **75.3** |                  **30.0%** |
+| Phase III |                  **118.5** |                  **32.8%** |
+
+I would visualize **“patients affected”** as large bars and put mean deviations above them.
+
+**Slide message:**
+**By Phase III, ~1 in 3 participants experience a protocol deviation.**
+
+This is all protocol deviations—not specifically medication deviations—so label it accordingly. ([PubMed Central (PMC)][3])
+
+---
+
+### 3. Really good graph: Important deviations by therapeutic area
+
+The newer 2025 study gives surprisingly clean disease-level data. These are **participants with an important protocol deviation**, not merely any deviation. ([ResearchGate][2])
+
+| Trial area           | Participants | Important deviations |       Rate |
+| -------------------- | -----------: | -------------------: | ---------: |
+| Oncology             |          583 |                  199 | **34.13%** |
+| Neurology/Psychiatry |          227 |                   54 | **23.79%** |
+| Rheumatology         |        1,386 |                  145 | **10.44%** |
+| Other                |          667 |                   47 |  **7.05%** |
+| Cardiology           |        1,287 |                   75 |  **5.83%** |
+| Respiratory          |        1,262 |                   64 |  **5.07%** |
+| Diabetes             |        1,338 |                   54 |  **4.04%** |
+| Renal                |          297 |                   11 |  **3.70%** |
+
+This makes an excellent descending horizontal bar chart.
+
+You could highlight oncology because Reconmed's medication restrictions/interactions are especially relevant in oncology.
+
+---
+
+### 4. Great “why automation now?” graph: Trial data volume is exploding
+
+Tufts CSDD + **15 TransCelerate sponsor companies** analyzed 105 recent protocols. The latest publication reports Phase III protocols now collect about **5.9 million datapoints on average**. ([PubMed Central (PMC)][4])
+
+| Year | Mean datapoints / Phase III protocol |
+| ---- | -----------------------------------: |
+| 2012 |                          **929,203** |
+| 2020 |                        **3,560,201** |
+| 2025 |                        **5,957,122** |
+
+That's about a **6.4× increase since 2012**.
+
+The paper reports data volume grew **10.8% annually since 2020** and **15.4% annually between 2012–2025**. ([DOI][5])
+
+This is possibly my favorite macro graph for Reconmed:
+
+> **929K → 3.6M → 6.0M datapoints per Phase III trial**
+
+Then underneath:
+
+**“More data means more reconciliation, monitoring, and opportunities for stale records.”**
+
+Don't claim all 6M datapoints require medication reconciliation—the point is overall operational/data complexity.
+
+---
+
+### 5. Directly relevant: Medication problems found through proactive participant contact
+
+Across **12 diabetes clinical trials**, pharmacists made **25,829 calls** to participants. ([PubMed][6])
+
+| Issue identified                      |    Number | % of all calls |
+| ------------------------------------- | --------: | -------------: |
+| Adverse-event intervention            |     3,774 |      **14.6%** |
+| **Medication-use protocol violation** | **3,341** |      **12.9%** |
+| **Concurrent medication issue**       | **1,630** |       **5.9%** |
+| Miscellaneous concern                 |     1,269 |       **4.6%** |
+
+Overall:
+
+**11,765 / 25,829 calls = 45.5%** had ≥1 intervention.
+
+And those interventions involved **3,573 patients, or 92.3% of patients** in the dataset. ([PubMed][6])
+
+This is conceptually **extremely close to Reconmed**: proactive calls to clinical-trial participants uncover medication/adherence/protocol issues **before they simply remain in the trial record**.
+
+Caveat: 2017 and diabetes-specific.
+
+---
+
+### 6. Automation comparison graph: manual entry → more queries
+
+A 2025 peer-reviewed EMR→EDC study compared automated pre-population with manual trial data entry. ([PubMed][7])
+
+| Visit     | Manual entry | Automated pre-population | Reduction |
+| --------- | -----------: | -----------------------: | --------: |
+| Baseline  | 22.0 queries |                     17.1 | **22.3%** |
+| Follow-up |  7.1 queries |                      4.1 | **42.3%** |
+
+The follow-up difference was statistically significant, **p < .05**. ([PubMed Central (PMC)][8])
+
+A separate Lilly/MSK/Yale direct-data-exchange project found automation reduced:
+
+* transcription errors: **6.7% → 0%**
+* data latency: **20.4 → 3.5 days**
+* site effort: **8 hours/patient/study**
+* queries: **2.5 fewer/patient/visit**
+* monitoring: **3 fewer hours/patient/study** ([Clinical Data Management Journal][9])
+
+That's a very powerful before/after graphic.
+
+---
+
+### 7. Macro scale: how large is the clinical-trial ecosystem?
+
+Official ClinicalTrials.gov data as of **July 14, 2026**: ([ClinicalTrials][10])
+
+| Registered study type  |      Number |
+| ---------------------- | ----------: |
+| All registered studies | **593,857** |
+| Interventional studies | **453,135** |
+| Drug/biologic studies  | **219,299** |
+| Recruiting studies     |  **65,004** |
+
+A simple funnel could work:
+
+**594K studies → 453K interventional → 219K drug/biologic**
+
+This doesn't prove medication-reconciliation burden, but it establishes the enormous system Reconmed is targeting. ([ClinicalTrials][10])
+
+---
+
+## And one general-medication-safety graph
+
+This is **not clinical-trial-specific**, so I'd only use it as safety context.
+
+WHO reports medication discrepancies affect **almost every patient moving across transitions of care**, and cites evidence that **11–59% of medication discrepancies** may have potential for harm. The MARQUIS medication-reconciliation work estimated **0.45 potentially harmful discrepancies per patient**. ([World Health Organization][11])
+
+WHO's broader global estimate is:
+
+**$42 billion/year** associated with medication errors worldwide. ([World Health Organization][12])
+
+And WHO's 2024 policy brief says medicines and therapeutic options account for **nearly 50% of preventable harm in medical care**. ([World Health Organization][13])
+
+Again: **healthcare generally, not clinical trials.**
+
+---
+
+## What I'd actually put on the Reconmed slide
+
+I think a stronger slide than four disconnected numbers would be:
+
+**Headline:**
+
+### **Medication Errors Hide Inside a Growing Trial Burden**
+
+**Left ~60%:** donut chart from the **649 important deviations**
+
+> 44.5% Procedures
+> 18.5% Consent
+> 14.5% Intervention
+> 13.6% Eligibility
+> **5.1% Concomitant medications**
+> 3.2% Safety reporting
+> 0.6% Discontinuation
+
+**Right ~40%:** three big callouts:
+
+**118.5**
+deviations / Phase III protocol
+
+**5.9M**
+datapoints / Phase III protocol
+
+**12.9%**
+of participant calls uncovered medication-use protocol violations
+
+And at the bottom:
+
+**Reconmed catches medication drift before it becomes downstream trial deviation and rework.**
+
+That gives you **one real distribution + three scale statistics**, which visually and analytically tells the story much better than four standalone facts. ([PubMed Central (PMC)][3])
+
+[1]: https://pubmed.ncbi.nlm.nih.gov/40540193/?utm_source=chatgpt.com "Incidence and Characterization of Important Protocol Deviations in Clinical Trials in Argentina."
+[2]: https://www.researchgate.net/publication/392874026_Incidence_and_Characterization_of_Important_Protocol_Deviations_in_Clinical_Trials_in_Argentina?utm_source=chatgpt.com "(PDF) Incidence and Characterization of Important Protocol Deviations in Clinical Trials in Argentina"
+[3]: https://pmc.ncbi.nlm.nih.gov/articles/PMC8979478/?utm_source=chatgpt.com "Benchmarking Protocol Deviations and Their Variation by Major Disease Categories - PMC"
+[4]: https://pmc.ncbi.nlm.nih.gov/articles/PMC12945892/?utm_source=chatgpt.com "Insights Informing Strategies for Optimizing the Collection of Clinical Trial Data - PMC"
+[5]: https://doi.org/10.1007/s43441-025-00899-4?utm_source=chatgpt.com "Insights Informing Strategies for Optimizing the Collection of Clinical Trial Data | Therapeutic Innovation & Regulatory Science | Springer Nature Link"
+[6]: https://pubmed.ncbi.nlm.nih.gov/28285724/?utm_source=chatgpt.com "Frequency and Impact of Pharmacist Interventions in Clinical Trial Patients With Diabetes."
+[7]: https://pubmed.ncbi.nlm.nih.gov/40886069/?utm_source=chatgpt.com "Automated data collection from an electronic medical record for a prospective real-world study in patients with retinal disease (VOYAGER) - PubMed"
+[8]: https://pmc.ncbi.nlm.nih.gov/articles/PMC12647373/?utm_source=chatgpt.com "Automated data collection from an electronic medical record for a prospective real-world study in patients with retinal disease (VOYAGER) - PMC"
+[9]: https://www.jscdm.org/article/id/21/?utm_source=chatgpt.com "Buckley | Direct Data Extraction and Exchange of Local Labs for Clinical Research Protocols: A Partnership with Sites, Biopharmaceutical Firms, and Clinical Research Organizations | Journal of the Society for Clinical Data Management"
+[10]: https://clinicaltrials.gov/about-site/trends-charts?utm_source=chatgpt.com "Trends and Charts on Registered Studies | ClinicalTrials.gov"
+[11]: https://www.who.int/docs/default-source/patient-safety/who-uhc-sds-2019-9-eng.pdf?utm_source=chatgpt.com "TransitionOfCare31Print"
+[12]: https://www.who.int/initiatives/medication-without-harm?utm_source=chatgpt.com "Medication Without Harm"
+[13]: https://www.who.int/publications/i/item/9789240062764?utm_source=chatgpt.com "Medication without harm: Policy brief"

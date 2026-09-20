@@ -8,7 +8,6 @@
 \path[use as bounding box] (0,0) rectangle (160,90);
 
 \node[headline] at (16,82) {The medication list is stale, and the visit is now};
-\node[subline]  at (16,76) {Everything else is decided before the visit. The medication list is not.};
 
 % ---- the morning, 08:00 -> 10:30 spread across 132 mm -------------------
 \draw[line, line width=0.5pt] (14,40) -- (146,40);
@@ -27,7 +26,7 @@
 
 % the block that is the problem — weight, not colour
 \fill[ink, rounded corners=1.5pt] (124.6,41) rectangle (141.6,53);
-\node[font=\fontsize{6.2}{7}\selectfont\sffamily\bfseries\color{white}] at (133.1,47) {conmeds};
+\node[font=\fontsize{6.2}{7}\selectfont\sffamily\bfseries\color{white}] at (133.1,47) {med rec};
 
 % the visit
 \draw[lineii, dashed, line width=0.5pt] (146,38) -- (146,58);

@@ -1,6 +1,6 @@
-# conmed — presentation
+# Reconmed — presentation
 
-The Regeneron track deck for **conmed · Automated patient reconciliation**.
+The Regeneron track deck for **Reconmed · Automated patient reconciliation**.
 
 Each slide is a single image, built in its own folder as a standalone LaTeX
 figure and compiled to a **backgroundless PDF**. The deck (`slides/main.tex`) is
@@ -28,14 +28,14 @@ ImageMagick for `make preview`.
 ```
 presentation/
 ├── shared/
-│   ├── palette.tex      the app's colour tokens (frontend/src/styles/tokens.css)
-│   ├── fonts.tex        one neutral grotesque (Open Sans; Inter if installed)
+│   ├── palette.tex      green medical theme (derived from the app's tokens)
+│   ├── fonts.tex        Montserrat headings over Open Sans body
 │   ├── tikzstyles.tex   shared TikZ styles, sized in millimetres
-│   ├── logo.tex         \conmedmark — the mark at any size
+│   ├── logo.tex         \reconmedmark — the mark at any size
 │   ├── base.tex         preamble for figures *and* slides
 │   ├── theme.tex        base + transparent page background (figures only)
 │   └── marks/           vector assets, included at any size:
-│                        conmed mark, OpenAI, Deepgram, Lucide icons
+│                        Reconmed mark, OpenAI, Deepgram, Lucide icons
 │                        (brain, database, file, clock, shield, stethoscope),
 │                        and the QR code
 ├── figures/
@@ -73,7 +73,9 @@ shows through. Panels that should read as surfaces get an explicit `surf` fill.
 
 ## Brand
 
-**conmed** (lowercase) — automated patient reconciliation.
+**Reconmed** — automated patient reconciliation. (The clinical shorthand for
+concomitant medication, "conmed/conmeds", is a separate term and is still used
+where it means the medication itself.)
 
 The mark is two records converging into a single line: the medication log on
 file, and what the participant actually said, resolved into one record. It is

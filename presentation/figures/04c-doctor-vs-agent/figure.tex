@@ -1,0 +1,96 @@
+% Slide 04c — before, and after.
+% Left: the manual process, plain and slow — read the record, call and remember
+% it, then type it into a computer hours later. Icons say what each step is;
+% the clocks sit on the transitions between steps, so the time draining away is
+% what you see. Right: the same plain setting, with the Reconmed logo doing the
+% branding — the record loaded before the call and updating as it happens.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+% a clock face: x, y, radius, hour angle, minute angle (degrees clockwise from 12)
+\newcommand{\clockface}[5]{%
+  \draw[line, line width=0.4pt, fill=surf] (#1,#2) circle (#3);
+  \draw[ink, line width=0.5pt, line cap=round]
+    (#1,#2) -- ({#1+#3*0.42*cos(90-#4)},{#2+#3*0.42*sin(90-#4)});
+  \draw[ink, line width=0.4pt, line cap=round]
+    (#1,#2) -- ({#1+#3*0.74*cos(90-#5)},{#2+#3*0.74*sin(90-#5)});
+  \fill[ink] (#1,#2) circle ({#3*0.10});
+}
+
+\node[headline] at (16,82) {Before, and after};
+
+% ==================== BEFORE — plain, and slow ==========================
+\fill[surf, rounded corners=3pt] (12,16) rectangle (76,72);
+\draw[lineii, line width=0.5pt, rounded corners=3pt] (12,16) rectangle (76,72);
+
+\node[anchor=west, font=\fontsize{12}{13}\selectfont\displayfont\bfseries\color{inkiii}] at (16,66.5) {Before};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (16,62) {the coordinator, by hand};
+\draw[line] (14,60) -- (74,60);
+
+\fill[surf, rounded corners=1.5pt] (14,49) rectangle (74,58);
+\draw[lineii, line width=0.4pt, rounded corners=1.5pt] (14,49) rectangle (74,58);
+\node[anchor=center] at (19,53.5) {\includegraphics[height=5.5mm]{shared/marks/i-file-text.pdf}};
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{inkii}] at (24,55) {Read the record};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (24,51) {protocol and history};
+
+\draw[-{Stealth[length=1.4mm,width=1.1mm]}, lineii, dashed, line width=0.5pt] (60,49) -- (60,43);
+\clockface{60}{46}{2.6}{15}{180}
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{inkiii}] at (64.5,46) {30 min};
+
+\fill[surf, rounded corners=1.5pt] (14,34) rectangle (74,43);
+\draw[lineii, line width=0.4pt, rounded corners=1.5pt] (14,34) rectangle (74,43);
+\node[anchor=center] at (19,38.5) {\includegraphics[height=5.5mm]{shared/marks/i-phone-call.pdf}};
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{inkii}] at (24,40) {Call, and remember it};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (24,36) {nothing is written down};
+
+\draw[-{Stealth[length=1.4mm,width=1.1mm]}, lineii, dashed, line width=0.5pt] (60,34) -- (60,28);
+\clockface{60}{31}{2.6}{22}{270}
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{inkiii}] at (64.5,31) {45 min};
+
+\fill[surf, rounded corners=1.5pt] (14,19) rectangle (74,28);
+\draw[lineii, line width=0.4pt, rounded corners=1.5pt] (14,19) rectangle (74,28);
+\node[anchor=center] at (19,23.5) {\includegraphics[height=5.5mm]{shared/marks/i-monitor.pdf}};
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{inkii}] at (24,25) {Type it into the computer};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (24,21) {hours later, from memory};
+
+% ==================== AFTER — the logo, and live ========================
+\draw[lineii, dashed, line width=0.5pt] (80,16) -- (80,72);
+
+\node[anchor=center] at (94,67) {\includegraphics[height=10mm]{shared/marks/reconmed.pdf}};
+\node[anchor=west, font=\fontsize{10}{11}\selectfont\displayfont\bfseries\color{brand}] at (103,68.5) {Reconmed};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiii}] at (103,64) {the record, live};
+
+\fill[brand] (131,68.5) circle (1);
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\bfseries\color{brand}] at (133.5,68.5) {live};
+
+\draw[line] (86,61.5) -- (146,61.5);
+
+\node[anchor=center] at (90,56.5) {\includegraphics[height=5mm]{shared/marks/i-database.pdf}};
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkii}] at (94,56.5) {the record is already loaded};
+
+\foreach \x/\h in {92/3,96/5,100/3,104/6,108/4,112/6,116/3,120/5,124/4,128/6,132/3,136/4,140/3,144/4}{
+  \fill[lineiii, rounded corners=0.3pt] (\x,{48.5-\h*0.5}) rectangle (\x+1.4,{48.5+\h*0.5});
+}
+\node[anchor=west, font=\fontsize{5.6}{7}\selectfont\sffamily\color{inkiii}] at (88,42) {the call};
+
+\fill[surf, draw=line, line width=0.4pt, rounded corners=1.5pt] (88,33.5) rectangle (104,39);
+\fill[add] (91,36.25) circle (1);
+\node[anchor=west, font=\fontsize{5.6}{7}\selectfont\sffamily\color{ink}] at (93.5,36.25) {Add};
+\fill[surf, draw=line, line width=0.4pt, rounded corners=1.5pt] (108,33.5) rectangle (126,39);
+\fill[modify] (111,36.25) circle (1);
+\node[anchor=west, font=\fontsize{5.6}{7}\selectfont\sffamily\color{ink}] at (113.5,36.25) {Modify};
+\fill[surf, draw=line, line width=0.4pt, rounded corners=1.5pt] (130,33.5) rectangle (146,39);
+\fill[stop] (133,36.25) circle (1);
+\node[anchor=west, font=\fontsize{5.6}{7}\selectfont\sffamily\color{ink}] at (135.5,36.25) {Stop};
+
+\clockface{92}{27}{3}{2}{18}
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (97,28.5) {3 min to review};
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (97,24.8) {not to write up};
+
+\node[anchor=west, font=\fontsize{9}{10}\selectfont\displayfont\bfseries\color{brand}] at (86,19) {4 h 30 back, every round};
+
+\end{tikzpicture}
+\end{document}

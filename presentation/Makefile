@@ -1,4 +1,4 @@
-# conmed presentation — build.
+# Reconmed presentation — build.
 #
 #   make            build the deck (and everything it needs)
 #   make figures    compile every figures/*/figure.tex to figure.pdf
@@ -12,7 +12,8 @@
 LATEX   ?= lualatex
 FLAGS   := -interaction=nonstopmode -halt-on-error -file-line-error
 
-MARK    := shared/marks/conmed.pdf
+MARK    := shared/marks/reconmed.pdf
+MARKS   := $(wildcard shared/marks/*.png)
 FIGTEX  := $(wildcard figures/*/figure.tex)
 FIGPDFS := $(patsubst %/figure.tex,%/figure.pdf,$(FIGTEX))
 SLIDES  := slides/main.pdf
@@ -23,7 +24,7 @@ SHARED  := $(wildcard shared/*.tex)
 all: deck
 
 # ---- the mark asset -----------------------------------------------------
-$(MARK): shared/marks/conmed.tex $(SHARED)
+$(MARK): shared/marks/reconmed.tex $(SHARED)
 	@mkdir -p $(dir $@)
 	$(LATEX) $(FLAGS) -output-directory=$(dir $@) $< >/dev/null || { echo "FAILED: $<"; $(LATEX) $(FLAGS) -output-directory=$(dir $@) $<; exit 1; }
 	@echo "  mark    $@"
@@ -33,7 +34,7 @@ figures: $(FIGPDFS)
 
 $(FIGPDFS): $(MARK)
 
-%/figure.pdf: %/figure.tex $(SHARED) $(MARK)
+%/figure.pdf: %/figure.tex $(SHARED) $(MARK) $(MARKS)
 	$(LATEX) $(FLAGS) -output-directory=$* $< >/dev/null || { echo "FAILED: $<"; $(LATEX) $(FLAGS) -output-directory=$* $<; exit 1; }
 	@echo "  figure  $@"
 
