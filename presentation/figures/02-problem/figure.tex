@@ -7,10 +7,17 @@
 % a dose changed by someone else's doctor, a vaccination — and all of it funnels
 % into the one dark box at the end of the visit.
 %
-% On the ~20 minutes: a site estimate, and a conservative one. Published
-% medication-reconciliation times run far longer (a median of 50 minutes per
-% patient; 46 at internal-medicine admission). It is labelled as an estimate
-% because it is the only number in the deck without a citation.
+% On the duration: the slide quotes AHRQ's 30-60 minutes per admission rather
+% than picking a point inside it. A midpoint would have been a number we chose;
+% the range is a number someone published. A time-and-motion study of 103
+% observed reconciliations corroborates it — 46.2 minutes at internal-medicine
+% admission, 92.2 in geriatrics. Both are hospital settings, not trial visits,
+% and the slide says so in small type: the figure is defensible, the transplant
+% between settings is the part a judge could reasonably question.
+%
+% Sizing the blocks by real minutes changed the argument for the better. At 50
+% minutes med rec is not a box squeezed onto the end of the visit; it is the
+% single largest thing in it, and it still only captures what they remember.
 %
 % The load-bearing claim is the last line, and that one is corroborated:
 % conmed data is entered at the site visit, which makes the record a test of
@@ -23,7 +30,7 @@
 \path[use as bounding box] (0,0) rectangle (160,90);
 
 \node[headline] at (16,82) {The medication list is stale, and the visit is now};
-\node[subline]  at (16,75.5) {Twelve weeks of changes, recalled once, in the last twenty minutes of a visit.};
+\node[subline]  at (16,75.5) {Concomitant medications \textemdash\ anything taken besides the study drug \textemdash\ are collected once, at the visit.};
 
 % ---- the gap between visits --------------------------------------------
 \node[anchor=west, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (16,66) {last visit};
@@ -47,15 +54,17 @@
 \node[anchor=west, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (82,46.5) {all of it, from memory};
 
 % ---- the visit ----------------------------------------------------------
-\foreach \x/\w/\lab in {16/32/{check-in}, 50/32/{vitals \& samples}, 84/32/{eligibility \& history}} {
+\foreach \x/\w/\lab/\mins in {16/16.3/{check-in}/{20 min}, 34.3/32.5/{vitals \& samples}/{40 min}, 68.8/32.5/{eligibility \& history}/{40 min}} {
   \fill[surfii, draw=line, line width=0.4pt, rounded corners=1.5pt] (\x,28) rectangle (\x+\w,40);
-  \node[font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkii}] at (\x+\w/2,34) {\lab};
+  \node[font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkii}] at (\x+\w/2,35) {\lab};
+  \node[font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiv}] at (\x+\w/2,31) {\mins};
 }
-\fill[ink, rounded corners=1.5pt] (118,28) rectangle (144,40);
-\node[font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{white}] at (131,34) {med rec};
+\fill[ink, rounded corners=1.5pt] (103.3,28) rectangle (144,40);
+\node[font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{white}] at (123.6,35) {medication reconciliation};
+\node[font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{white}] at (123.6,31) {30\textendash60 min};
 
-\node[anchor=north, font=\fontsize{7.2}{8.6}\selectfont\sffamily\bfseries\color{ink}] at (131,25.5) {\textasciitilde20 minutes};
-\node[anchor=north, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (131,21.5) {site estimate};
+\node[anchor=north, font=\fontsize{7.2}{8.6}\selectfont\sffamily\bfseries\color{ink}] at (123.6,25.5) {the longest task of the visit};
+\node[anchor=north, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiii}] at (123.6,21.5) {AHRQ, per admission};
 
 % ---- the claim ----------------------------------------------------------
 \draw[line, line width=0.5pt] (16,15) -- (144,15);
@@ -63,6 +72,8 @@
   {Conmeds are entered at the visit, so the record is whatever the participant remembers.};
 \node[anchor=north west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkii}] at (16,7.5)
   {Nothing above reaches the site any other way. A course that ended six weeks ago is the easiest thing in the world to forget.};
+\node[anchor=west, font=\fontsize{5.2}{6.2}\selectfont\sffamily\color{inkiv}] at (16,2.5)
+  {Reconciliation times: AHRQ \textit{Patient Safety and Quality}; time-and-motion study of 103 reconciliations, \textit{BMC Health Serv Res} 13:485. Hospital settings.};
 
 \end{tikzpicture}
 \end{document}
