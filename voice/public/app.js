@@ -21,6 +21,7 @@
   let muted = false;
   let agentSpeaking = false;
   let currentAudio = null;
+  let openingLine = '';
   let queue = [];
   let turnBusy = false;
   let pendingFinals = [];
@@ -571,6 +572,9 @@
         body: JSON.stringify({ subjectId }),
       });
       sessionId = s.sessionId;
+      // The agent opens: this is an outbound call, so it speaks first rather
+      // than waiting to be greeted. `say` comes back with the session.
+      openingLine = (s.say || '').trim();
       $('#sessionPill').textContent = `session ${sessionId.slice(0, 8)}… · ${subjectId}`;
       $('#sessionPill').className = 'pill ok';
       log('session.start', { sessionId, subjectId });
@@ -636,6 +640,16 @@
 
       call = { ws, ctx, stream, source, processor, analyser };
       flushInterval = setInterval(maybeFlush, 200);
+
+      // The agent opens. Spoken here rather than earlier because the mic gate
+      // is half-duplex on `agentSpeaking`, which only holds once `call` exists
+      // — and because playing it during the microphone permission prompt would
+      // mean the participant never hears it.
+      if (openingLine) {
+        conversation.push({ speaker: 'agent', text: openingLine });
+        renderConversation();
+        agentSpeak(openingLine).catch(() => {});   // never block the call on TTS
+      }
 
       // Drive the orb's mic level ~10×/s.
       const levelData = new Uint8Array(analyser.frequencyBinCount);

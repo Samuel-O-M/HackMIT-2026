@@ -9,3 +9,5 @@ voice/brain/db/*.db-wal
 voice/logs/
 databases/**/*.db
 databases/call_sessions/contacts.json
+databases/**/*.db-shm
+databases/**/*.db-wal

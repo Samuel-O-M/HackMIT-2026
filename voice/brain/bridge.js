@@ -16,6 +16,7 @@
  * take down a call that is already over.
  */
 const { patient } = require('./db');
+const { redactTurns } = require('./redact');
 
 const API = process.env.TRIAL_API_BASE || 'http://localhost:5174';
 
@@ -89,11 +90,16 @@ async function publishSession(sessionId) {
       changes: identity.outcome === 'verified' ? staged.map(toProposedChange) : [],
     },
     identity,
-    transcript: turns.map((t, i) => ({
-      atMs: i * 6000,
-      speaker: t.speaker === 'patient' ? 'participant' : 'agent',
-      text: t.transcript,
-    })),
+    // Redacted here, at the boundary. The identity exchange stays; the name
+    // and date of birth inside it do not cross into the clinical record.
+    transcript: redactTurns(
+      turns.map((t, i) => ({
+        atMs: i * 6000,
+        speaker: t.speaker === 'patient' ? 'participant' : 'agent',
+        text: t.transcript,
+      })),
+      p.get('SELECT given_name, family_name, dob FROM patients WHERE subject_id = ?', call.subject_id),
+    ),
   };
 
   try {

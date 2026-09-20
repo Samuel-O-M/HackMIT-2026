@@ -355,7 +355,17 @@ async function handleBrainSession(req, res) {
     subjectId,
     studyId: session.study_id ?? null,
   });
-  sendJson(res, 200, { sessionId: session.session_id, subjectId });
+
+  // The agent opens. Callers do not wait to be greeted by the person they rang.
+  let say = '';
+  try {
+    ({ say } = await brain.openCall({ sessionId: session.session_id, subjectId }));
+    if (say) logger.append(session.session_id, 'turn', { userText: null, say, opening: true });
+  } catch (err) {
+    console.error('[open]', err.message);   // a failed opening must not fail the call
+  }
+
+  sendJson(res, 200, { sessionId: session.session_id, subjectId, say });
 }
 
 async function handleBrainTurn(req, res) {
@@ -412,13 +422,18 @@ async function handleBrainEnd(req, res) {
   // Best effort: a failed publish must not fail a call that is already over.
   let published = null;
   try {
+    // The planner runs in the background, so the last thing said on a call is
+    // often still being written when the call ends. Publishing straight away
+    // raced it and handed the coordinator an empty review queue for a call
+    // that had just surfaced a new medication. Let it finish first.
+    await brain.waitForIdle(sessionId);
     published = await require('./brain/bridge').publishSession(sessionId);
   } catch (err) {
     published = { published: false, reason: String(err.message || err) };
   }
   brain.endSession(sessionId);
-  logger.append(sessionId, 'session.end', {});
-  sendJson(res, 200, { ok: true, sessionId });
+  logger.append(sessionId, 'session.end', { published });
+  sendJson(res, 200, { ok: true, sessionId, published });
 }
 
 async function handleChannel(req, res) {

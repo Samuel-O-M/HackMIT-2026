@@ -165,6 +165,30 @@ class Brain {
     return state;
   }
 
+  /**
+   * The agent speaks first.
+   *
+   * This is an outbound call — the site is ringing the participant, so the
+   * agent opens, exactly as a coordinator would. Nothing is recorded as a
+   * participant turn, because they have not said anything yet.
+   */
+  async openCall({ sessionId, subjectId }) {
+    this.init();
+    const session = this.ensureSession(sessionId, subjectId);
+    subjectId = session.subject_id;
+
+    const { say, toolCalls, model } = await talker.respond({
+      plannerState: this.stateForTalker(sessionId, subjectId),
+      conversation: [{ speaker: 'system', text: 'The participant has just answered the phone and has not spoken yet. Open the call: say who is calling, why, and ask for their full name and date of birth.' }],
+      subjectId,
+      sessionId,
+    });
+
+    const opening = (say || '').trim();
+    if (opening) this.saveUtterance(sessionId, 'agent', opening);
+    return { say: opening, sessionId, subjectId, toolCalls, model };
+  }
+
   // ------------------------------------------------------------- turn cycle
   /**
    * Fast path. Runs only the Talker and returns immediately.

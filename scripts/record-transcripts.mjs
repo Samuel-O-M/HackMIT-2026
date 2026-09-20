@@ -16,6 +16,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 try { process.loadEnvFile(join(ROOT, '.env')); } catch { /* may already be set */ }
@@ -27,6 +28,9 @@ const read = (p) => JSON.parse(readFileSync(join(ROOT, p), 'utf8'));
 const sessions = read('patient_data/participants/sessions.json');
 const transcripts = read('patient_data/participants/transcripts.json');
 const contacts = read('databases/call_sessions/contacts.json');
+// The same redaction the live bridge applies, so a recorded call and a real
+// one are de-identified by one implementation rather than two.
+const { redactTurns } = createRequire(import.meta.url)('../voice/brain/redact.js');
 
 async function post(path, body) {
   const res = await fetch(`${BASE}${path}`, {
@@ -171,7 +175,10 @@ for (const session of targets) {
   }
 
   await post('/api/brain/end', { sessionId: brainId, subjectId: session.subjectId }).catch(() => {});
-  transcripts[session.sessionId] = turns;
+  // Redacted before it reaches disk. transcripts.json is committed and the app
+  // renders it, so an unredacted turn here is a name on a screen built to show
+  // none. Nothing downstream has to remember to do this.
+  transcripts[session.sessionId] = redactTurns(turns, contacts[session.subjectId]);
   writeFileSync(tPath, `${JSON.stringify(transcripts, null, 2)}\n`);
   const got = session.changes.length - remaining.size;
   console.log(`  ${session.sessionId}  ${session.subjectId}  ${turns.length} turns · ${got}/${session.changes.length} changes surfaced${remaining.size ? ` · missed ${[...remaining].join(',')}` : ''}`);
