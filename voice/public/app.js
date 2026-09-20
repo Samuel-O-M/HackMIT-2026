@@ -390,7 +390,7 @@
       }
       // The grounding/brain/log panes are developer-only. The conversation
       // above must refresh in patient mode too, otherwise the agent's reply is
-      // never rendered and agentSpeak() is never triggered (silent call).
+      // never shown (and the transcript looks silent).
       if (devPanel.hidden) return;
       const sig = JSON.stringify({
         p: data.patient ?? null, t: data.lastTurn?.talker?.toolCalls ?? null,
@@ -419,57 +419,159 @@
   }
 
   // ------------------------------------------------------------- TTS
-  async function agentSpeak(text) {
-    const res = await fetch('/api/tts?model=aura-2-helena-en', {
+  const VOICE_MODEL = 'aura-2-helena-en';
+
+  // The "one moment" fillers are three fixed phrases, so they are synthesised
+  // once when the call starts and replayed instantly. Keep in sync with FILLERS
+  // in brain/lib/speech.js.
+  const FILLERS = ['One moment.', 'Let me check that.', 'Just a second.'];
+  const fillerUrls = new Map(); // phrase -> Promise<object URL>
+
+  async function fetchSpeechUrl(text) {
+    const res = await fetch(`/api/tts?model=${VOICE_MODEL}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
     });
-    if (!res.ok) throw new Error('TTS failed');
-    const blob = await res.blob();
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio = null;
+    if (!res.ok) throw new Error(`TTS failed (${res.status})`);
+    return URL.createObjectURL(await res.blob());
+  }
+
+  function prefetchFillers() {
+    for (const phrase of FILLERS) {
+      if (!fillerUrls.has(phrase)) {
+        fillerUrls.set(phrase, fetchSpeechUrl(phrase).catch((err) => {
+          fillerUrls.delete(phrase); // try again next time it is needed
+          throw err;
+        }));
+      }
     }
+  }
+
+  /** Start synthesising one chunk now. Resolves to a ready Audio, or null if TTS failed. */
+  async function synthesize(text) {
+    try {
+      const cached = FILLERS.includes(text);
+      if (cached) prefetchFillers();
+      const url = await (cached ? fillerUrls.get(text) : fetchSpeechUrl(text));
+      const audio = new Audio(url);
+      audio.preload = 'auto';
+      if (cached) audio.dataset.cached = '1';
+      return audio;
+    } catch (err) {
+      log('tts.error', { error: String(err.message || err) });
+      return null;
+    }
+  }
+
+  function playAudio(audio) {
     return new Promise((resolve) => {
-      const audio = new Audio(URL.createObjectURL(blob));
       currentAudio = audio;
-      agentSpeaking = true;
-      setState('speaking');
       const done = () => {
-        agentSpeaking = false;
-        currentAudio = null;
-        if (call) setState(muted ? 'muted' : 'listening');
+        if (!audio.dataset.cached) URL.revokeObjectURL(audio.src); // cached fillers are reused
+        if (currentAudio === audio) currentAudio = null;
         resolve();
       };
       audio.onended = done;
       audio.onerror = done;
       audio.play().catch(done);
-      log('tts.played', { chars: text.length });
     });
   }
 
+  /**
+   * The agent's speech for one turn. Every chunk is synthesised the moment it
+   * is added — in parallel, not one after another — and played back to back in
+   * order. The mic stays muted from the first sound to finish(), including the
+   * gaps between chunks, so the agent never hears itself.
+   */
+  function createSpeech(onFirstAudio) {
+    let chain = Promise.resolve();
+    let started = false;
+    return {
+      add(text) {
+        const audio = synthesize(text);
+        chain = chain.then(async () => {
+          const ready = await audio;
+          if (!ready) return;
+          if (!started) {
+            started = true;
+            agentSpeaking = true;
+            setState('speaking');
+            onFirstAudio?.();
+          }
+          await playAudio(ready);
+        });
+      },
+      async finish() {
+        await chain;
+        agentSpeaking = false;
+      },
+    };
+  }
+
   // ------------------------------------------------------------- turns
+  /** Read a newline-delimited JSON stream, calling onEvent for each object. */
+  async function readNdjson(res, onEvent) {
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let pending = '';
+    const handle = (line) => {
+      if (line.trim()) onEvent(JSON.parse(line));
+    };
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      pending += decoder.decode(value, { stream: true });
+      const lines = pending.split('\n');
+      pending = lines.pop();
+      lines.forEach(handle);
+    }
+    if (pending) handle(pending);
+  }
+
   async function doTurn(text) {
     while (agentSpeaking) await sleep(100);
     setState('thinking');
+    const sentAt = Date.now();
+    // When they actually stopped talking (typed messages have no such moment).
+    const speechEndAt = sentAt - lastVoiceAt < 10000 ? lastVoiceAt : sentAt;
     log('turn.sent', { text });
+
+    const speech = createSpeech(() => {
+      log('turn.timing', {
+        speechEndToFirstAudioMs: Date.now() - speechEndAt,
+        sendToFirstAudioMs: Date.now() - sentAt,
+      });
+    });
+
     try {
-      const r = await fetchJson('/api/brain/turn', {
+      const res = await fetch('/api/brain/turn/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, subjectId, text }),
       });
-      log('turn.replied', { say: r.say, tools: r.toolCalls, latencyMs: r.latencyMs });
-      await refresh();
-      const lastAgent = [...conversation].reverse().find((t) => t.speaker === 'agent');
-      if (lastAgent?.transcript) await agentSpeak(lastAgent.transcript);
-      refreshUntilIdle(4, 1300);
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || `HTTP ${res.status}`);
+      }
+      await readNdjson(res, (e) => {
+        if (e.type === 'say') {
+          speech.add(e.text); // speak it now; the rest is still being written
+          log('turn.say', { text: e.text, filler: Boolean(e.filler) });
+        } else if (e.type === 'done') {
+          log('turn.replied', { say: e.say, tools: e.toolCalls, firstChunkMs: e.firstChunkMs, latencyMs: e.latencyMs });
+          refresh(); // the full reply is saved now; show it while it is still being spoken
+        } else if (e.type === 'error') {
+          throw new Error(e.error);
+        }
+      });
     } catch (err) {
       showError('Brain: ' + err.message);
     } finally {
+      await speech.finish();
       setState(call ? (muted ? 'muted' : 'listening') : 'idle');
     }
+    refreshUntilIdle(4, 1300);
   }
 
   function enqueueTurn(text) {
@@ -490,13 +592,19 @@
   }
 
   // Reply only after a sustained silence that WE measure — not on Deepgram's
-  // speech_final, which fires at short pauses.
-  const SILENCE_MS = 1500;
+  // speech_final, which fires at short pauses. Short after a finished sentence,
+  // longer when the words just trail off (the speaker is probably still
+  // thinking: "I take... um...").
+  const SILENCE_MS = 700;
+  const SILENCE_TRAILING_MS = 1200;
+  const FINISHED = /[.?!]["')\]]?\s*$/;
   const noteVoice = () => { lastVoiceAt = Date.now(); };
 
   function maybeFlush() {
     if (!call || agentSpeaking || muted || !pendingFinals.length) return;
-    if (Date.now() - lastVoiceAt >= SILENCE_MS) flushFinals();
+    const last = pendingFinals[pendingFinals.length - 1];
+    const needed = FINISHED.test(last) ? SILENCE_MS : SILENCE_TRAILING_MS;
+    if (Date.now() - lastVoiceAt >= needed) flushFinals();
   }
 
   function flushFinals() {
@@ -514,7 +622,9 @@
       if (msg.is_final) {
         pendingFinals.push(t);
         interim = '';
-        noteVoice();
+        // Not noteVoice(): a final only arrives after the endpointing pause, so
+        // the speaker has already been quiet that long. Restarting the clock
+        // here made the wait endpointing + silence instead of just silence.
         log('stt.final', { text: t });
       } else {
         interim = t;
@@ -574,6 +684,7 @@
       $('#sessionPill').textContent = `session ${sessionId.slice(0, 8)}… · ${subjectId}`;
       $('#sessionPill').className = 'pill ok';
       log('session.start', { sessionId, subjectId });
+      prefetchFillers();
 
       conversation = [];
       interim = '';
@@ -597,8 +708,11 @@
       params.set('punctuate', 'true');
       params.set('interim_results', 'true');
       params.set('vad_events', 'true');
-      params.set('endpointing', '800');
-      params.set('utterance_end_ms', '1500');
+      // endpointing only decides when a final transcript is emitted; when we
+      // reply is decided by SILENCE_MS above. Deepgram's minimum
+      // utterance_end_ms is 1000.
+      params.set('endpointing', '400');
+      params.set('utterance_end_ms', '1000');
 
       const proto = location.protocol === 'https:' ? 'wss' : 'ws';
       const ws = new WebSocket(`${proto}://${location.host}/ws/listen?${params}`);

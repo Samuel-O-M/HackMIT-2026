@@ -39,8 +39,12 @@ async function fetchWithRetry(url, options, { retries = 3, timeoutMs = 30000 } =
   throw lastErr;
 }
 
-async function request(messages, { model, effort, json, tools }) {
+async function request(messages, { model, effort, json, tools, stream }) {
   const body = { model, messages };
+  if (stream) {
+    body.stream = true;
+    body.stream_options = { include_usage: true };
+  }
   if (effort) body.reasoning_effort = effort;
   // response_format and tools don't mix well; only use JSON mode without tools.
   if (json && !(tools && tools.length)) body.response_format = { type: 'json_object' };
@@ -133,6 +137,105 @@ async function chatWithTools({ messages, tools, model, effort, maxRounds = 4, ex
   };
 }
 
+/**
+ * Read one streamed chat completion. Text deltas go to `onText` as they
+ * arrive; tool calls are assembled from their fragments. `onToolStart` fires
+ * once, the moment the model begins asking for a tool.
+ */
+async function readCompletionStream(res, { onText, onToolStart }) {
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let pending = '';
+  let content = '';
+  let modelName = null;
+  let usage = {};
+  let toolStarted = false;
+  const calls = [];
+
+  const handle = (line) => {
+    if (!line.startsWith('data:')) return;
+    const payload = line.slice(5).trim();
+    if (!payload || payload === '[DONE]') return;
+    let chunk;
+    try {
+      chunk = JSON.parse(payload);
+    } catch {
+      return;
+    }
+    modelName = chunk.model || modelName;
+    if (chunk.usage) usage = chunk.usage;
+    const delta = chunk.choices?.[0]?.delta;
+    if (!delta) return;
+    if (delta.content) {
+      content += delta.content;
+      onText?.(delta.content);
+    }
+    for (const t of delta.tool_calls || []) {
+      const c = (calls[t.index] ??= { id: '', type: 'function', function: { name: '', arguments: '' } });
+      if (t.id) c.id = t.id;
+      if (t.function?.name) c.function.name += t.function.name;
+      if (t.function?.arguments) c.function.arguments += t.function.arguments;
+      if (!toolStarted) {
+        toolStarted = true;
+        onToolStart?.();
+      }
+    }
+  };
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    pending += decoder.decode(value, { stream: true });
+    const lines = pending.split('\n');
+    pending = lines.pop();
+    for (const line of lines) handle(line);
+  }
+  if (pending) handle(pending);
+  return { content, calls: calls.filter(Boolean), model: modelName, usage };
+}
+
+/**
+ * Streaming twin of chatWithTools. Same tool loop, but text is pushed to
+ * `onText` token by token so the caller can start speaking before the model
+ * has finished, and `onToolStart` fires when a tool round begins.
+ */
+async function chatWithToolsStream({ messages, tools, model, effort, maxRounds = 4, execute, onText, onToolStart }) {
+  if (!config.openaiKey) throw new Error('OPENAI_API_KEY is not set (repo-root .env).');
+  const toolCalls = [];
+  const eff = tools && tools.length ? 'none' : effort;
+  let spoken = '';
+  const collect = (d) => {
+    spoken += d;
+    onText?.(d);
+  };
+
+  for (let round = 0; round <= maxRounds; round++) {
+    const withTools = round < maxRounds;
+    const res = await request(messages, { model, effort: withTools ? eff : effort, tools: withTools ? tools : undefined, stream: true });
+    if (!res.ok) await parseOrThrow(res); // throws with the API's message
+    const out = await readCompletionStream(res, {
+      onText: collect,
+      onToolStart: () => onToolStart?.({ spokenSoFar: spoken }),
+    });
+    messages.push({ role: 'assistant', content: out.content || null, ...(out.calls.length ? { tool_calls: out.calls } : {}) });
+
+    if (!out.calls.length) return { text: spoken, model: out.model || model, toolCalls, usage: out.usage };
+
+    for (const call of out.calls) {
+      let args = {};
+      try {
+        args = JSON.parse(call.function?.arguments || '{}');
+      } catch {
+        args = { _parse_error: call.function?.arguments };
+      }
+      const result = execute ? await execute(call.function?.name, args) : { error: 'no executor' };
+      toolCalls.push({ name: call.function?.name, args, result });
+      messages.push({ role: 'tool', tool_call_id: call.id, content: JSON.stringify(result).slice(0, 8000) });
+    }
+  }
+  return { text: spoken, model, toolCalls, usage: {} };
+}
+
 /** Extract the first JSON object from a string (tolerates fences/prose). */
 function parseJson(text) {
   const trimmed = String(text || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
@@ -146,4 +249,4 @@ function parseJson(text) {
   }
 }
 
-module.exports = { chat, chatWithTools, parseJson };
+module.exports = { chat, chatWithTools, chatWithToolsStream, parseJson };
