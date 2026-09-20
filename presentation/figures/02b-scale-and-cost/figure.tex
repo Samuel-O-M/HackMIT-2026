@@ -1,0 +1,65 @@
+% Slide 03 — how common, and what it costs to find late.
+%
+% Merged from two slides that were making one argument between them: the
+% deviation benchmark on its own says "this happens a lot" and the I-SPY cost
+% on its own says "finding it late is expensive", and neither is the point
+% without the other.
+%
+% Bars on the left because a trend wants a shape; figures on the right because
+% money wants a number. Bars run at 0.9mm per percent, so the 40% oncology
+% reference sits at a literal 36mm above the baseline.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\hyphenpenalty=10000\exhyphenpenalty=10000
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {Common in every trial, and expensive once it is cold};
+
+% ---- left: how common ---------------------------------------------------
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (16,73)
+  {Participants with a protocol deviation};
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (16,69)
+  {187 protocols, 20 sponsors and CROs \textemdash\ Tufts CSDD, 2022};
+
+\draw[lineii, line width=0.4pt, dash pattern=on 1.2pt off 1.2pt] (18,58) -- (70,58);
+\node[anchor=west, font=\fontsize{5.4}{6.5}\selectfont\sffamily\bfseries\color{ink}] at (70.5,58) {40\%};
+\node[anchor=west, font=\fontsize{5}{6}\selectfont\sffamily\color{inkiii}] at (70.5,55) {oncology};
+
+\foreach \x/\pct/\ph/\dev in {28/15.3/{I}/{8.7}, 43/30.0/{II}/{75.3}} {
+  \fill[lineii, rounded corners=1.2pt] (\x-6,22) rectangle (\x+6,22+\pct*0.9);
+  \node[anchor=south, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (\x,22+\pct*0.9+1.5) {\pct\%};
+  \node[anchor=north, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (\x,19.5) {Phase \ph};
+  \node[anchor=north, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (\x,15.5) {\dev};
+}
+\fill[brand, rounded corners=1.2pt] (52,22) rectangle (64,51.5);
+\node[anchor=south, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{brand}] at (58,53) {32.8\%};
+\node[anchor=north, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (58,19.5) {Phase III};
+\node[anchor=north, font=\fontsize{5.8}{7}\selectfont\sffamily\bfseries\color{ink}] at (58,15.5) {118.5};
+
+\draw[line, line width=0.5pt] (18,22) -- (70,22);
+\node[anchor=north, font=\fontsize{5.4}{6.5}\selectfont\sffamily\color{inkiv}] at (43,12.5) {mean deviations per protocol};
+
+% ---- right: what it costs ----------------------------------------------
+\draw[line, line width=0.4pt] (80,14) -- (80,75);
+
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (88,73)
+  {Found later, in retrospective review};
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (88,69)
+  {One phase 2 trial \textemdash\ I-SPY COVID, 2025};
+
+\foreach \y/\fig/\what in {%
+  60/{\$4,862}/{per data error identified},
+  44/{\$6.1M}/{and 61,073 person-hours, to check 30\% of one trial},
+  28/{0.36\%}/{of the fields checked actually held an error}} {
+  \node[anchor=north west, font=\fontsize{15}{17}\selectfont\displayfont\bfseries\color{brand}] at (88,\y) {\fig};
+  \node[anchor=north west, font=\fontsize{6}{7.4}\selectfont\sffamily\color{ink}, align=left, text width=54mm] at (88,\y-7.5) {\what};
+}
+
+% ---- the join -----------------------------------------------------------
+\node[anchor=west, font=\fontsize{5.2}{6.2}\selectfont\sffamily\color{inkiv}] at (16,5)
+  {Getz et al., \textit{Ther Innov Regul Sci} 56:632, 2022 (all deviation types) \textperiodcentered\ \textit{Communications Medicine} 5, 2025.};
+
+\end{tikzpicture}
+\end{document}
