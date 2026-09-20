@@ -12,6 +12,7 @@
  * GET  /agent/trials             -> { trials, protocols } as they are on disk
  * POST /agent/trials             { trial, protocol } -> persists to patient_data/
  * POST /agent/sessions           { session, identity, transcript } -> review queue
+ * GET  /agent/sessions           -> { sessions, transcripts, audit } as published so far
  * GET  /agent/identity           -> identity check per session
  * GET  /agent/participants       -> Participant[]
  * POST /agent/participants       Participant -> upsert by subject id
@@ -102,6 +103,14 @@ createServer(async (req, res) => {
 
     if (req.method === 'GET' && req.url === '/agent/identity') {
       return json(res, 200, loadJson('identity.json', {}));
+    }
+
+    if (req.method === 'GET' && req.url === '/agent/sessions') {
+      return json(res, 200, {
+        sessions: loadJson('sessions.json', []),
+        transcripts: loadJson('transcripts.json', {}),
+        audit: loadJson('audit.json', {}),
+      });
     }
 
     if (req.method === 'POST' && req.url === '/agent/sessions') {
