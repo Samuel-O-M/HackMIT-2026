@@ -1,15 +1,16 @@
-% Slide 10 — readiness, and what stays on the machine.
+% Slide 10 — privacy.
 %
-% The headline claimed "no network" while the slide only covered databases —
-% and the demo path still ships the participant's audio to Deepgram and their
-% words to OpenAI. So the claim was true of the record and false of the voice,
-% which is the half a privacy question is actually about.
+% Titled to match the grounding slide ("What we do about hallucination"), so
+% the deck answers its two hard questions in the same voice.
 %
-% local-ai/ closes that: Parakeet for speech in, Qwen3-TTS for speech out, both
-% ~0.6B, both on CPU, weights in the repo. The middle column says so, and says
-% honestly that it is a switch rather than the default — the demo still runs
-% the hosted path, and a slide that implies otherwise would not survive a
-% judge opening voice/server.js.
+% Three separate claims, and all three are real:
+%   the voice can stay on the machine  (local-ai/, built and round-trip tested)
+%   the record already does            (local stores, no cloud database)
+%   names never enter the record       (redaction at the publish boundary)
+%
+% No filenames anywhere. A store is described by what it holds — "the trial's
+% medication log" — because that is the thing a judge can evaluate, where
+% "conmed.db" is only evidence we have a filesystem.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
@@ -17,64 +18,53 @@
 \begin{tikzpicture}[x=1mm,y=1mm]
 \path[use as bounding box] (0,0) rectangle (160,90);
 
-\node[headline] at (16,82) {Nothing has to leave the machine};
-\node[subline]  at (16,76) {Three real published protocols, 25 participants \textemdash\ trials real, participant data synthetic.};
+\node[headline] at (16,82) {What we do about privacy};
+\node[subline]  at (16,75.5) {A call about someone's medication is as sensitive as data gets. Three places it could leak; three answers.};
 
-% ---- the record ---------------------------------------------------------
-\fill[surf, rounded corners=2.5pt] (10,22) rectangle (64,70);
-\draw[line, line width=0.5pt, rounded corners=2.5pt] (10,22) rectangle (64,70);
-\node[anchor=west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}] at (14,65.5) {The record};
-\draw[line] (10,62.5) -- (64,62.5);
+% ---- 1. the voice -------------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (12,26) rectangle (60,68);
+\draw[brand, line width=0.7pt, rounded corners=2.5pt] (12,26) rectangle (60,68);
+\node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{brand}] at (16,64) {THE VOICE};
+\node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}, align=left, text width=40mm] at (16,59)
+  {Their recorded voice need never reach a vendor};
 
-\foreach \cy/\name/\purpose in {%
-  56/conmed.db/the trial record,
-  47/patient.db/the call in progress,
-  38/drugs.db/RxNorm \textperiodcentered\ RxClass,
-  29/general\_health.db/plain-language guidance}{%
-  \fill[surfiii, rounded corners=1pt] (14,\cy-2.2) rectangle (19,\cy+2.2);
-  \draw[line, line width=0.4pt, rounded corners=1pt] (14,\cy-2.2) rectangle (19,\cy+2.2);
-  \draw[line] (14,\cy+0.7) -- (19,\cy+0.7);
-  \node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (21.5,\cy+1.5) {\name};
-  \node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiii}] at (21.5,\cy-2) {\purpose};
+\node[anchor=north west, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{ink}] at (16,48) {Speech in and speech out};
+\node[anchor=north west, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{ink}] at (16,44) {run on open models,};
+\node[anchor=north west, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{ink}] at (16,40) {on this machine's CPU.};
+\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=40mm] at (16,33)
+  {No API key, no upload, no account.};
+
+% ---- 2. the record ------------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (64,26) rectangle (112,68);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (64,26) rectangle (112,68);
+\node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{inkiii}] at (68,64) {THE RECORD};
+\node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}, align=left, text width=40mm] at (68,59)
+  {Every store sits on the site's own machine};
+
+\foreach \y/\what in {48/{the trial's medication log}, 43.5/{the call in progress}, 39/{the drug reference}, 34.5/{plain-language guidance}}{%
+  \fill[brand] (68,\y+0.6) circle (0.6);
+  \node[anchor=west, font=\fontsize{6}{7.3}\selectfont\sffamily\color{ink}] at (70.5,\y+0.6) {\what};
 }
+\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=40mm] at (68,31)
+  {Or point it at the sponsor's server: one setting, same code.};
 
-% ---- the voice ----------------------------------------------------------
-\fill[surf, rounded corners=2.5pt] (68,22) rectangle (122,70);
-\draw[brand, line width=0.7pt, rounded corners=2.5pt] (68,22) rectangle (122,70);
-\node[anchor=west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{brand}] at (72,65.5) {The voice, too};
-\draw[line] (68,62.5) -- (122,62.5);
+% ---- 3. the identifiers -------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (116,26) rectangle (148,68);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (116,26) rectangle (148,68);
+\node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{inkiii}] at (119,64) {THE NAMES};
+\node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}, align=left, text width=26mm] at (119,59)
+  {They never enter the record at all};
 
-\foreach \cy/\role/\model/\note in {%
-  55/{speech in}/{Parakeet 0.6B}/{NVIDIA \textperiodcentered\ NeMo},
-  40/{speech out}/{Qwen3-TTS 0.6B}/{open weights}}{%
-  \node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (72,\cy+4.5) {\role};
-  \node[anchor=west, font=\fontsize{6.8}{8.2}\selectfont\sffamily\bfseries\color{ink}] at (72,\cy) {\model};
-  \node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiii}] at (72,\cy-4) {\note};
-}
+\node[anchor=north west, font=\fontsize{6}{7.3}\selectfont\sffamily\color{ink}, align=left, text width=26mm] at (119,46)
+  {The call hears a name and a date of birth. The trial record keeps neither.};
+\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=26mm] at (119,33)
+  {Both are stripped as the call is filed, leaving the subject number.};
 
-\node[anchor=west, font=\fontsize{6}{7.2}\selectfont\sffamily\bfseries\color{ink}] at (72,30)
-  {Runs on CPU. No API key.};
-\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkii}] at (72,26.5)
-  {A participant's voice never reaches a vendor.};
-
-% ---- or a server --------------------------------------------------------
-\fill[surf, rounded corners=2.5pt] (126,22) rectangle (150,70);
-\draw[line, line width=0.5pt, rounded corners=2.5pt] (126,22) rectangle (150,70);
-\node[anchor=west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}] at (129,65.5) {Or a server};
-\draw[line] (126,62.5) -- (150,62.5);
-
-\node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\ttfamily\color{inkii}] at (129,56) {DATABASE\_URL=};
-\node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\ttfamily\color{inkii}] at (129,52.5) {postgres://\dots};
-\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=20mm] at (129,45)
-  {one environment variable, same code};
-
-\fill[add!10!white, rounded corners=1.5pt] (129,29) rectangle (147,35);
-\draw[add, line width=0.4pt, rounded corners=1.5pt] (129,29) rectangle (147,35);
-\node[anchor=center, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{add}] at (138,32) {MIT \textperiodcentered\ open};
-
-% ---- the honest footnote ------------------------------------------------
-\node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiv}] at (16,16)
-  {The demo runs the hosted speech path. The local models are built and round-trip tested in \texttt{local-ai/}; switching is configuration, not a rewrite.};
+% ---- footing ------------------------------------------------------------
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiv}] at (16,19)
+  {The demo runs hosted speech for latency; the local models are built and tested, and switching is a setting rather than a rewrite.};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (16,12)
+  {Three real published protocols, 25 participants \textemdash\ the trials are real, every participant is synthetic.};
 
 \end{tikzpicture}
 \end{document}
