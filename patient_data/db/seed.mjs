@@ -40,7 +40,7 @@ const visits = read('participants/visits.json');
 const sessions = read('participants/sessions.json');
 const transcripts = read('participants/transcripts.json');
 const audit = read('participants/audit.json');
-const meds = JSON.parse(readFileSync(join(ROOT, 'medical_data', 'medications.json'), 'utf8'));
+const meds = JSON.parse(readFileSync(join(ROOT, 'api', 'medical_data', 'medications.json'), 'utf8'));
 
 const insert = (sql) => db.prepare(sql);
 const counts = {};

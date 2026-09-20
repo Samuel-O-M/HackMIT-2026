@@ -13,7 +13,7 @@
  * Returns only what matched; never a table dump.
  */
 
-const medical_data = require('../../../medical_data');
+const medical_data = require('../../../api/medical_data');
 const { generalHealth } = require('../db');
 
 function tokenize(text) {

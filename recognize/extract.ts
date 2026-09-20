@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import mammoth from 'mammoth';
 import { extractText, getDocumentProxy } from 'unpdf';
-import drugdb from '../medical_data/index.js';
+import drugdb from '../api/medical_data/index.js';
 import type { ExtractedField, Phase, ProhibitedRule, ProtocolExtraction } from './types.ts';
 
 const here = path.dirname(fileURLToPath(import.meta.url));

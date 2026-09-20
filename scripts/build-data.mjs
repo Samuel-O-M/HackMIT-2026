@@ -2,7 +2,7 @@
  * Rebuilds every file under patient_data/ from two inputs:
  *
  *   patient_data/catalog/registry.json  ClinicalTrials.gov snapshot per trial
- *   medical_data/medications.json       curated medications, RxCUIs verified vs RxNav
+ *   api/medical_data/medications.json   curated medications, RxCUIs verified vs RxNav
  *
  * Run: npm run build:data
  *
@@ -42,7 +42,7 @@ const chance = (r, p) => r() < p;
 
 /* ---------------------------------------------------------------- trials */
 const registry = read('catalog/registry.json');
-const meds = JSON.parse(readFileSync(join(ROOT, 'medical_data', 'medications.json'), 'utf8'));
+const meds = JSON.parse(readFileSync(join(ROOT, 'api', 'medical_data', 'medications.json'), 'utf8'));
 
 /** Hand-written where the registry title is too long to scan. */
 const TRIAL_COPY = {

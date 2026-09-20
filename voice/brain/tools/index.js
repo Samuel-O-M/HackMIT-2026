@@ -15,7 +15,7 @@
 
 const health = require('./health');
 const patientData = require('./patient');
-const drugdb = require('../../../medical_data');
+const drugdb = require('../../../api/medical_data');
 
 const healthSearchSchema = {
   type: 'function',
