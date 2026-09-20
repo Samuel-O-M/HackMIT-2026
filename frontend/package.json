@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "build:data": "node ../scripts/build-data.mjs",
-    "build:db": "node ../patient_data/db/seed.mjs"
+    "build:db": "node ../databases/trial_records/seed.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

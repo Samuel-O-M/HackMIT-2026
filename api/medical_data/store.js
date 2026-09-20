@@ -12,7 +12,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { DatabaseSync } = require('node:sqlite');
 
-const DB_PATH = process.env.DRUGDB_PATH || path.join(__dirname, 'drugs.db');
+const DB_PATH = process.env.DRUGDB_PATH || path.join(__dirname, '..', '..', 'databases', 'drug_reference', 'drugs.db');
 
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS concepts (

@@ -408,6 +408,14 @@ async function handleBrainEnd(req, res) {
     sendJson(res, 400, { error: 'Missing "sessionId".' });
     return;
   }
+  // Hand the call's staged changes and identity result to the review queue.
+  // Best effort: a failed publish must not fail a call that is already over.
+  let published = null;
+  try {
+    published = await require('./brain/bridge').publishSession(sessionId);
+  } catch (err) {
+    published = { published: false, reason: String(err.message || err) };
+  }
   brain.endSession(sessionId);
   logger.append(sessionId, 'session.end', {});
   sendJson(res, 200, { ok: true, sessionId });
