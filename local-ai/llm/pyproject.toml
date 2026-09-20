@@ -1,0 +1,11 @@
+[project]
+name = "local-ai-llm"
+version = "0.1.0"
+private = true
+description = "Local Gemma 4 E4B Q4 chat model for the brain (drop-in, OpenAI-compatible, for replacing GPT-5.6 Luna)."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  # Only used by download_model.py. The runtime is llama.cpp (see run_server.sh);
+  # test_llm.py is standard-library only.
+  "huggingface_hub>=0.30",
+]

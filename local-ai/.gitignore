@@ -2,6 +2,9 @@
 # committed (multi-GB binaries). Recreate with the per-project download_model.py.
 models/
 
+# Prebuilt llama.cpp binaries fetched by llm/get_llama_cpp.sh.
+llm/runtime/
+
 # Per-project uv virtualenvs
 .venv/
 

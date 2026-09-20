@@ -61,6 +61,9 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const DEEPGRAM_STT_MODEL = process.env.DEEPGRAM_STT_MODEL || 'nova-3';
 const DEEPGRAM_TTS_MODEL = process.env.DEEPGRAM_TTS_MODEL || 'aura-2-thalia-en';
 // Model + reasoning effort are chosen here, in code — not in .env.
+// LOCAL-LLM HOOK: set to 'gemma-4-e4b' to serve this plain chat proxy from the
+// local model in ../../local-ai/llm/ instead of Luna (also change the upstream
+// URL in handleChat below). See local-ai/llm/README.md.
 const OPENAI_MODEL = 'gpt-5.6-luna';
 const OPENAI_REASONING_EFFORT = 'medium';
 
@@ -325,6 +328,10 @@ async function handleChat(req, res) {
     ? incoming
     : [{ role: 'system', content: SYSTEM_PROMPT }, ...incoming];
 
+  // LOCAL-LLM HOOK (chat proxy). To use the local Gemma 4 E4B Q4 server in
+  // ../../local-ai/llm instead of OpenAI, replace the URL below with
+  //   `${process.env.LOCAL_LLM_URL || 'http://127.0.0.1:5003'}/v1/chat/completions`
+  // and drop the Authorization header; set OPENAI_MODEL to 'gemma-4-e4b' above.
   const oaRes = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
