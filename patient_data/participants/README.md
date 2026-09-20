@@ -16,3 +16,7 @@ and the UI never renders a name.
 
 Every session in `sessions.json` has a transcript, and every change id a
 transcript yields exists in that session.
+
+Calls made after the build are not written here. The api service saves them to
+`patient_data/published/` (gitignored) and the app loads them at runtime, so
+these files stay as committed.
