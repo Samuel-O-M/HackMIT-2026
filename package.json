@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Root scripts for hosting the admin panel (frontend/) and voice backend (voice/) on one machine.",
   "scripts": {
-    "install:all": "npm --prefix frontend ci && npm --prefix voice ci",
+    "install:all": "npm --prefix frontend ci && npm --prefix voice ci && npm --prefix recognize ci",
     "frontend": "npm --prefix frontend run build && npm --prefix frontend run preview -- --host 0.0.0.0 --port ${FRONTEND_PORT:-5173}",
     "frontend:dev": "npm --prefix frontend run dev",
     "api": "node --no-warnings api/server.mjs",
