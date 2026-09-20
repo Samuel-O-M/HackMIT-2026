@@ -1,0 +1,60 @@
+% Slide 06 — hallucination.
+% Real, sourced reporting: models invent medicine. This is why the agent is
+% not allowed to answer from memory. Clippings are set in type, sourced, not
+% screenshots.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {The model is not the source of truth};
+\node[subline]  at (16,76) {Left alone, it invents drugs \textemdash\ and invents words nobody said.};
+
+% ---------- AP ----------------------------------------------------------
+\fill[surf, rounded corners=2pt] (12,16) rectangle (52,68);
+\draw[line, line width=0.4pt, rounded corners=2pt] (12,16) rectangle (52,68);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (16,63) {AP News};
+\draw[line] (15,59.5) -- (49,59.5);
+\node[anchor=north west, align=left, text width=32mm, font=\fontsize{7}{8.5}\selectfont\sffamily\color{ink}]
+  at (16,57) {AI transcription tool used in hospitals invents things no one ever said};
+\fill[surfii, rounded corners=1.5pt] (15,24) rectangle (49,46);
+\draw[line, line width=0.4pt, rounded corners=1.5pt] (15,24) rectangle (49,46);
+\node[anchor=north west, align=left, text width=29mm, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{inkii}]
+  at (18,44) {\textquotedblleft hyperactivated antibiotics\textquotedblright\ \textemdash\ a drug that does not exist, invented in a patient's notes.};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (16,19) {26 Oct 2024};
+
+% ---------- STAT --------------------------------------------------------
+\fill[surf, rounded corners=2pt] (58,16) rectangle (98,68);
+\draw[line, line width=0.4pt, rounded corners=2pt] (58,16) rectangle (98,68);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (62,63) {STAT};
+\draw[line] (61,59.5) -- (95,59.5);
+\node[anchor=north west, align=left, text width=32mm, font=\fontsize{7}{8.5}\selectfont\sffamily\color{ink}]
+  at (62,57) {Watson recommended \textquotedblleft unsafe and incorrect\textquotedblright\ cancer treatments};
+\fill[surfii, rounded corners=1.5pt] (61,24) rectangle (95,46);
+\draw[line, line width=0.4pt, rounded corners=1.5pt] (61,24) rectangle (95,46);
+\node[anchor=north west, align=left, text width=29mm, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{inkii}]
+  at (64,44) {recommended a drug that could cause severe or fatal bleeding \textemdash\ for a patient already bleeding.};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (62,19) {25 Jul 2018};
+
+% ---------- Science -----------------------------------------------------
+\fill[surf, rounded corners=2pt] (104,16) rectangle (148,68);
+\draw[line, line width=0.4pt, rounded corners=2pt] (104,16) rectangle (148,68);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (108,63) {Science};
+\draw[line] (107,59.5) -- (145,59.5);
+\node[anchor=north west, align=left, text width=36mm, font=\fontsize{7}{8.5}\selectfont\sffamily\color{ink}]
+  at (108,57) {AI transcription tools \textquotedblleft hallucinate\textquotedblright, too};
+\fill[surfii, rounded corners=1.5pt] (107,24) rectangle (145,46);
+\draw[line, line width=0.4pt, rounded corners=1.5pt] (107,24) rectangle (145,46);
+\node[anchor=north west, align=left, text width=33mm, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{inkii}]
+  at (110,44) {made up whole sentences in about 1.4\% of the transcriptions tested.};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (108,19) {26 Apr 2024};
+
+% ---------- the lesson --------------------------------------------------
+\node[anchor=west, font=\fontsize{6.8}{8}\selectfont\sffamily\color{inkii}] at (14,10)
+  {Hallucination is a property to design around, not a bug to patch.};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (14,6)
+  {as reported by AP News, STAT and Science};
+
+\end{tikzpicture}
+\end{document}

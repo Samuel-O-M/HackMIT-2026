@@ -1,0 +1,60 @@
+% Slide 08 — the diff.
+% The product's hero screen, drawn rather than screenshotted: what is on file
+% against what the call proposed, the change type colour-coded, confidence
+% beside each row, and the reasoning one interaction away.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {What is on file, and what the call proposed};
+\node[subline]  at (16,76) {Confirm, edit or reject one row at a time. The agent's reasoning is one click away.};
+
+% ---- the screen ---------------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (10,14) rectangle (150,70);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (10,14) rectangle (150,70);
+
+\node[anchor=west, font=\fontsize{8.5}{10}\selectfont\sffamily\bfseries\color{ink}] at (16,65.5) {Review queue};
+\node[anchor=east, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkiii}] at (144,65.5) {6 proposed changes \textperiodcentered\ 4 need a decision};
+\draw[line] (10,62.5) -- (150,62.5);
+
+\node[anchor=center, font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkiii}] at (54,59.5) {on file};
+\node[anchor=center, font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkiii}] at (104,59.5) {from the call};
+
+% ---- rows ---------------------------------------------------------------
+% row 1 — add, pending
+\node[tag, fill=add, text=white, anchor=center] at (22,52) {Add};
+\node[anchor=center, font=\fontsize{6.6}{8}\selectfont\sffamily\color{inkiv}] at (54,52) {\textemdash};
+\draw[flow] (77,52) -- (83,52);
+\node[anchor=center, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (104,52) {Atorvastatin 20 mg nightly};
+\foreach \i in {0,1,2}{\fill[ink] (128+\i*3.4,52) circle (0.85);}
+\node[anchor=east, font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkiii}] at (148,52) {pending};
+
+% row 2 — modify, accepted
+\fill[add!7!white, rounded corners=1.5pt] (11,40) rectangle (149,46.5);
+\node[tag, fill=modify, text=white, anchor=center] at (22,43.25) {Modify};
+\node[anchor=center, font=\fontsize{6.6}{8}\selectfont\sffamily\color{inkii}] at (54,43.25) {Metformin 500 mg twice daily};
+\draw[flow] (77,43.25) -- (83,43.25);
+\node[anchor=center, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (104,43.25) {Metformin 1000 mg twice daily};
+\foreach \i in {0,1,2}{\fill[ink] (128+\i*3.4,43.25) circle (0.85);}
+\node[anchor=east, font=\fontsize{6.2}{7}\selectfont\sffamily\bfseries\color{accept}] at (148,43.25) {accepted};
+
+% row 3 — stop, rejected
+\fill[ink!5!white, rounded corners=1.5pt] (11,25.5) rectangle (149,32);
+\node[tag, fill=stop, text=white, anchor=center] at (22,28.75) {Stop};
+\node[anchor=center, font=\fontsize{6.6}{8}\selectfont\sffamily\color{inkiii}] at (54,28.75) {Ibuprofen 400 mg as needed};
+\draw[flow] (77,28.75) -- (83,28.75);
+\node[anchor=center, font=\fontsize{6.6}{8}\selectfont\sffamily\color{inkiii}] at (104,28.75) {stopped \textemdash\ GI bleed reported};
+\foreach \i in {0,1}{\fill[caution] (128+\i*3.4,28.75) circle (0.85);}
+\draw[lineii] (134.8,28.75) circle (0.85);
+\node[anchor=east, font=\fontsize{6.2}{7}\selectfont\sffamily\bfseries\color{reject}] at (148,28.75) {rejected};
+
+% ---- the one action -----------------------------------------------------
+\fill[ink, rounded corners=1.5pt] (108,17) rectangle (148,23);
+\node[anchor=center, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{white}] at (128,20) {Promote 1 accepted};
+\node[anchor=west, font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkiii}] at (16,20)
+  {each row: confirm, edit, reject \textperiodcentered\ and \textquotedblleft why\textquotedblright\ opens the tool trace};
+
+\end{tikzpicture}
+\end{document}

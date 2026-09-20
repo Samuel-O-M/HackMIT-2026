@@ -1,0 +1,71 @@
+% Slide 05b — the realtime agent.
+% Turn-taking, drawn as disjoint speech bursts: the participant speaks, the
+% agent answers, never at once. Deepgram on the voice, GPT-5.6 Luna on the
+% reasoning, and the async planner visibly reading our three prompt files.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\newcommand{\burst}[4]{% #1 x0, #2 cy, #3 colour, #4 comma-separated bar heights
+  \foreach \h [count=\i from 0] in {#4}{%
+    \fill[#3, rounded corners=0.4pt]
+      ({#1+\i*2.0},{#2-\h*0.5}) rectangle ({#1+\i*2.0+1.0},{#2+\h*0.5});
+  }}
+
+\node[headline] at (16,82) {Turn by turn, and the agent never waits};
+\node[subline]  at (16,76) {Deepgram hears and speaks; GPT-5.6 Luna thinks. The prompts are files you can read.};
+
+% ---- participant --------------------------------------------------------
+\fill[add, rounded corners=2.2pt] (14,57) rectangle (116,69);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,63) {Participant};
+\burst{42}{63}{white}{3,6,4,8,5,7,4,6}
+\burst{74}{63}{white}{4,7,3,8,5,6,4,7}
+\burst{100}{63}{white}{4,7,5,8,4,6}
+
+% ---- conmed agent -------------------------------------------------------
+\fill[modify, rounded corners=2.2pt] (14,41) rectangle (116,53);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,47) {conmed agent};
+\burst{58}{47}{white}{5,8,4,7,6,4,8,5}
+\burst{90}{47}{white}{6,4,8,5,7}
+
+% ---- components, on the right ------------------------------------------
+\draw[flow] (116,63) -- (120,63);
+\fill[surf, rounded corners=2pt] (120,56.5) rectangle (150,69.5);
+\draw[line, line width=0.4pt, rounded corners=2pt] (120,56.5) rectangle (150,69.5);
+\node[anchor=center] at (135,64.5) {\includegraphics[height=4mm]{shared/marks/deepgram.pdf}};
+\node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{ink}] at (135,59.5) {Deepgram STT};
+
+\draw[flow] (116,47) -- (120,47);
+\fill[surf, rounded corners=2pt] (120,40.5) rectangle (150,53.5);
+\draw[line, line width=0.4pt, rounded corners=2pt] (120,40.5) rectangle (150,53.5);
+\node[anchor=center] at (135,48.5) {\includegraphics[height=4mm]{shared/marks/deepgram.pdf}};
+\node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{ink}] at (135,43.5) {Deepgram TTS};
+
+\draw[flow] (116,30) -- (120,30);
+\fill[surf, rounded corners=2pt] (120,24) rectangle (150,36);
+\draw[line, line width=0.4pt, rounded corners=2pt] (120,24) rectangle (150,36);
+\node[anchor=center] at (135,31) {\includegraphics[height=5.5mm]{shared/marks/openai.pdf}};
+\node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{ink}] at (135,26.5) {GPT-5.6 Luna};
+
+% ---- the async planner reads our prompt files --------------------------
+\fill[surf, rounded corners=2pt] (14,12) rectangle (116,34);
+\draw[line, line width=0.4pt, rounded corners=2pt] (14,12) rectangle (116,34);
+\node[anchor=center] at (22,25) {\includegraphics[height=9mm]{shared/marks/i-brain.pdf}};
+\node[anchor=center, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (22,18.5) {async planner};
+\node[anchor=center, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (22,15) {gpt-5.6-luna};
+
+\draw[flow] (48,22) -- (30,22);
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (52,30) {prompts it reads};
+
+\foreach \x/\f in {52/policy.md, 74/talker.md, 96/thinker.md}{%
+  \node[anchor=center] at (\x,22) {\includegraphics[height=5mm]{shared/marks/i-file-text.pdf}};
+  \node[anchor=west, font=\fontsize{6}{7}\selectfont\ttfamily\color{inkii}] at (\x+4,22) {\f};
+}
+
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\color{inkii}] at (14,7)
+  {Open source (MIT) \textperiodcentered\ swap the model or the prompts};
+
+\end{tikzpicture}
+\end{document}

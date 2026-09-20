@@ -1,0 +1,35 @@
+% Slide 01 — title.
+% Quiet by design: the one loud thing in this deck is the prohibited alert
+% (slide 07), so the title carries no alarm colour at all.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+% ---- brand lockup -------------------------------------------------------
+\node[anchor=west, inner sep=0pt] at (16,76) {\conmedmark[15mm]};
+\node[anchor=west, inner sep=0pt] at (36,79.5)
+  {\fontsize{22}{22}\selectfont\sffamily\bfseries\color{ink} conmed};
+\node[anchor=west, inner sep=0pt] at (36,71.5)
+  {\fontsize{8.5}{10}\selectfont\sffamily\color{inkii} Automated patient reconciliation};
+
+% ---- headline -----------------------------------------------------------
+\node[anchor=west, align=left, text width=76mm, inner sep=0pt] at (16,51)
+  {\fontsize{24}{28}\selectfont\sffamily\bfseries\color{ink} Reconciled\\ before the visit.};
+
+% ---- sub ----------------------------------------------------------------
+\node[anchor=west, align=left, text width=80mm, inner sep=0pt] at (16,33)
+  {\fontsize{10.5}{14.5}\selectfont\sffamily\color{inkii}
+   Pre-visit concomitant medication\\ reconciliation for clinical trial sites.};
+
+% ---- hairline + event ---------------------------------------------------
+\draw[line] (16,22) -- (86,22);
+\node[anchor=west, inner sep=0pt] at (16,14)
+  {\fontsize{9}{11}\selectfont\sffamily\color{inkiii} HackMIT 2026 \textperiodcentered\ Regeneron Track};
+
+% ---- the mark, large ----------------------------------------------------
+\node[anchor=center, inner sep=0pt] at (124,45) {\conmedmark[52mm]};
+
+\end{tikzpicture}
+\end{document}

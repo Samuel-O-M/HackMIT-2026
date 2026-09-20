@@ -1,0 +1,41 @@
+% Slide 03 — the cost.
+% The same error is worth a few minutes at the visit and a corrective action
+% months later. Shown as an escalating staircase, in weight rather than alarm.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {Cheap to fix at the visit. Expensive to find later.};
+\node[subline]  at (16,76) {The same error, caught at three different points, by three different people.};
+
+% time
+\draw[flow] (14,70) -- (146,70);
+\node[anchor=east, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkiii}] at (146,73) {time since the visit};
+
+% baseline
+\draw[line, line width=0.5pt] (14,24) -- (146,24);
+
+% escalating steps
+\fill[lineii, rounded corners=1.5pt] (20,24)  rectangle (56,38);
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (24,27) {coordinator};
+
+\fill[inkiv, rounded corners=1.5pt]  (62,24)  rectangle (98,52);
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (66,27) {monitor};
+
+\fill[ink, rounded corners=1.5pt]   (104,24) rectangle (140,68);
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{white}] at (108,27) {auditor \textperiodcentered\ IRB};
+
+% what happens at each
+\node[anchor=north west, font=\fontsize{6.8}{8}\selectfont\sffamily\bfseries\color{inkii}] at (20,22)  {at the visit};
+\node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}]      at (20,18) {fixed before it matters};
+
+\node[anchor=north west, font=\fontsize{6.8}{8}\selectfont\sffamily\bfseries\color{inkii}] at (62,22)  {at monitoring (SDV)};
+\node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}]      at (62,18) {data query \textperiodcentered\ protocol deviation};
+
+\node[anchor=north west, font=\fontsize{6.8}{8}\selectfont\sffamily\bfseries\color{inkii}] at (104,22)  {at inspection};
+\node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}]      at (104,18) {finding \textperiodcentered\ corrective action};
+
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,48 @@
+% Slide 02 — the problem.
+% A coordinator's visit morning, to scale. Everything is decided in the room;
+% the medication list is the one thing that needed days, and gets 20 minutes.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {The medication list is stale, and the visit is now};
+\node[subline]  at (16,76) {Everything else is decided before the visit. The medication list is not.};
+
+% ---- the morning, 08:00 -> 10:30 spread across 132 mm -------------------
+\draw[line, line width=0.5pt] (14,40) -- (146,40);
+
+\fill[surfiii, rounded corners=1.5pt] (14,41)   rectangle (49.2,53);
+\draw[line,    rounded corners=1.5pt] (14,41)   rectangle (49.2,53);
+\node[font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkii}] at (31.6,47) {check-in};
+
+\fill[surfiii, rounded corners=1.5pt] (49.8,41) rectangle (88.8,53);
+\draw[line,    rounded corners=1.5pt] (49.8,41) rectangle (88.8,53);
+\node[font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkii}] at (69.3,47) {vitals \& samples};
+
+\fill[surfiii, rounded corners=1.5pt] (89.4,41) rectangle (124,53);
+\draw[line,    rounded corners=1.5pt] (89.4,41) rectangle (124,53);
+\node[font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkii}] at (106.7,47) {eligibility \& history};
+
+% the block that is the problem — weight, not colour
+\fill[ink, rounded corners=1.5pt] (124.6,41) rectangle (141.6,53);
+\node[font=\fontsize{6.2}{7}\selectfont\sffamily\bfseries\color{white}] at (133.1,47) {conmeds};
+
+% the visit
+\draw[lineii, dashed, line width=0.5pt] (146,38) -- (146,58);
+\node[anchor=east, font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkiii}] at (144.5,58) {10:30 \textemdash\ the visit};
+
+% time ticks
+\foreach \x/\t in {14/08:00, 66.8/09:00, 119.6/10:00}{
+  \draw[line] (\x,40) -- (\x,38.6);
+  \node[anchor=north, font=\fontsize{6}{6.8}\selectfont\sffamily\color{inkiv}] at (\x,38) {\t};
+}
+
+% the point
+\draw[ink, line width=0.8pt] (133.1,41) -- (133.1,35.5);
+\node[anchor=north, font=\fontsize{7.5}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (133.1,34.5) {20 minutes};
+\node[anchor=north, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkii}] at (133.1,30) {the first time the list meets reality};
+
+\end{tikzpicture}
+\end{document}

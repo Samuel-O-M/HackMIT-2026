@@ -1,0 +1,38 @@
+% Slide 04b — the time it saves.
+% Manual pre-visit reconciliation against the assisted one, to the same scale.
+% Numbers are labelled as illustrative, not measured.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {Hours back, every visit round};
+\node[subline]  at (16,76) {The agent places the calls. The coordinator only reviews.};
+\node[anchor=center] at (142,79) {\includegraphics[height=9mm]{shared/marks/i-clock.pdf}};
+
+% ---- manual -------------------------------------------------------------
+\node[anchor=west, font=\fontsize{7.5}{9}\selectfont\sffamily\bfseries\color{ink}] at (14,62) {manual};
+\fill[inkiv, rounded corners=1.5pt] (44,58) rectangle (140,66);
+\node[anchor=east, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{white}] at (136,62) {6 h 00};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (44,55) {30 calls \texttimes\ 12 min of coordinator time};
+
+% ---- conmed -------------------------------------------------------------
+\node[anchor=west, font=\fontsize{7.5}{9}\selectfont\sffamily\bfseries\color{add}] at (14,46) {conmed};
+\fill[add, rounded corners=1.5pt] (44,42) rectangle (69,50);
+\node[anchor=west, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{add}] at (72,46) {1 h 30};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (44,39) {30 reviews \texttimes\ 3 min to approve a draft};
+
+% ---- the difference -----------------------------------------------------
+\draw[lineii, dashed, line width=0.4pt] (69,50) -- (69,58);
+\draw[-{Stealth[length=1.6mm,width=1.3mm]}, ink, line width=0.7pt] (69,52) -- (140,52);
+\node[anchor=center, font=\fontsize{7.5}{9}\selectfont\sffamily\bfseries\color{ink}] at (104,54.5) {4 h 30 back, per round};
+
+% ---- the caveat ---------------------------------------------------------
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (14,26)
+  {illustrative baseline: 30 participants, 12 min of manual reconciliation each, 3 min to review a finished draft.};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkii}] at (14,18)
+  {The calls run in parallel. Only the exceptions reach a person.};
+
+\end{tikzpicture}
+\end{document}
