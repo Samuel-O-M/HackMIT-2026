@@ -1,9 +1,12 @@
 % Slide 06 — hallucination.
-% Real reporting, as screenshots cropped to the headline: models invent
-% medicine. This is why the agent is not allowed to answer from memory.
+% Real reporting, shown as the real pages: three full website screenshots, each
+% with the publication, date and headline set beside it. The point is that this
+% is documented, not hypothetical — models invent medicine, and the agent is
+% therefore never allowed to answer from memory.
 %
-% Uses shared/marks/news-{ap,stat,science}.png; if one is missing it falls back
-% to a typed, sourced clipping so the deck still builds.
+% Uses shared/marks/news-originals/{ap,stat,science}.png (full-page captures,
+% 1842x1048). If one is missing it falls back to a typed, sourced clipping so
+% the deck still builds.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
@@ -12,46 +15,62 @@
 
 \node[headline] at (16,82) {The model is not the source of truth};
 
+% three rows, each: the page as captured on the left, the words on the right.
+% capture is 1842:1048, so height=21mm gives width=36.9mm.
+% row tops at 76 / 51.3 / 26.7; screenshots sit 0.5mm inside those.
+
 % ---------- AP News -----------------------------------------------------
-\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (13,69) {AP News};
-\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (13,64.5) {26 Oct 2024};
-\IfFileExists{shared/marks/news-ap.png}{%
-  \node[anchor=west, inner sep=0pt, draw=line, line width=0.4pt] at (46,66)
-    {\includegraphics[height=18mm,width=104mm,keepaspectratio]{shared/marks/news-ap.png}};
+\IfFileExists{shared/marks/news-originals/ap.png}{%
+  \node[anchor=south west, inner sep=0pt, draw=line, line width=0.4pt] at (13,54.5)
+    {\includegraphics[height=21mm]{shared/marks/news-originals/ap.png}};
 }{%
-  \node[anchor=west, align=left, text width=100mm, font=\fontsize{8}{10}\selectfont\sffamily\bfseries\color{ink}] at (46,68)
+  \node[anchor=west, align=left, text width=99mm, font=\fontsize{8}{10}\selectfont\sffamily\bfseries\color{ink}] at (53.5,68)
     {AI transcription tool used in hospitals invents things no one ever said};
-  \node[anchor=west, align=left, text width=100mm, font=\fontsize{6.5}{8}\selectfont\sffamily\color{inkii}] at (46,60)
+  \node[anchor=west, align=left, text width=99mm, font=\fontsize{6.5}{8}\selectfont\sffamily\color{inkii}] at (53.5,60)
     {\textquotedblleft hyperactivated antibiotics\textquotedblright\ \textemdash\ a drug that does not exist, invented in a patient's notes.};
 }
-\draw[line] (12,55.5) -- (152,55.5);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (53.5,73.5) {AP News};
+\node[anchor=east, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (152,73.5) {26 Oct 2024};
+\node[anchor=north west, align=left, text width=98.5mm, font=\fontsize{8}{10}\selectfont\sffamily\bfseries\color{ink}] at (53.5,69.5)
+  {Researchers say an AI-powered transcription tool used in hospitals invents things no one ever said};
+\node[anchor=north west, align=left, text width=98.5mm, font=\fontsize{6.5}{8}\selectfont\sffamily\color{inkii}] at (53.5,61)
+  {\textquotedblleft hyperactivated antibiotics\textquotedblright\ \textemdash\ a drug that does not exist, invented in a patient's notes.};
+\draw[line] (12,52.8) -- (152,52.8);
 
 % ---------- STAT --------------------------------------------------------
-\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (13,48) {STAT};
-\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (13,43.5) {25 Jul 2018};
-\IfFileExists{shared/marks/news-stat.png}{%
-  \node[anchor=west, inner sep=0pt, draw=line, line width=0.4pt] at (46,45)
-    {\includegraphics[height=18mm,width=104mm,keepaspectratio]{shared/marks/news-stat.png}};
+\IfFileExists{shared/marks/news-originals/stat.png}{%
+  \node[anchor=south west, inner sep=0pt, draw=line, line width=0.4pt] at (13,29.9)
+    {\includegraphics[height=21mm]{shared/marks/news-originals/stat.png}};
 }{%
-  \node[anchor=west, align=left, text width=100mm, font=\fontsize{8}{10}\selectfont\sffamily\bfseries\color{ink}] at (46,47)
+  \node[anchor=west, align=left, text width=99mm, font=\fontsize{8}{10}\selectfont\sffamily\bfseries\color{ink}] at (53.5,43.3)
     {Watson recommended \textquotedblleft unsafe and incorrect\textquotedblright\ cancer treatments};
-  \node[anchor=west, align=left, text width=100mm, font=\fontsize{6.5}{8}\selectfont\sffamily\color{inkii}] at (46,39)
+  \node[anchor=west, align=left, text width=99mm, font=\fontsize{6.5}{8}\selectfont\sffamily\color{inkii}] at (53.5,35.3)
     {recommended a drug that could cause severe or fatal bleeding \textemdash\ for a patient already bleeding.};
 }
-\draw[line] (12,34.5) -- (152,34.5);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (53.5,48.8) {STAT};
+\node[anchor=east, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (152,48.8) {25 Jul 2018};
+\node[anchor=north west, align=left, text width=98.5mm, font=\fontsize{8}{10}\selectfont\sffamily\bfseries\color{ink}] at (53.5,44.8)
+  {IBM's Watson supercomputer recommended \textquotedblleft unsafe and incorrect\textquotedblright\ cancer treatments, internal documents show};
+\node[anchor=north west, align=left, text width=98.5mm, font=\fontsize{6.5}{8}\selectfont\sffamily\color{inkii}] at (53.5,36.3)
+  {recommended a drug that could cause severe or fatal bleeding \textemdash\ for a patient already bleeding.};
+\draw[line] (12,28.2) -- (152,28.2);
 
 % ---------- Science -----------------------------------------------------
-\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (13,27) {Science};
-\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (13,22.5) {26 Apr 2024};
-\IfFileExists{shared/marks/news-science.png}{%
-  \node[anchor=west, inner sep=0pt, draw=line, line width=0.4pt] at (46,24)
-    {\includegraphics[height=18mm,width=104mm,keepaspectratio]{shared/marks/news-science.png}};
+\IfFileExists{shared/marks/news-originals/science.png}{%
+  \node[anchor=south west, inner sep=0pt, draw=line, line width=0.4pt] at (13,5.2)
+    {\includegraphics[height=21mm]{shared/marks/news-originals/science.png}};
 }{%
-  \node[anchor=west, align=left, text width=100mm, font=\fontsize{8}{10}\selectfont\sffamily\bfseries\color{ink}] at (46,26)
+  \node[anchor=west, align=left, text width=99mm, font=\fontsize{8}{10}\selectfont\sffamily\bfseries\color{ink}] at (53.5,18.7)
     {AI transcription tools \textquotedblleft hallucinate\textquotedblright, too};
-  \node[anchor=west, align=left, text width=100mm, font=\fontsize{6.5}{8}\selectfont\sffamily\color{inkii}] at (46,19)
+  \node[anchor=west, align=left, text width=99mm, font=\fontsize{6.5}{8}\selectfont\sffamily\color{inkii}] at (53.5,10.7)
     {made up whole sentences in about 1.4\% of the transcriptions tested.};
 }
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (53.5,24.2) {Science};
+\node[anchor=east, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (152,24.2) {26 Apr 2024};
+\node[anchor=north west, align=left, text width=98.5mm, font=\fontsize{8}{10}\selectfont\sffamily\bfseries\color{ink}] at (53.5,20.2)
+  {AI transcription tools \textquotedblleft hallucinate\textquotedblright, too};
+\node[anchor=north west, align=left, text width=98.5mm, font=\fontsize{6.5}{8}\selectfont\sffamily\color{inkii}] at (53.5,11.7)
+  {made up whole sentences in about 1.4\% of the transcriptions tested.};
 
 \end{tikzpicture}
 \end{document}

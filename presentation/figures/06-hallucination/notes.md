@@ -12,9 +12,10 @@ kill. So the agent is never allowed to answer from memory.
 - Science, 26 Apr 2024 — transcription models fabricated sentences in ~1.4% of
   recordings.
 
-**Note.** The clippings are set in type and sourced, not page screenshots (no
-desktop browser was connected when this was built). Swap in real screenshots if
-wanted.
+**Note.** Each article is shown as the real page — a full website screenshot
+(`shared/marks/news-originals/{ap,stat,science}.png`, captured from the live
+sites) with the publication, date and headline set beside it. The earlier
+headline-only crops are no longer used.
 
 **Status.** built — `figure.tex` present.
 **Build.** `make figures` from `presentation/`.
