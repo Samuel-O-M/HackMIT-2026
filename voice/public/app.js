@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Clinical Call — patient-facing client.
+ * ReconMed call screen — patient-facing client.
  *
  * One screen: a greeting, one big call button, and a conversation written out
  * as it happens. Developer mode (wrench in the top bar) opens a drawer with

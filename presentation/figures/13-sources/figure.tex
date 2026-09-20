@@ -1,0 +1,48 @@
+% Slide 13 — where the numbers came from, and what the system reads.
+%
+% Two columns that answer two different questions a judge will have: is the
+% problem real (left, peer-reviewed), and is the product grounded in anything
+% (right, the live sources every claim resolves against). Splitting them is
+% the point — the evidence for the pitch and the evidence inside the software
+% are not the same kind of claim.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {Sources};
+
+% ---- left: the evidence for the problem --------------------------------
+\node[anchor=north west, font=\fontsize{6.8}{8.2}\selectfont\sffamily\bfseries\color{ink}] at (16,72) {Evidence};
+
+\foreach \y/\cite/\what in {%
+  66/{Getz et al., \textit{Ther Innov Regul Sci} 56:632, 2022}/{187 protocols \textperiodcentered\ deviation rates by phase},
+  55/{\textit{Communications Medicine} 5, 2025}/{I-SPY COVID \textperiodcentered\ retrospective SDV cost},
+  44/{Martinez et al., \textit{Clin Ther} 39(3), 2017}/{25,829 pharmacist calls \textperiodcentered\ 12 trials},
+  33/{FDA final guidance, 2026}/{washout periods and concomitant medications},
+  22/{AP \textperiodcentered\ STAT \textperiodcentered\ Science, 2018\textendash2024}/{reported failures of clinical AI}} {
+  \node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{ink}, align=left, text width=58mm] at (16,\y) {\cite};
+  \node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=58mm] at (16,\y-5) {\what};
+}
+
+% ---- right: what the software reads ------------------------------------
+\draw[line, line width=0.4pt] (82,20) -- (82,74);
+
+\node[anchor=north west, font=\fontsize{6.8}{8.2}\selectfont\sffamily\bfseries\color{ink}] at (90,72) {Grounding, live}; 
+
+\foreach \y/\src/\what in {%
+  66/{RxNorm \textperiodcentered\ RxClass}/{NLM \textperiodcentered\ drug identity and class},
+  55/{openFDA drug label}/{FDA \textperiodcentered\ documented adverse reactions},
+  44/{ClinicalTrials.gov}/{the three trials in this demo, verbatim},
+  33/{Published study protocols}/{prohibited medications, parsed from the PDF},
+  22/{CDISC SDTM \textperiodcentered\ 21 CFR 11}/{record shape and signature}} {
+  \node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{ink}, align=left, text width=58mm] at (90,\y) {\src};
+  \node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=58mm] at (90,\y-5) {\what};
+}
+
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiv}] at (16,8)
+  {Trial and protocol data are real and public. Participant records are synthetic.};
+
+\end{tikzpicture}
+\end{document}

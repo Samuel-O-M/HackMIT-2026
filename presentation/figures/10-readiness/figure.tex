@@ -1,58 +1,80 @@
-% Slide 10 — readiness.
-% The demo has to run on conference wifi, so everything is local SQLite and the
-% only network call is to the model. The same code re-points at a server.
+% Slide 10 — readiness, and what stays on the machine.
+%
+% The headline claimed "no network" while the slide only covered databases —
+% and the demo path still ships the participant's audio to Deepgram and their
+% words to OpenAI. So the claim was true of the record and false of the voice,
+% which is the half a privacy question is actually about.
+%
+% local-ai/ closes that: Parakeet for speech in, Qwen3-TTS for speech out, both
+% ~0.6B, both on CPU, weights in the repo. The middle column says so, and says
+% honestly that it is a switch rather than the default — the demo still runs
+% the hosted path, and a slide that implies otherwise would not survive a
+% judge opening voice/server.js.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
+\hyphenpenalty=10000\exhyphenpenalty=10000
 \begin{tikzpicture}[x=1mm,y=1mm]
 \path[use as bounding box] (0,0) rectangle (160,90);
 
-\node[headline] at (16,82) {One machine, no network};
-\node[subline]  at (16,76) {Eight real Regeneron protocols and 42 participants — all synthetic at site level.};
+\node[headline] at (16,82) {Nothing has to leave the machine};
+\node[subline]  at (16,76) {Three real published protocols, 25 participants \textemdash\ trials real, participant data synthetic.};
 
-% ---- everything local ---------------------------------------------------
-\fill[surf, rounded corners=2.5pt] (10,20) rectangle (96,70);
-\draw[line, line width=0.5pt, rounded corners=2.5pt] (10,20) rectangle (96,70);
-\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (15,65.5) {Everything local};
-\draw[line] (10,62.5) -- (96,62.5);
+% ---- the record ---------------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (10,22) rectangle (64,70);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (10,22) rectangle (64,70);
+\node[anchor=west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}] at (14,65.5) {The record};
+\draw[line] (10,62.5) -- (64,62.5);
 
 \foreach \cy/\name/\purpose in {%
   56/conmed.db/the trial record,
-  47.5/patient.db/the call in progress,
-  39/drugs.db/RxNorm / RxClass cache,
-  30.5/general\_health.db/plain-language guidance}{%
-  \fill[surfiii, rounded corners=1pt] (14,\cy-2.2) rectangle (20,\cy+2.2);
-  \draw[line, line width=0.4pt, rounded corners=1pt] (14,\cy-2.2) rectangle (20,\cy+2.2);
-  \draw[line] (14,\cy+0.7) -- (20,\cy+0.7);
-  \node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (23,\cy+1.5) {\name};
-  \node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiii}] at (23,\cy-2) {\purpose};
+  47/patient.db/the call in progress,
+  38/drugs.db/RxNorm \textperiodcentered\ RxClass,
+  29/general\_health.db/plain-language guidance}{%
+  \fill[surfiii, rounded corners=1pt] (14,\cy-2.2) rectangle (19,\cy+2.2);
+  \draw[line, line width=0.4pt, rounded corners=1pt] (14,\cy-2.2) rectangle (19,\cy+2.2);
+  \draw[line] (14,\cy+0.7) -- (19,\cy+0.7);
+  \node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (21.5,\cy+1.5) {\name};
+  \node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiii}] at (21.5,\cy-2) {\purpose};
 }
 
-\node[anchor=west, font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkiv}] at (15,24)
-  {delete any of them and rebuild from the source data};
+% ---- the voice ----------------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (68,22) rectangle (122,70);
+\draw[brand, line width=0.7pt, rounded corners=2.5pt] (68,22) rectangle (122,70);
+\node[anchor=west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{brand}] at (72,65.5) {The voice, too};
+\draw[line] (68,62.5) -- (122,62.5);
 
-% ---- or point it at a server -------------------------------------------
-\fill[surf, rounded corners=2.5pt] (104,20) rectangle (150,70);
-\draw[line, line width=0.5pt, rounded corners=2.5pt] (104,20) rectangle (150,70);
-\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (109,65.5) {Or a server};
-\draw[line] (104,62.5) -- (150,62.5);
+\foreach \cy/\role/\model/\note in {%
+  55/{speech in}/{Parakeet 0.6B}/{NVIDIA \textperiodcentered\ NeMo},
+  40/{speech out}/{Qwen3-TTS 0.6B}/{open weights}}{%
+  \node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (72,\cy+4.5) {\role};
+  \node[anchor=west, font=\fontsize{6.8}{8.2}\selectfont\sffamily\bfseries\color{ink}] at (72,\cy) {\model};
+  \node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiii}] at (72,\cy-4) {\note};
+}
 
-\node[anchor=west, font=\fontsize{6}{7}\selectfont\ttfamily\color{inkii}] at (109,56)
-  {DATABASE\_URL=};
-\node[anchor=west, font=\fontsize{6}{7}\selectfont\ttfamily\color{inkii}] at (109,52.5)
-  {postgres://\dots};
+\node[anchor=west, font=\fontsize{6}{7.2}\selectfont\sffamily\bfseries\color{ink}] at (72,30)
+  {Runs on CPU. No API key.};
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkii}] at (72,26.5)
+  {A participant's voice never reaches a vendor.};
 
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (109,46)
-  {no database is opened by path:};
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (109,42.5)
+% ---- or a server --------------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (126,22) rectangle (150,70);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (126,22) rectangle (150,70);
+\node[anchor=west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}] at (129,65.5) {Or a server};
+\draw[line] (126,62.5) -- (150,62.5);
+
+\node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\ttfamily\color{inkii}] at (129,56) {DATABASE\_URL=};
+\node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\ttfamily\color{inkii}] at (129,52.5) {postgres://\dots};
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=20mm] at (129,45)
   {one environment variable, same code};
 
-\fill[add!10!white, rounded corners=1.5pt] (109,31) rectangle (145,37);
-\draw[add, line width=0.4pt, rounded corners=1.5pt] (109,31) rectangle (145,37);
-\node[anchor=center, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{add}] at (127,34) {MIT \textperiodcentered\ open source};
+\fill[add!10!white, rounded corners=1.5pt] (129,29) rectangle (147,35);
+\draw[add, line width=0.4pt, rounded corners=1.5pt] (129,29) rectangle (147,35);
+\node[anchor=center, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{add}] at (138,32) {MIT \textperiodcentered\ open};
 
-\node[anchor=west, font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkiv}] at (109,25)
-  {the same schema, three methods};
+% ---- the honest footnote ------------------------------------------------
+\node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiv}] at (16,16)
+  {The demo runs the hosted speech path. The local models are built and round-trip tested in \texttt{local-ai/}; switching is configuration, not a rewrite.};
 
 \end{tikzpicture}
 \end{document}

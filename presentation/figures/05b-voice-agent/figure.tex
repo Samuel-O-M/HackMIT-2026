@@ -1,70 +1,57 @@
-% Slide 05b — the realtime agent.
-% Turn-taking, drawn as disjoint speech bursts: the participant speaks, the
-% agent answers, never at once. Deepgram on the voice, GPT-5.6 Luna on the
-% reasoning, and the async planner visibly reading our three prompt files.
+% Slide 05b — the two-agent split.
+%
+% Replaces a slide that listed three prompt filenames. The interesting claim is
+% architectural: a realtime voice agent cannot wait for a planner, so there are
+% two models. The Talker streams speech the moment it has a clause; the Thinker
+% runs between turns and leaves state behind for the next one.
+%
+% The tool row is the grounding surface, drawn as what each call actually hits.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
 \begin{tikzpicture}[x=1mm,y=1mm]
 \path[use as bounding box] (0,0) rectangle (160,90);
 
-\newcommand{\burst}[4]{% #1 x0, #2 cy, #3 colour, #4 comma-separated bar heights
-  \foreach \h [count=\i from 0] in {#4}{%
-    \fill[#3, rounded corners=0.4pt]
-      ({#1+\i*2.0},{#2-\h*0.5}) rectangle ({#1+\i*2.0+1.0},{#2+\h*0.5});
-  }}
+\node[headline] at (16,82) {Two models, because a realtime agent cannot wait};
+\node[subline]  at (16,75.5) {The Talker speaks. The Thinker plans between turns and never touches the line.};
 
-\node[headline] at (16,82) {Turn by turn, and the agent never waits};
+% ---- the Talker ---------------------------------------------------------
+\fill[brand, rounded corners=2.5pt] (16,50) rectangle (86,68);
+\node[anchor=north west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,65) {Talker};
+\node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{white}] at (20,60)
+  {streams a clause at a time \textperiodcentered\ half-duplex};
+\node[anchor=north west, font=\fontsize{6}{7.2}\selectfont\ttfamily\color{white}] at (20,55)
+  {respondStream() \textrightarrow\ ndjson};
 
-% ---- participant --------------------------------------------------------
-\fill[patient, rounded corners=2.2pt] (14,57) rectangle (116,69);
-\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,63) {Participant};
-\burst{42}{63}{white}{3,6,4,8,5,7,4,6}
-\burst{74}{63}{white}{4,7,3,8,5,6,4,7}
-\burst{100}{63}{white}{4,7,5,8,4,6}
+% ---- the Thinker --------------------------------------------------------
+\fill[surfii, draw=line, line width=0.4pt, rounded corners=2.5pt] (94,50) rectangle (144,68);
+\node[anchor=north west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (98,65) {Thinker};
+\node[anchor=north west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkii}] at (98,60)
+  {async \textperiodcentered\ fire-and-forget};
+\node[anchor=north west, font=\fontsize{6}{7.2}\selectfont\ttfamily\color{inkiii}] at (98,55)
+  {planner\_state};
 
-% ---- the agent, in brand green -----------------------------------------
-\fill[brand, rounded corners=2.2pt] (14,41) rectangle (116,53);
-\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,47) {Reconmed agent};
-\burst{58}{47}{white}{5,8,4,7,6,4,8,5}
-\burst{90}{47}{white}{6,4,8,5,7}
+% state handoff
+\draw[flow] (86,62) -- (94,62);
+\draw[{Stealth[length=1.5mm,width=1.2mm]}-, draw=lineii, line width=0.7pt] (86,55) -- (94,55);
+\node[anchor=south, font=\fontsize{5.4}{6.4}\selectfont\sffamily\color{inkiii}] at (90,63) {turn};
+\node[anchor=north, font=\fontsize{5.4}{6.4}\selectfont\sffamily\color{inkiii}] at (90,54) {state};
 
-% ---- components, on the right ------------------------------------------
-\draw[flow] (116,63) -- (120,63);
-\fill[surf, rounded corners=2pt] (120,56.5) rectangle (150,69.5);
-\draw[line, line width=0.4pt, rounded corners=2pt] (120,56.5) rectangle (150,69.5);
-\node[anchor=center] at (135,64.5) {\includegraphics[height=4mm]{shared/marks/deepgram.pdf}};
-\node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{ink}] at (135,59.5) {Deepgram STT};
+% ---- tools: what a call is allowed to consult --------------------------
+\node[anchor=west, font=\fontsize{6.4}{7.6}\selectfont\sffamily\bfseries\color{ink}] at (16,42) {Every claim resolves to a lookup};
 
-\draw[flow] (116,47) -- (120,47);
-\fill[surf, rounded corners=2pt] (120,40.5) rectangle (150,53.5);
-\draw[line, line width=0.4pt, rounded corners=2pt] (120,40.5) rectangle (150,53.5);
-\node[anchor=center] at (135,48.5) {\includegraphics[height=4mm]{shared/marks/deepgram.pdf}};
-\node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{ink}] at (135,43.5) {Deepgram TTS};
-
-\draw[flow] (116,30) -- (120,30);
-\fill[surf, rounded corners=2pt] (120,24) rectangle (150,36);
-\draw[line, line width=0.4pt, rounded corners=2pt] (120,24) rectangle (150,36);
-\node[anchor=center] at (135,31) {\includegraphics[height=5.5mm]{shared/marks/openai.pdf}};
-\node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{ink}] at (135,26.5) {GPT-5.6 Luna};
-
-% ---- the async planner reads our prompt files --------------------------
-\fill[surf, rounded corners=2pt] (14,12) rectangle (116,34);
-\draw[line, line width=0.4pt, rounded corners=2pt] (14,12) rectangle (116,34);
-\node[anchor=center] at (24,23) {\includegraphics[height=8mm]{shared/marks/i-brain.pdf}};
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (31,25.5) {async planner};
-\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (31,20.5) {gpt-5.6-luna};
-
-\draw[flow] (48,23) -- (34,23);
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (52,30) {prompts it reads};
-
-\foreach \x/\f in {54/policy.md, 74/talker.md, 94/thinker.md}{%
-  \node[anchor=center] at (\x,23) {\includegraphics[height=5mm]{shared/marks/i-file-text.pdf}};
-  \node[anchor=west, font=\fontsize{6}{7}\selectfont\ttfamily\color{inkii}] at (\x+4,23) {\f};
+\foreach \x/\tool/\src in {%
+  16/{verify\_identity}/{patient record},
+  49/{check\_prohibited}/{RxNorm \textperiodcentered\ RxClass},
+  82/{drug\_safety}/{openFDA label},
+  115/{check\_behaviour}/{protocol rules}} {
+  \fill[surf, draw=line, line width=0.4pt, rounded corners=2pt] (\x,22) rectangle (\x+29,36);
+  \node[anchor=north west, font=\fontsize{6}{7.2}\selectfont\ttfamily\color{ink}]    at (\x+3,33.5) {\tool};
+  \node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (\x+3,28)   {\src};
 }
 
-\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\color{inkii}] at (14,7)
-  {Open source (MIT) \textperiodcentered\ swap the model or the prompts};
+\node[anchor=west, font=\fontsize{6.4}{7.6}\selectfont\sffamily\color{inkii}] at (16,14)
+  {Deepgram nova-3 in, aura-2 out \textperiodcentered\ GPT-5.6 Luna both sides \textperiodcentered\ prompts are files, swappable without a deploy};
 
 \end{tikzpicture}
 \end{document}

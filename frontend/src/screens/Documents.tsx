@@ -169,7 +169,7 @@ export function Documents({ studyId, study, onToast, onChanged }: Props) {
               <dd>{protocol.effectiveDate}</dd>
             </div>
             <div className="fact">
-              <dt>Conmed section</dt>
+              <dt>Medication section</dt>
               <dd className="mono">§{protocol.conmedSection ?? '—'}</dd>
             </div>
             <div className="fact">
@@ -233,7 +233,7 @@ export function Documents({ studyId, study, onToast, onChanged }: Props) {
         lede={
           protocol
             ? 'Supersedes the version in force and re-reads the prohibited list.'
-            : 'The prohibited list is read from its concomitant medications section.'
+            : 'The prohibited list is read from its medications section.'
         }
         accept=".pdf,.doc,.docx"
         busy={busyKind === 'protocol'}
