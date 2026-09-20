@@ -1,62 +1,68 @@
-% Slide 02 — the problem.
-% A coordinator's visit morning, to scale. Everything is decided in the room;
-% the medication list is the one thing that needed days, and gets 20 minutes.
+% Slide 02 — the list is stale and the visit is now.
 %
-% On the 20 minutes: it is a site estimate, and a conservative one. Published
-% medication-reconciliation times in other settings run far longer — a median
-% of 50 minutes per patient overall, 46 at internal-medicine admission — so
-% this is not an inflated number. It is labelled as an estimate anyway,
-% because it is the only figure on the slide without a citation.
+% The slide used to be a visit timeline and a lot of white space. The visit
+% strip alone never showed the thing that makes the list stale: the weeks
+% behind it. So the top band is now that gap, carrying the four kinds of change
+% that actually accumulate — a finished course, an over-the-counter purchase,
+% a dose changed by someone else's doctor, a vaccination — and all of it funnels
+% into the one dark box at the end of the visit.
 %
-% The load-bearing claim is the line beneath it, and that one is corroborated:
-% conmed data is entered at the site visit, which makes it a test of what the
-% participant can recall since the last one.
+% On the ~20 minutes: a site estimate, and a conservative one. Published
+% medication-reconciliation times run far longer (a median of 50 minutes per
+% patient; 46 at internal-medicine admission). It is labelled as an estimate
+% because it is the only number in the deck without a citation.
+%
+% The load-bearing claim is the last line, and that one is corroborated:
+% conmed data is entered at the site visit, which makes the record a test of
+% what the participant can recall since the last one.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
+\hyphenpenalty=10000\exhyphenpenalty=10000
 \begin{tikzpicture}[x=1mm,y=1mm]
 \path[use as bounding box] (0,0) rectangle (160,90);
 
 \node[headline] at (16,82) {The medication list is stale, and the visit is now};
+\node[subline]  at (16,75.5) {Twelve weeks of changes, recalled once, in the last twenty minutes of a visit.};
 
-% ---- the morning, 08:00 -> 10:30 spread across 132 mm -------------------
-\draw[line, line width=0.5pt] (14,40) -- (146,40);
+% ---- the gap between visits --------------------------------------------
+\node[anchor=west, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (16,66) {last visit};
+\node[anchor=east, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (144,66) {today};
+\draw[hairii] (16,62) -- (144,62);
+\draw[hairii] (16,60.5) -- (16,63.5);
+\draw[hairii] (144,60.5) -- (144,63.5);
 
-\fill[surfiii, rounded corners=1.5pt] (14,41)   rectangle (49.2,53);
-\draw[line,    rounded corners=1.5pt] (14,41)   rectangle (49.2,53);
-\node[font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkii}] at (31.6,47) {check-in};
-
-\fill[surfiii, rounded corners=1.5pt] (49.8,41) rectangle (88.8,53);
-\draw[line,    rounded corners=1.5pt] (49.8,41) rectangle (88.8,53);
-\node[font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkii}] at (69.3,47) {vitals \& samples};
-
-\fill[surfiii, rounded corners=1.5pt] (89.4,41) rectangle (124,53);
-\draw[line,    rounded corners=1.5pt] (89.4,41) rectangle (124,53);
-\node[font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkii}] at (106.7,47) {eligibility \& history};
-
-% the block that is the problem — weight, not colour
-\fill[ink, rounded corners=1.5pt] (124.6,41) rectangle (141.6,53);
-\node[font=\fontsize{6.2}{7}\selectfont\sffamily\bfseries\color{white}] at (133.1,47) {med rec};
-
-% the visit
-\draw[lineii, dashed, line width=0.5pt] (146,38) -- (146,58);
-\node[anchor=east, font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkiii}] at (144.5,58) {10:30 \textemdash\ the visit};
-
-% time ticks
-\foreach \x/\t in {14/08:00, 66.8/09:00, 119.6/10:00}{
-  \draw[line] (\x,40) -- (\x,38.6);
-  \node[anchor=north, font=\fontsize{6}{6.8}\selectfont\sffamily\color{inkiv}] at (\x,38) {\t};
+\foreach \x/\what/\why in {%
+  34/{amoxicillin}/{a course, finished},
+  66/{ibuprofen}/{bought, not prescribed},
+  98/{levothyroxine}/{dose changed elsewhere},
+  128/{influenza vaccine}/{at a pharmacy}} {
+  \fill[brand] (\x,62) circle (1.1);
+  \node[anchor=north, font=\fontsize{6.4}{7.7}\selectfont\sffamily\bfseries\color{ink}] at (\x,58.5) {\what};
+  \node[anchor=north, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (\x,54.5) {\why};
 }
 
-% the point
-\draw[ink, line width=0.8pt] (133.1,41) -- (133.1,35.5);
-\node[anchor=north, font=\fontsize{7.5}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (133.1,34.5) {\textasciitilde20 minutes};
-\node[anchor=north, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (133.1,30.2) {site estimate};
+% ---- it all funnels into one box ---------------------------------------
+\draw[flow] (80,50) -- (80,43);
+\node[anchor=west, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (82,46.5) {all of it, from memory};
 
-\node[anchor=north west, font=\fontsize{7.6}{9.2}\selectfont\sffamily\bfseries\color{ink}] at (16,22)
+% ---- the visit ----------------------------------------------------------
+\foreach \x/\w/\lab in {16/32/{check-in}, 50/32/{vitals \& samples}, 84/32/{eligibility \& history}} {
+  \fill[surfii, draw=line, line width=0.4pt, rounded corners=1.5pt] (\x,28) rectangle (\x+\w,40);
+  \node[font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkii}] at (\x+\w/2,34) {\lab};
+}
+\fill[ink, rounded corners=1.5pt] (118,28) rectangle (144,40);
+\node[font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{white}] at (131,34) {med rec};
+
+\node[anchor=north, font=\fontsize{7.2}{8.6}\selectfont\sffamily\bfseries\color{ink}] at (131,25.5) {\textasciitilde20 minutes};
+\node[anchor=north, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (131,21.5) {site estimate};
+
+% ---- the claim ----------------------------------------------------------
+\draw[line, line width=0.5pt] (16,15) -- (144,15);
+\node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}] at (16,12)
   {Conmeds are entered at the visit, so the record is whatever the participant remembers.};
-\node[anchor=north west, font=\fontsize{6.4}{7.7}\selectfont\sffamily\color{inkii}] at (16,16.5)
-  {Weeks of pharmacy, dose changes and anything bought over the counter, recalled once, under time pressure.};
+\node[anchor=north west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkii}] at (16,7.5)
+  {Nothing above reaches the site any other way. A course that ended six weeks ago is the easiest thing in the world to forget.};
 
 \end{tikzpicture}
 \end{document}
