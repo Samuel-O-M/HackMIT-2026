@@ -56,10 +56,17 @@ class ReadOnlyStore {
 const FEEDBACK_COLUMNS = ['effectiveness', 'side_effects', 'side_effects_note', 'stop_reason'];
 
 function migrate(db) {
-  const have = db.prepare('PRAGMA table_info(staged_changes)').all().map((c) => c.name);
-  if (have.length === 0) return; // table absent: nothing seeded yet
-  for (const col of FEEDBACK_COLUMNS) {
-    if (!have.includes(col)) db.exec(`ALTER TABLE staged_changes ADD COLUMN ${col} TEXT`);
+  const staged = db.prepare('PRAGMA table_info(staged_changes)').all().map((c) => c.name);
+  if (staged.length) {
+    for (const col of FEEDBACK_COLUMNS) {
+      if (!staged.includes(col)) db.exec(`ALTER TABLE staged_changes ADD COLUMN ${col} TEXT`);
+    }
+  }
+  // Utterance provenance: 'stt' when the patient's turn came from speech-to-text,
+  // 'text' when it was typed. Databases seeded before this existed lack it.
+  const utterances = db.prepare('PRAGMA table_info(utterances)').all().map((c) => c.name);
+  if (utterances.length && !utterances.includes('source')) {
+    db.exec("ALTER TABLE utterances ADD COLUMN source TEXT NOT NULL DEFAULT 'text'");
   }
 }
 

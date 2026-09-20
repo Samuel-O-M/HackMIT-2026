@@ -48,21 +48,8 @@ class Brain {
     const missing = !fs.existsSync(GENERAL_DB) || !fs.existsSync(PATIENT_DB);
     const stale = !missing && !hasTable(PATIENT_DB, 'planner_state');
     if (reseed || missing || stale) seed();
-    this.migrate();
     this.ready = true;
     return this;
-  }
-
-  /**
-   * Forward-migrate an existing database in place. seed() builds fresh files
-   * with every column; this patches files created before a column existed.
-   */
-  migrate() {
-    const p = patient();
-    const columns = p.query('PRAGMA table_info(utterances)').map((c) => c.name);
-    if (!columns.includes('source')) {
-      p.execute("ALTER TABLE utterances ADD COLUMN source TEXT NOT NULL DEFAULT 'text'");
-    }
   }
 
   // ------------------------------------------------------------ runtime state
