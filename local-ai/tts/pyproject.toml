@@ -1,0 +1,29 @@
+[project]
+name = "local-ai-tts"
+version = "0.1.0"
+private = true
+description = "Local Qwen3-TTS 12Hz 0.6B text-to-speech (drop-in replacement for the Deepgram TTS call in voice/server.js)."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "qwen-tts>=0.1.1",
+  "huggingface_hub>=0.30",
+  "soundfile>=0.13",
+  "numpy>=1.26",
+  # Declared directly (they are transitive via qwen-tts) because uv only routes
+  # *direct* dependencies through `[tool.uv.sources]`. This is what makes the
+  # CPU-only index below take effect.
+  "torch",
+  "torchaudio",
+]
+
+# The default PyPI torch wheel bundles the CUDA runtime (multi-GB). This box has
+# no NVIDIA GPU, so route torch/torchaudio to the CPU-only wheel index. On a
+# machine with a GPU, delete the index + sources blocks to get the CUDA wheels.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+torchaudio = { index = "pytorch-cpu" }

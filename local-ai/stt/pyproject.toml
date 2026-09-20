@@ -1,0 +1,26 @@
+[project]
+name = "local-ai-stt"
+version = "0.1.0"
+private = true
+description = "Local NVIDIA Parakeet-unified-en-0.6B speech-to-text (drop-in replacement for the Deepgram STT call in voice/server.js)."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "nemo_toolkit[asr]>=3.0.0",
+  "huggingface_hub>=0.30",
+  # Declared directly (transitive via nemo_toolkit) because uv only routes
+  # *direct* dependencies through `[tool.uv.sources]`; this is what makes the
+  # CPU-only index below take effect.
+  "torch",
+  "torchaudio",
+]
+
+# No NVIDIA GPU on this box: route torch/torchaudio to the CPU-only wheels so we
+# do not pull the multi-GB CUDA runtime. Delete this block on a GPU machine.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+torchaudio = { index = "pytorch-cpu" }
