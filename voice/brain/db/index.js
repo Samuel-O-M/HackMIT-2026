@@ -52,8 +52,8 @@ class ReadOnlyStore {
   close() { this.db.close(); }
 }
 
-/** Follow-up answers on a staged change; databases seeded before these existed lack them. */
-const FEEDBACK_COLUMNS = ['effectiveness', 'side_effects', 'side_effects_note', 'stop_reason'];
+/** Symptom-answer columns added after the first seeds; earlier databases lack them. */
+const FEEDBACK_COLUMNS = ['side_effects', 'side_effects_note'];
 
 function migrate(db) {
   const staged = db.prepare('PRAGMA table_info(staged_changes)').all().map((c) => c.name);

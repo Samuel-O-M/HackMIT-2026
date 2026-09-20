@@ -33,17 +33,9 @@ const path = require('node:path');
 // ---------------------------------------------------------------------------
 // Model + effort choices (edit here, not in .env)
 // ---------------------------------------------------------------------------
-//
-// LOCAL-LLM HOOK. Default is the hosted GPT-5.6 Luna. To run the brain on the
-// local Gemma 4 E4B Q4 model instead (see ../../local-ai/llm/, one command:
-// `./run_server.sh`), change this to the alias the server advertises:
-//
-//   const MODEL = 'gemma-4-e4b';
-//
-// and point the client at the local server in lib/openai.js. Two differences to
-// remember: a local server needs no API key, and it has no `reasoning_effort` —
-// set talkerEffort/plannerEffort to null below, because llama.cpp has no such
-// field and Chat Completions tools + effort is an OpenAI-only combination.
+// To run on a local model instead of Luna: set MODEL = 'gemma-4-e4b' (see
+// ../../local-ai/llm/), point lib/openai.js at the local server, and set the
+// efforts below to null — llama.cpp has no reasoning_effort.
 const MODEL = 'gpt-5.6-luna';
 
 module.exports = {
@@ -61,10 +53,5 @@ module.exports = {
   // Loop limits
   maxToolRounds: 4,
   historyTurns: 20,
-
-  // Follow-up questions ("has it been working?", "any side effects?"): asking
-  // them of every medicine sounds like a form. At most this many *optional* ones
-  // per call; the "why did you stop it?" kind is not counted against this.
-  maxFollowups: 3,
   plannerDebounceMs: 250,
 };

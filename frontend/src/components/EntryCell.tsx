@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import type { ConmedEntry } from '../types/contract';
 import { isApproximate } from '../lib/dates';
 import {
-  EFFECTIVENESS_LABEL,
   FIELD_LABEL,
   displayName,
   isSingleAdministration,
@@ -148,18 +147,6 @@ export function EntryCell({
       {atcClass && (
         <Line label="Class">
           <span>{atcClass}</span>
-        </Line>
-      )}
-
-      {entry.stopReason && (
-        <Line label="Reason">
-          <q className="said">{entry.stopReason}</q>
-        </Line>
-      )}
-
-      {entry.effectiveness && (
-        <Line label="Effect">
-          <span>{EFFECTIVENESS_LABEL[entry.effectiveness]}</span>
         </Line>
       )}
 

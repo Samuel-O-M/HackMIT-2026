@@ -1,4 +1,4 @@
-import type { ConmedEntry, Effectiveness, ProposedChange } from '../types/contract';
+import type { ConmedEntry, ProposedChange } from '../types/contract';
 import { formatPartialDate } from './dates';
 
 /** Fields the coordinator can correct inline before promoting. */
@@ -10,13 +10,6 @@ export const FIELD_LABEL: Record<EditableField, string> = {
   route: 'Route',
   frequency: 'Frequency',
   indication: 'Indication',
-};
-
-export const EFFECTIVENESS_LABEL: Record<Effectiveness, string> = {
-  working: 'Working',
-  partly: 'Partly working',
-  not_working: 'Not working',
-  unsure: 'Not sure',
 };
 
 /** Only what the participant volunteered or was asked: null means never asked. */

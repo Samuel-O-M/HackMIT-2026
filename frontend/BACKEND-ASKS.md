@@ -68,19 +68,18 @@ A prohibited conmed is a reportable deviation. `ProtocolDeviation` is currently
 UI-side; it belongs in the backend and probably in its own store, since the PI
 signs it and the IRB report draws from it.
 
-## 6. Follow-up answers on `ConmedEntry`, and `safetyFlags` on the session
+## 6. Symptom answer on `ConmedEntry`, and `safetyFlags` on the session
 
-The voice agent now asks, selectively, how a medicine is going. The answers ride
-on the entry the coordinator reviews. All new fields are **optional**, so nothing
-that ignores them breaks; `null`/absent means "never asked", not "no".
+The voice agent records whether the participant reported a side effect on a
+medicine. That rides on the entry the coordinator reviews. All new fields are
+**optional**, so nothing that ignores them breaks; `null`/absent means "never
+asked", not "no".
 
 ```ts
 interface ConmedEntry {
   // ...existing fields...
-  effectiveness?: 'working' | 'partly' | 'not_working' | 'unsure' | null;
   sideEffects?: 'none' | 'reported' | 'serious' | 'unsure' | null;
   sideEffectsNote?: string | null;   // participant's words
-  stopReason?: string | null;        // participant's words
 }
 
 interface ReconciliationSession {

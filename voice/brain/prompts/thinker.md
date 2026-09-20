@@ -99,20 +99,17 @@ Never request or pass the whole record.
 You do **not** write directly. Emit writes in `to_save` as named operations; the
 orchestrator applies them through controlled functions:
 
-- `{"op":"add_medication_change","payload":{reported_text, canonical_name, rxcui, status, start_date, stop_date, precision, indication, dose, frequency, effectiveness, side_effects, side_effects_note, stop_reason}}`
+- `{"op":"add_medication_change","payload":{reported_text, canonical_name, rxcui, status, start_date, stop_date, precision, indication, dose, frequency, side_effects, side_effects_note}}`
   - `status`: `started` (new), `stopped`, `changed`, or `unchanged` (confirmed as on file).
-  - the four follow-up fields are **optional and only from what the participant said**:
-    `effectiveness` = `working` | `partly` | `not_working` | `unsure`;
+  - `side_effects` and `side_effects_note` are **optional and only from what the participant said**:
     `side_effects` = `none` | `reported` | `serious` | `unsure`, with
-    `side_effects_note` = their own words when they reported something;
-    `stop_reason` = why they stopped or changed it, in their words.
-    Leave a field **out** if it was never asked. Absent means "not asked" and is
-    different from `none`.
+    `side_effects_note` = their own words when they reported something. Leave them
+    out if never asked — absent means "not asked", which is different from `none`.
   - emitting a medication you already emitted is safe: the change is not
-    duplicated, but any follow-up answers you add are merged into it. So when an
-    answer arrives later, emit the medication again — **repeat the same
-    `reported_text`, `canonical_name`, `rxcui` and `status` you used before** so it
-    is recognised as the same medicine — plus the new follow-up fields.
+    duplicated, but any answer you add is merged into it. So when an answer arrives
+    later, emit the medication again — **repeat the same `reported_text`,
+    `canonical_name`, `rxcui` and `status` you used before** so it is recognised as
+    the same medicine — plus the new field.
   - a symptom that is **not tied to one medicine** ("I get chest tightness
     sometimes") has no medication to attach to: do not invent one. Record it only
     as a `flags` entry of type `safety` (below), in their words.

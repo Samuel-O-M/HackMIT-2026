@@ -36,11 +36,9 @@ function toProposedChange(row, index) {
     stopDate: row.stop_date || null,
     stopDatePrecision: row.stop_date_precision || 'unknown',
     ongoing: row.ongoing !== 0,
-    // Follow-up answers: null means the agent never asked, not "no".
-    effectiveness: row.effectiveness || null,
+    // Symptom answer: null means the agent never asked, not "no".
     sideEffects: row.side_effects || null,
     sideEffectsNote: row.side_effects_note || null,
-    stopReason: row.stop_reason || null,
   };
   return {
     changeId: `CH-${row.session_id.slice(0, 4)}-${String(index + 1).padStart(2, '0')}`,

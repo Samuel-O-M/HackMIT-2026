@@ -121,15 +121,6 @@ class Brain {
    */
   stateForTalker(sessionId, subjectId) {
     const state = { ...(this.getState(sessionId, subjectId) || {}), identity_status: this.identityStatus(sessionId) };
-
-    // Follow-ups are a medication conversation: never before identity is done,
-    // and the optional kinds stop for good once the per-call cap is reached.
-    // Enforced here, in code, so a planner that loses count cannot turn the call
-    // into a questionnaire. (Asking *why* something was stopped is exempt.)
-    const optional = state.followup && ['feedback', 'group'].includes(state.followup.kind);
-    const capped = (state.followups?.used ?? 0) >= config.maxFollowups;
-    if (state.identity_status !== 'verified' || (optional && capped)) state.followup = null;
-
     if (state.identity_status !== 'verified') return state;
     const isIdentity = (s) => /identity|date of birth|\bdob\b|birth/i.test(String(s));
     return {
@@ -266,25 +257,6 @@ class Brain {
     return rt.plannerPromise;
   }
 
-  /**
-   * The planner keeps the follow-up count and the "closing question" status in
-   * its own JSON, and a model can lose count or declare something done that never
-   * happened. So the parts that can be checked are checked:
-   *  - the count never goes backwards;
-   *  - the closing question cannot be `asked`/`done` unless an agent turn in the
-   *    transcript actually asked it (otherwise the call would close without it).
-   */
-  reconcileFollowups(next, previous, conversation) {
-    const f = next.followups;
-    if (!f) return next;
-    f.used = Math.max(f.used || 0, previous?.followups?.used || 0);
-    const askedGroup = conversation.some(
-      (t) => t.speaker === 'agent' && /side effects?|not agreed with you|agreed with you|any (problems|trouble)/i.test(t.transcript || '')
-    );
-    if (f.group_check !== 'pending' && !askedGroup) f.group_check = 'pending';
-    return next;
-  }
-
   /** One planner pass: reason → apply structured writes → persist state. */
   async runPlan(sessionId, subjectId) {
     const rt = this.runtime(sessionId);
@@ -315,7 +287,6 @@ class Brain {
       }
     }
 
-    this.reconcileFollowups(next, this.getState(sessionId, subjectId), conversation);
     this.setState(sessionId, subjectId, next);
     rt.lastPlanModel = model;
     rt.lastPlanAt = new Date().toISOString();
@@ -396,7 +367,6 @@ class Brain {
       lastPlan: rt.lastPlan || null,
       channel: rt.channel || null,
       patient: patient_snapshot,
-      maxFollowups: config.maxFollowups,
     };
   }
 

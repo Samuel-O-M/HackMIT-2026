@@ -30,15 +30,12 @@ export interface ConmedEntry {
   stopDatePrecision: DatePrecision;
   ongoing: boolean;
   /**
-   * Follow-up answers from the call, in the participant's terms. All optional:
-   * absent or null means the agent never asked, which is not the same as "no".
+   * Symptom answer from the call, in the participant's terms. Optional: absent
+   * or null means the agent never asked, which is not the same as "no".
    */
-  effectiveness?: Effectiveness | null;
   sideEffects?: SideEffects | null;
   /** What they said, when they reported something. Verbatim. */
   sideEffectsNote?: string | null;
-  /** Why they stopped or changed it. Verbatim. */
-  stopReason?: string | null;
 }
 
 export type Effectiveness = 'working' | 'partly' | 'not_working' | 'unsure';

@@ -53,19 +53,10 @@ async function request(messages, { model, effort, json, tools, stream }) {
     body.tool_choice = 'auto';
   }
 
-  // LOCAL-LLM HOOK. To use a local OpenAI-compatible server instead of OpenAI —
-  // e.g. llama.cpp serving Gemma 4 E4B Q4 (see ../../local-ai/llm/) — replace the
-  // URL below with:
-  //
-  //   const base = process.env.OPENAI_BASE_URL || 'http://127.0.0.1:5003/v1';
-  //   return fetchWithRetry(`${base}/chat/completions`, { ... })
-  //
-  // and then: (a) drop the Authorization header (llama.cpp ignores it, but the
-  // key guard at the top of chat()/chatWithTools*() will throw unless
-  // OPENAI_API_KEY is set to any non-empty value, e.g. `local`), and (b) stop
-  // sending reasoning_effort (set the effort fields to null in config.js).
-  // Everything else — tools, tool_choice, streaming and the tool_call deltas —
-  // is already OpenAI-shaped and works unchanged.
+  // For a local OpenAI-compatible server (e.g. llama.cpp + Gemma 4 E4B): point
+  // the URL below at `${OPENAI_BASE_URL || 'http://127.0.0.1:5003/v1'}` and drop
+  // the Authorization header; set the efforts to null in config.js. See
+  // ../../local-ai/llm/.
   return fetchWithRetry('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {

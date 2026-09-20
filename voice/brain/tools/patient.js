@@ -127,28 +127,23 @@ function read({ subjectId, sessionId, scope, limit }) {
 }
 
 
-const EFFECTIVENESS = ['working', 'partly', 'not_working', 'unsure'];
 const SIDE_EFFECTS = ['none', 'reported', 'serious', 'unsure'];
 const clip = (v, n) => (v == null ? null : String(v).trim().slice(0, n) || null);
 
 /**
- * The follow-up answers on a medication, validated. Anything outside the
- * allowed values is dropped rather than stored: these are the participant's
- * words classified coarsely, and a made-up category is worse than a blank.
- * `null`/absent means "not asked" and is never written as a value.
+ * The symptom answer on a medication, validated. Anything outside the allowed
+ * values is dropped rather than stored: a made-up category is worse than a
+ * blank. `null`/absent means "not asked" and is never written as a value.
  */
 function readFeedback(payload) {
   const out = {};
-  if (EFFECTIVENESS.includes(payload.effectiveness)) out.effectiveness = payload.effectiveness;
   if (SIDE_EFFECTS.includes(payload.side_effects)) out.side_effects = payload.side_effects;
   const note = clip(payload.side_effects_note, 500);
   if (note) out.side_effects_note = note;
-  const reason = clip(payload.stop_reason, 300);
-  if (reason) out.stop_reason = reason;
   return out;
 }
 
-/** Fold new follow-up answers into an already-staged row. Returns the fields changed. */
+/** Fold a new symptom answer into an already-staged row. Returns the fields changed. */
 function mergeFeedback(p, row, feedback) {
   const sets = [];
   const vals = [];
@@ -156,8 +151,6 @@ function mergeFeedback(p, row, feedback) {
     sets.push(`${col} = ?`);
     vals.push(val);
   };
-  if (feedback.effectiveness) put('effectiveness', feedback.effectiveness);
-  if (feedback.stop_reason) put('stop_reason', feedback.stop_reason);
   if (feedback.side_effects) {
     // "serious" is sticky: a later, calmer-sounding answer must not hide it.
     put('side_effects', row.side_effects === 'serious' ? 'serious' : feedback.side_effects);
@@ -177,17 +170,9 @@ function mergeFeedback(p, row, feedback) {
 }
 
 
-// Both sides of the merge added follow-up capture, at different grains, and
-// they are complementary rather than duplicate:
-//
-//   effectiveness / side_effects (above) ride on the medication row. Coarse,
-//   per-drug, and the 'serious' flag is sticky — that is triage.
-//   staged_symptoms / staged_adherence (below) are separate rows: a named
-//   symptom checked against the drug's own FDA label, and a dose count over a
-//   stated window. That is the record.
-//
-// Keeping only the flags would lose which symptom and whether the label knows
-// it; keeping only the rows would lose the at-a-glance "is this working".
+// A medication row carries a coarse side-effects flag (triage); symptoms that
+// need naming are separate rows in staged_symptoms, checked against the drug's
+// own FDA label (the record).
 const WRITE_OPS = [
   'set_planner_state',
   'add_medication_change',
@@ -261,8 +246,8 @@ function update({ subjectId, sessionId, op, payload = {} }) {
            (session_id, subject_id, study_id, change_type, reported_text, rxcui, canonical_name,
             indication, dose, route, frequency, start_date, start_date_precision,
             stop_date, stop_date_precision, ongoing,
-            effectiveness, side_effects, side_effects_note, stop_reason)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            side_effects, side_effects_note)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         sessionId, subjectId,
         p.get('SELECT study_id FROM call_sessions WHERE session_id = ?', sessionId)?.study_id || null,
         changeType,
@@ -272,8 +257,7 @@ function update({ subjectId, sessionId, op, payload = {} }) {
         payload.precision || payload.start_date_precision || 'unknown',
         payload.stop_date || null, payload.stop_date_precision || 'unknown',
         payload.ongoing === false ? 0 : 1,
-        feedback.effectiveness ?? null, feedback.side_effects ?? null,
-        feedback.side_effects_note ?? null, feedback.stop_reason ?? null
+        feedback.side_effects ?? null, feedback.side_effects_note ?? null
       );
       return { ok: true, op, staged: true };
     }
