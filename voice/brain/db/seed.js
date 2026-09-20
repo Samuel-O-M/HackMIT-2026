@@ -150,7 +150,19 @@ function seedPatient() {
       rxcui            TEXT,
       class_id         TEXT,
       protocol_section TEXT,
-      rationale        TEXT
+      rationale        TEXT,
+      -- When the rule bites: before_first_dose | during_treatment | both.
+      --
+      -- A screening gate and an ongoing prohibition read almost identically in
+      -- a protocol, and mean opposite things for someone already enrolled.
+      -- Without this column every washout requirement was checked against
+      -- participants who satisfied it months ago, which would report a
+      -- deviation against a rule they had already met.
+      applies_when     TEXT NOT NULL DEFAULT 'during_treatment',
+      -- The look-back period, kept apart from a dose ceiling. They are
+      -- different qualifiers and were sharing one field.
+      washout_window   TEXT,
+      threshold        TEXT
     );
     -- People other than the participant who may lawfully be spoken to.
     --

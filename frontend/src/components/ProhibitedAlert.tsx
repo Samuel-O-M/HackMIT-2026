@@ -64,6 +64,11 @@ export function ProhibitedAlert({
                     : 'Matched on drug'}
                   {' · '}
                   Protocol §{hit.protocolSection} · rule <span className="mono">{hit.ruleId}</span>
+                  {/* Only shown where it changes the reading: a rule that also
+                      governed the run-up to dosing is easy to mistake for one
+                      the participant breached at screening. */}
+                  {hit.appliesWhen === 'both' && ' · applies before and during treatment'}
+                  {hit.doseLimit && ` · only above ${hit.doseLimit}`}
                 </div>
               </div>
               <Disclosure tone="alarm" label="Why it is prohibited">

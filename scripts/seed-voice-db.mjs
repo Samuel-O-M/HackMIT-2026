@@ -125,13 +125,30 @@ for (const [subjectId, rows] of Object.entries(UNCALLED_LOG)) {
   }
 }
 
-const iRule = db.prepare('INSERT INTO protocol_rules (study_id,rule_type,rxcui,class_id,protocol_section,rationale) VALUES (?,?,?,?,?,?)');
+const iRule = db.prepare(
+  'INSERT INTO protocol_rules (study_id,rule_type,rxcui,class_id,protocol_section,rationale,applies_when,washout_window,threshold) VALUES (?,?,?,?,?,?,?,?,?)'
+);
 let rules = 0;
+let screeningOnly = 0;
+const unscreenable = [];
 for (const [studyId, doc] of Object.entries(protocols)) {
   for (const r of doc.rules) {
+    // Carried through, not dropped. A screening-only rule still belongs on the
+    // record — it just must not be checked against someone already dosed.
+    const applies = r.appliesWhen || 'during_treatment';
+    if (applies === 'before_first_dose') screeningOnly++;
+    // A rule with no grounded class id cannot match a drug, so it is not
+    // screened at all. Seeding the class NAME instead produced rows that
+    // looked like working rules and silently matched nothing — which is worse
+    // than an absent rule, because the count said the trial was covered.
+    if (!r.classIds?.length && !r.rxcuis?.length) {
+      unscreenable.push(`${studyId} §${r.protocolSection} ${r.label}`);
+      continue;
+    }
     for (const classId of r.classIds?.length ? r.classIds : [r.className]) {
       iRule.run(studyId, r.matchedOn === 'drug' ? 'prohibited_drug' : 'prohibited_class',
-        null, classId, r.protocolSection, r.rationale);
+        null, classId, r.protocolSection, r.rationale,
+        applies, r.washoutWindow || null, r.threshold || null);
       rules++;
     }
   }
@@ -190,8 +207,12 @@ for (const t of trials) {
 db.exec('PRAGMA foreign_keys = ON');
 console.log(`voice db seeded from patient_data:`);
 const contactCount = db.prepare('SELECT COUNT(*) AS n FROM authorised_contacts').get().n;
-console.log(`  studies ${trials.length} · patients ${roster.length} · medications ${meds} · drug rules ${rules} · behaviour rules ${brules}`);
+console.log(`  studies ${trials.length} · patients ${roster.length} · medications ${meds} · drug rules ${rules} (${screeningOnly} screening-only) · behaviour rules ${brules}`);
 console.log(`  authorised contacts ${contactCount}`);
+if (unscreenable.length) {
+  console.log(`  NOT auto-screened (no grounded class/rxcui) — a person must check these:`);
+  for (const u of unscreenable) console.log(`    ${u}`);
+}
 db.close();
 
 // The driver needs the names it just invented in order to pass identity check.

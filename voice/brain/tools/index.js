@@ -41,8 +41,10 @@ const checkProhibitedSchema = {
     name: 'check_prohibited',
     description:
       'Check a resolved drug (by rxcui, from health_search) against the current participant\'s ' +
-      'protocol rules. Membership only: a rule\'s dose or timing limit still has to be checked ' +
-      'against what the participant reported.',
+      'protocol rules. Returns only rules that apply DURING treatment — rules that governed ' +
+      'the period before the first dose are already satisfied by an enrolled participant and ' +
+      'are reported separately under screening_only, which you must not raise. Membership ' +
+      'only: a rule\'s dose_limit still has to be checked against what they reported.',
     parameters: {
       type: 'object',
       properties: {
@@ -58,7 +60,7 @@ async function checkProhibited(args, ctx) {
   // One protocol rule may span several class ids (one row each); group them back.
   const rules = new Map();
   for (const r of rows) {
-    const key = `${r.rule_type}|${r.protocol_section}|${r.rationale}`;
+    const key = `${r.rule_type}|${r.protocol_section}|${r.rationale}|${r.applies_when}`;
     const rule = rules.get(key) ?? { ruleId: key, ...r, classIds: [], rxcuis: [] };
     if (r.class_id) rule.classIds.push(r.class_id);
     if (r.rxcui) rule.rxcuis.push(r.rxcui);
@@ -66,14 +68,51 @@ async function checkProhibited(args, ctx) {
   }
   const { hits, unavailable } = await drugdb.checkProhibited(String(args.rxcui), [...rules.values()]);
   if (unavailable) return { rxcui: args.rxcui, error: 'Drug database unreachable; cannot check. Do not guess.' };
+
+  // A participant on this call has been dosed, so a rule that only governed
+  // the run-up to the first dose is already satisfied and cannot be breached
+  // now. Matching it and reporting it as prohibited would manufacture a
+  // deviation out of a screening requirement they met months ago.
+  const live = hits.filter((h) => rules.get(h.ruleId).applies_when !== 'before_first_dose');
+  const screeningOnly = hits.filter((h) => rules.get(h.ruleId).applies_when === 'before_first_dose');
+
+  const describe = (h) => {
+    const r = rules.get(h.ruleId);
+    return {
+      rule_type: r.rule_type,
+      protocol_section: r.protocol_section,
+      rationale: r.rationale,
+      applies_when: r.applies_when,
+      // Surfaced so the agent can see a ban is conditional. Membership alone
+      // was being reported as prohibited, with no way to tell that the rule
+      // only bites above a dose.
+      dose_limit: r.threshold || null,
+      washout_window: r.washout_window || null,
+      via: h.via,
+      matched: h.matched,
+      class_name: h.className,
+    };
+  };
+
   return {
     rxcui: args.rxcui,
-    prohibited: hits.some((h) => rules.get(h.ruleId).rule_type === 'prohibited'),
-    hits: hits.map((h) => {
-      const r = rules.get(h.ruleId);
-      return { rule_type: r.rule_type, protocol_section: r.protocol_section, rationale: r.rationale, via: h.via, matched: h.matched, class_name: h.className };
-    }),
-    ...(hits.length === 0 ? { note: 'No protocol rule matched this drug.' } : {}),
+    // rule_type is 'prohibited_drug' or 'prohibited_class' in the database;
+    // only the bare string 'prohibited' was being compared, so a matched class
+    // rule reported prohibited:false and the agent moved on. 'monitored' rules
+    // deliberately do not set this.
+    prohibited: live.some((h) => String(rules.get(h.ruleId).rule_type || '').startsWith('prohibited')),
+    hits: live.map(describe),
+    ...(screeningOnly.length
+      ? {
+          screening_only: screeningOnly.map(describe),
+          note:
+            'One or more rules matched but apply only before the first dose. This ' +
+            'participant is already enrolled, so they are not breached. Do not raise them.',
+        }
+      : {}),
+    ...(live.length === 0 && screeningOnly.length === 0
+      ? { note: 'No protocol rule matched this drug.' }
+      : {}),
   };
 }
 

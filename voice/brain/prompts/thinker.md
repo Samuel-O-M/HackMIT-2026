@@ -73,6 +73,10 @@ or `patient_read` result, and you should note the source.
 Use the tools when you need to:
 - `health_search(query)` — resolve a drug/brand/class (RxNorm/RxClass).
 - `check_prohibited(rxcui)` — check a resolved drug against the participant's protocol rules.
+  Only rules that apply DURING treatment come back as hits. Rules that governed the
+  period before the first dose come back under `screening_only`: the participant met
+  them at enrolment, so they cannot be breached now. Never turn one into a flag.
+  A hit carrying a `dose_limit` is only a breach above that dose.
   Prohibited status comes from this, not from your own knowledge; a dose or timing limit
   in the rule still has to be compared with what the participant reported.
 - `set_call_outcome(outcome, detail?, callback_text?)` — how the call ended.

@@ -129,7 +129,7 @@ const SCHEMA = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['matchedOn', 'label', 'className', 'protocolSection', 'rationale', 'threshold', 'confidence'],
+        required: ['matchedOn', 'label', 'className', 'protocolSection', 'rationale', 'threshold', 'washoutWindow', 'appliesWhen', 'confidence'],
         properties: {
           matchedOn: { type: 'string', enum: ['drug', 'class'] },
           label: { type: 'string' },
@@ -137,6 +137,8 @@ const SCHEMA = {
           protocolSection: { type: 'string' },
           rationale: { type: 'string' },
           threshold: nullableString,
+          washoutWindow: nullableString,
+          appliesWhen: { type: 'string', enum: ['before_first_dose', 'during_treatment', 'both'] },
           confidence: { type: 'number' },
         },
       },
@@ -163,8 +165,16 @@ rules: one entry per prohibited medication or medication class in that section.
 - className is the drug class, or null.
 - protocolSection is the section number the rule comes from.
 - rationale is the protocol's stated reason, paraphrased in one or two sentences; if the protocol gives none, say so plainly rather than inventing one.
-- threshold is a dose or timing qualifier ("> 10 mg/day prednisone equivalent", "within 28 days of first dose"), or null if the ban is absolute.
+- threshold is a DOSE qualifier only ("> 10 mg/day prednisone equivalent"), or null if the ban is not conditional on dose. Do NOT put timing in here.
+- washoutWindow is the look-back period, when there is one ("within 28 days prior to first dose"), else null.
+- appliesWhen is when the rule actually bites. This matters more than anything else on the rule, so read the sentence carefully:
+  - "during_treatment" — the participant may not take it while on study. This is the DEFAULT for a concomitant-medication section, because that is what such a section is for.
+  - "before_first_dose" — a screening gate or washout only: it had to be stopped, or never taken, before dosing began. It says nothing about what they may take now.
+  - "both" — the text says both, e.g. "within 28 days of first dose and throughout treatment".
+- The distinction is not cosmetic. A participant enrolled three months ago has already satisfied every before_first_dose rule. Reporting one as a live finding invents a protocol deviation out of a requirement they met at screening, and a coordinator would have to chase it.
+- Read the words, not the list. "Patients must not have received X within 28 days prior to the first dose" is before_first_dose. "X is prohibited for the duration of the study" is during_treatment. If the sentence genuinely does not say, use during_treatment and note the ambiguity in notes.
 - Include only what is prohibited. Permitted medications, rescue medications and required treatments are not rules. Do not invent rules the text does not support.
+- Do NOT pull entries out of the eligibility or exclusion criteria. Those are about who may enrol, not what an enrolled participant may take, and they look almost identical on the page: a list of drugs with "not" nearby. If a prohibition appears ONLY in exclusion criteria and nowhere in the concomitant-medication section, leave it out.
 
 sourceHint: where you found it, as specifically as the text allows, using the [[Page N]] markers when present, e.g. "Title page (p. 1)" or "§5.7.2, p. 87".
 
@@ -238,6 +248,11 @@ function toExtraction(raw: RawExtraction): ProtocolExtraction {
     rules: raw.rules.map(({ confidence: _c, ...rule }, i) => ({
       ruleId: `TMP-${String(i + 1).padStart(2, '0')}`,
       ...rule,
+      // A conmed section is about what may be taken during treatment, so that
+      // is the safe reading when the model leaves it off. Defaulting the other
+      // way would silently drop live rules.
+      appliesWhen: rule.appliesWhen ?? 'during_treatment',
+      washoutWindow: rule.washoutWindow ?? null,
     })),
     source: 'agent',
     notes: raw.notes,
@@ -377,6 +392,7 @@ function printReport(
     console.log(`\n${rule.ruleId}  ${bold(rule.label)}`);
     console.log(`  ${confidenceBar(c)}  ${dim(`${rule.matchedOn} · ${rule.className ?? 'no class'} · §${rule.protocolSection}`)}`);
     if (rule.threshold) console.log(`  threshold  ${rule.threshold}`);
+    console.log(`  applies    ${rule.appliesWhen}${rule.washoutWindow ? ` (washout: ${rule.washoutWindow})` : ''}`);
     console.log(`  ${dim(rule.rationale)}`);
     printGrounding(grounding[i]!);
   });

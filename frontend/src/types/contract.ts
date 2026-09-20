@@ -55,6 +55,14 @@ export interface ProhibitedHit {
   className: string | null;
   protocolSection: string;
   rationale: string;
+  /**
+   * When the rule applies. Only 'during_treatment' and 'both' can be breached
+   * by an enrolled participant; a 'before_first_dose' rule was satisfied at
+   * screening and never reaches this screen.
+   */
+  appliesWhen?: 'before_first_dose' | 'during_treatment' | 'both';
+  /** The dose above which the rule bites, when it is conditional. */
+  doseLimit?: string | null;
 }
 
 export interface ToolStep {

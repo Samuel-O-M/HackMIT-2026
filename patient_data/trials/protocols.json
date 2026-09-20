@@ -23,7 +23,9 @@
         "className": "Chronic immunosuppressant",
         "protocolSection": "5.7.2",
         "rationale": "Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events.",
-        "threshold": null
+        "threshold": null,
+        "appliesWhen": "during_treatment",
+        "washoutWindow": null
       },
       {
         "ruleId": "PR-0021",
@@ -32,7 +34,9 @@
         "className": "Systemic corticosteroid",
         "protocolSection": "5.7.2",
         "rationale": "Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor.",
-        "threshold": "> 10 mg/day prednisone equivalent"
+        "threshold": "> 10 mg/day prednisone equivalent",
+        "appliesWhen": "during_treatment",
+        "washoutWindow": null
       },
       {
         "ruleId": "PR-0034",
@@ -41,7 +45,9 @@
         "className": "Live attenuated vaccine",
         "protocolSection": "5.7.2",
         "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted.",
-        "threshold": "Within 28 days of first dose and throughout treatment"
+        "threshold": null,
+        "appliesWhen": "both",
+        "washoutWindow": "Within 28 days of first dose"
       },
       {
         "ruleId": "PR-0040",
@@ -50,7 +56,9 @@
         "className": "Antineoplastic agent",
         "protocolSection": "5.7.2",
         "rationale": "No other systemic anticancer therapy may be given while the participant is on study treatment.",
-        "threshold": null
+        "threshold": null,
+        "appliesWhen": "during_treatment",
+        "washoutWindow": null
       }
     ],
     "sourceUrl": "/protocol-docs/R2810-ONC-1540/R2810-ONC-1540_Protocol_Amendment9.pdf"
@@ -79,7 +87,9 @@
         "className": "Chronic immunosuppressant",
         "protocolSection": "7.7.1",
         "rationale": "Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events.",
-        "threshold": null
+        "threshold": null,
+        "appliesWhen": "during_treatment",
+        "washoutWindow": null
       },
       {
         "ruleId": "PR-0021",
@@ -88,7 +98,9 @@
         "className": "Systemic corticosteroid",
         "protocolSection": "7.7.1",
         "rationale": "Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor.",
-        "threshold": "> 10 mg/day prednisone equivalent"
+        "threshold": "> 10 mg/day prednisone equivalent",
+        "appliesWhen": "during_treatment",
+        "washoutWindow": null
       },
       {
         "ruleId": "PR-0034",
@@ -97,7 +109,9 @@
         "className": "Live attenuated vaccine",
         "protocolSection": "7.7.1",
         "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted.",
-        "threshold": "Within 28 days of first dose and throughout treatment"
+        "threshold": null,
+        "appliesWhen": "both",
+        "washoutWindow": "Within 28 days of first dose"
       },
       {
         "ruleId": "PR-0040",
@@ -106,7 +120,9 @@
         "className": "Antineoplastic agent",
         "protocolSection": "7.7.1",
         "rationale": "No other systemic anticancer therapy may be given while the participant is on study treatment.",
-        "threshold": null
+        "threshold": null,
+        "appliesWhen": "during_treatment",
+        "washoutWindow": null
       }
     ],
     "sourceUrl": "/protocol-docs/R2810-ONC-1624/R2810-ONC-1624_Protocol.pdf"
@@ -135,7 +151,9 @@
         "className": "Chronic immunosuppressant",
         "protocolSection": "8.10.1",
         "rationale": "Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events.",
-        "threshold": null
+        "threshold": null,
+        "appliesWhen": "during_treatment",
+        "washoutWindow": null
       },
       {
         "ruleId": "PR-0021",
@@ -144,7 +162,9 @@
         "className": "Systemic corticosteroid",
         "protocolSection": "8.10.1",
         "rationale": "Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor.",
-        "threshold": "> 10 mg/day prednisone equivalent"
+        "threshold": "> 10 mg/day prednisone equivalent",
+        "appliesWhen": "during_treatment",
+        "washoutWindow": null
       },
       {
         "ruleId": "PR-0034",
@@ -153,7 +173,9 @@
         "className": "Live attenuated vaccine",
         "protocolSection": "8.10.1",
         "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted.",
-        "threshold": "Within 28 days of first dose and throughout treatment"
+        "threshold": null,
+        "appliesWhen": "both",
+        "washoutWindow": "Within 28 days of first dose"
       },
       {
         "ruleId": "PR-0040",
@@ -162,7 +184,9 @@
         "className": "Antineoplastic agent",
         "protocolSection": "8.10.1",
         "rationale": "No other systemic anticancer therapy may be given while the participant is on study treatment.",
-        "threshold": null
+        "threshold": null,
+        "appliesWhen": "during_treatment",
+        "washoutWindow": null
       }
     ],
     "sourceUrl": "/protocol-docs/R2810-ONC-1676/R2810-ONC-1676_Protocol.pdf"

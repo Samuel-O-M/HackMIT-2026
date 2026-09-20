@@ -22,6 +22,27 @@ export interface ProhibitedRule {
   /** Dose or timing qualifier, when the ban is conditional rather than absolute. */
   threshold: string | null;
   /**
+   * When the rule bites.
+   *
+   * A conmed section and an exclusion criterion read almost identically on the
+   * page — both are lists of drugs with the word "not" near them — and they
+   * mean opposite things for someone already enrolled. "No systemic
+   * corticosteroids within 28 days prior to first dose" is a screening gate
+   * that stopped applying the day they were dosed; flagging it mid-treatment
+   * invents a protocol deviation out of a rule the participant has already
+   * satisfied.
+   *
+   * 'during_treatment' is the default for a conmed section, because that is
+   * what a conmed section is for.
+   */
+  appliesWhen: 'before_first_dose' | 'during_treatment' | 'both';
+  /**
+   * The washout window, when the rule has one, kept apart from `threshold`.
+   * A dose ceiling and a look-back period are different qualifiers and were
+   * sharing one string.
+   */
+  washoutWindow?: string | null;
+  /**
    * RxClass ids (ATC / FDA EPC) this rule covers, looked up in medical_data rather
    * than written by the model. A drug in any of them trips the rule.
    */

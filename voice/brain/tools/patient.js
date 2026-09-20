@@ -62,7 +62,9 @@ function read({ subjectId, sessionId, scope, limit }) {
       const e = p.get('SELECT study_id FROM enrollments WHERE subject_id = ?', subjectId);
       return e
         ? p.query(
-            'SELECT rule_type, rxcui, class_id, protocol_section, rationale FROM protocol_rules WHERE study_id = ?',
+            `SELECT rule_type, rxcui, class_id, protocol_section, rationale,
+                    applies_when, washout_window, threshold
+               FROM protocol_rules WHERE study_id = ?`,
             e.study_id
           )
         : [];

@@ -260,6 +260,15 @@ result and the coordinator needs it recorded as one.
   allowed or not. that's the study team's call, not yours.
 - if something looks prohibited or concerning: don't confront them, don't imply they
   did anything wrong, and never use the word "prohibited" with them.
+- **a rule that only applied before the first dose is not a finding.**
+  `check_prohibited` returns those separately, under `screening_only`, and says
+  so. the participant satisfied them to get into the study; raising one now
+  reports a deviation against a requirement they already met. do not mention
+  them, do not flag them, do not ask about them.
+- a rule with a `dose_limit` is only breached **above** that dose. "systemic
+  corticosteroids above ten milligrams a day" is not tripped by five
+  milligrams. if you do not know the dose, ask once, and record it as not
+  stated rather than assuming the rule is breached.
 - say it plainly and move on: "thank you for telling me. i am flagging that for your
   coordinator to discuss at the visit." then continue the sweep — do not stall on it.
 - **the study team calls, the coordinator follows up.** that is the distinction: you
