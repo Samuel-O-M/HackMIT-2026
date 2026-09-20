@@ -2,6 +2,12 @@
 % Real numbers from the fixture set, and who each one helps.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
+% The four counts below are read off patient_data, not invented. Re-check them
+% after any change to the roster or the trial registry:
+%   sessions / changes / confirm_unchanged in participants/sessions.json,
+%   trials in trials/trials.json.
+% They said 30/69/27/8 from the earlier eight-trial dataset and went stale the
+% moment the demo was cut to three.
 \begin{document}
 \begin{tikzpicture}[x=1mm,y=1mm]
 \path[use as bounding box] (0,0) rectangle (160,90);
@@ -10,10 +16,10 @@
 
 % ---- the numbers --------------------------------------------------------
 \foreach \x/\n/\lab in {%
-  12/30/calls run,
-  48/69/changes proposed,
-  84/27/confirmed unchanged,
-  120/8/real protocols}{%
+  12/14/calls run,
+  48/33/changes proposed,
+  84/11/confirmed unchanged,
+  120/3/real protocols}{%
   \fill[surf, rounded corners=2pt] (\x,46) rectangle (\x+32,66);
   \draw[line, line width=0.4pt, rounded corners=2pt] (\x,46) rectangle (\x+32,66);
   \node[num] at (\x+6,57) {\n};
