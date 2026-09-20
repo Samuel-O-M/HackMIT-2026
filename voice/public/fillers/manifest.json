@@ -1,0 +1,89 @@
+{
+  "voice": "aura-2-helena-en",
+  "fillers": [
+    {
+      "id": "ack-01",
+      "kind": "ack",
+      "text": "Mm-hm.",
+      "file": "ack-01.mp3",
+      "ms": 611
+    },
+    {
+      "id": "ack-02",
+      "kind": "ack",
+      "text": "Mm-hm.",
+      "file": "ack-02.mp3",
+      "ms": 587
+    },
+    {
+      "id": "ack-03",
+      "kind": "ack",
+      "text": "Mm-hm.",
+      "file": "ack-03.mp3",
+      "ms": 395
+    },
+    {
+      "id": "ack-04",
+      "kind": "ack",
+      "text": "Mm-hmm.",
+      "file": "ack-04.mp3",
+      "ms": 517
+    },
+    {
+      "id": "ack-05",
+      "kind": "ack",
+      "text": "Mm-hmm.",
+      "file": "ack-05.mp3",
+      "ms": 613
+    },
+    {
+      "id": "ack-06",
+      "kind": "ack",
+      "text": "Mm-hmm.",
+      "file": "ack-06.mp3",
+      "ms": 523
+    },
+    {
+      "id": "ack-07",
+      "kind": "ack",
+      "text": "Uh-huh.",
+      "file": "ack-07.mp3",
+      "ms": 588
+    },
+    {
+      "id": "ack-08",
+      "kind": "ack",
+      "text": "Uh-huh.",
+      "file": "ack-08.mp3",
+      "ms": 647
+    },
+    {
+      "id": "ack-09",
+      "kind": "ack",
+      "text": "Uh-huh.",
+      "file": "ack-09.mp3",
+      "ms": 596
+    },
+    {
+      "id": "ack-10",
+      "kind": "ack",
+      "text": "Okay.",
+      "file": "ack-10.mp3",
+      "ms": 702
+    },
+    {
+      "id": "ack-11",
+      "kind": "ack",
+      "text": "Okay.",
+      "file": "ack-11.mp3",
+      "ms": 663
+    },
+    {
+      "id": "ack-12",
+      "kind": "ack",
+      "text": "Okay.",
+      "file": "ack-12.mp3",
+      "ms": 615
+    }
+  ]
+}

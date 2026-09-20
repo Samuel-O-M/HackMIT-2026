@@ -407,9 +407,10 @@ async function handleBrainTurn(req, res) {
 }
 
 /**
- * Streaming turn: newline-delimited JSON. `{type:'say', text, filler}` for each
- * short chunk of speech as soon as it is ready, then one `{type:'done', ...}`
- * (or `{type:'error'}`). The browser speaks each chunk while the rest is still
+ * Streaming turn: newline-delimited JSON. `{type:'say', text}` for each short
+ * chunk of speech as soon as it is ready, `{type:'wait'}` when the agent is
+ * about to wait on a lookup before it has said anything, then one
+ * `{type:'done', ...}` (or `{type:'error'}`). The browser speaks each chunk while the rest is still
  * being written.
  */
 async function handleBrainTurnStream(req, res) {
@@ -428,7 +429,13 @@ async function handleBrainTurnStream(req, res) {
   };
 
   try {
-    const result = await brain.handleTurn({ sessionId, subjectId, userText: String(text || ''), onEvent: send });
+    const result = await brain.handleTurn({
+      sessionId,
+      subjectId,
+      userText: String(text || ''),
+      onEvent: send,
+      opening: Boolean(payload.opening),
+    });
     logTurn(sessionId, subjectId, text, result);
     send({
       type: 'done',

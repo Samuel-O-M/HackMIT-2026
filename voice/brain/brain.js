@@ -170,12 +170,20 @@ class Brain {
    * Fast path. Runs only the Talker and returns immediately.
    * Kicks the planner off in the background.
    */
-  async handleTurn({ sessionId, subjectId, userText, onEvent }) {
+  async handleTurn({ sessionId, subjectId, userText, onEvent, opening = false }) {
     this.init();
     const session = this.ensureSession(sessionId, subjectId);
     subjectId = session.subject_id;
 
-    this.saveUtterance(sessionId, 'patient', userText);
+    // An opening turn is the agent speaking first: there is no participant
+    // utterance to record, and it only makes sense at the very start.
+    const isOpening = opening && this.getConversation(sessionId).length === 0;
+    if (opening && !isOpening) {
+      // Already underway: a repeated opening request must not greet twice or
+      // record an empty participant turn.
+      return { say: '', state: this.getState(sessionId, subjectId), toolCalls: [], model: null, latencyMs: 0, firstChunkMs: null, sessionId, planning: false };
+    }
+    if (!isOpening) this.saveUtterance(sessionId, 'patient', userText);
 
     const state = this.stateForTalker(sessionId, subjectId);
     const conversation = this.getConversation(sessionId);
@@ -190,9 +198,11 @@ class Brain {
           conversation,
           subjectId,
           sessionId,
+          opening: isOpening,
           onChunk: (chunk) => {
+            if (chunk.wait) return onEvent({ type: 'wait' });
             if (firstChunkMs === null) firstChunkMs = Date.now() - t0;
-            onEvent({ type: 'say', ...chunk });
+            onEvent({ type: 'say', text: chunk.text });
           },
         })
       : await talker.respond({ plannerState: state, conversation, subjectId, sessionId });

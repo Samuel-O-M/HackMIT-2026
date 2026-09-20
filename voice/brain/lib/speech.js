@@ -9,9 +9,6 @@
  * synthesised the moment it is complete, and playback starts on the first.
  */
 
-/** Said while a tool runs and the model has not said anything yet. */
-const FILLERS = ['One moment.', 'Let me check that.', 'Just a second.'];
-
 /** A period after these does not end a sentence: "Mr. Smith", "e.g. aspirin". */
 const ABBREVIATIONS = new Set(['mr', 'mrs', 'ms', 'dr', 'st', 'jr', 'sr', 'vs', 'e.g', 'i.e', 'approx', 'no']);
 
@@ -80,4 +77,4 @@ function speakable(text, { first = false } = {}) {
   return out.trim();
 }
 
-module.exports = { FILLERS, createChunker, speakable, endsSentence };
+module.exports = { createChunker, speakable, endsSentence };
