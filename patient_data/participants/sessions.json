@@ -32,7 +32,10 @@
           "stopDatePrecision": "unknown",
           "ongoing": true,
           "logId": "NEW-101",
-          "reportedText": "my other doctor put me on prednisone for the joint pain, twenty milligrams"
+          "reportedText": "my other doctor put me on prednisone for the joint pain, twenty milligrams",
+          "effectiveness": "working",
+          "sideEffects": "reported",
+          "sideEffectsNote": "It keeps me awake at night."
         },
         "agentConfidence": 0.93,
         "agentReasoning": "Participant named prednisone and a dose of 20 mg once daily, started by a physician outside the study. The protocol permits systemic corticosteroids only up to 10 mg/day prednisone equivalent; 20 mg is double that limit. This is a dose-threshold breach rather than a blanket ban \u2014 the drug itself is allowed, the dose is not, so the coordinator may be able to resolve it with a taper rather than a withdrawal.",
@@ -255,7 +258,9 @@
           "stopDatePrecision": "month",
           "ongoing": false,
           "logId": "LOG-0038",
-          "reportedText": "I came off the reflux one back in July, it was not doing much"
+          "reportedText": "I came off the reflux one back in July, it was not doing much",
+          "effectiveness": "not_working",
+          "stopReason": "It was not doing much."
         },
         "agentConfidence": 0.78,
         "agentReasoning": "Participant reports stopping \"the reflux one\" in July. Omeprazole is the only acid-suppression medication on the log, so the reference resolves by context. They could not name a day, so the stop date is held at month precision rather than guessed.",
@@ -609,7 +614,10 @@
           "stopDatePrecision": "unknown",
           "ongoing": true,
           "logId": "NEW-301",
-          "reportedText": "my rheumatologist started me on methotrexate, one dose a week on Sundays"
+          "reportedText": "my rheumatologist started me on methotrexate, one dose a week on Sundays",
+          "effectiveness": "working",
+          "sideEffects": "serious",
+          "sideEffectsNote": "Short of breath on the stairs now."
         },
         "agentConfidence": 0.91,
         "agentReasoning": "Participant reports weekly oral methotrexate started by a rheumatologist for rheumatoid arthritis. Low-dose weekly methotrexate is a chronic immunosuppressant, which this protocol prohibits. Note the dosing: methotrexate is weekly, and a daily entry would be a dosing error worth catching separately.",

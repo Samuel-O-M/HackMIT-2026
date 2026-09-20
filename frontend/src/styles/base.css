@@ -249,7 +249,8 @@ input, select, textarea {
 .row[data-status='rejected'] .row-grid > *:not(.row-actions) { opacity: 0.45; }
 .row[data-status='accepted'] { background: var(--row-accepted); }
 .row[data-status='edited'] { background: var(--row-edited); }
-.row[data-prohibited='true'] { box-shadow: inset 3px 0 0 var(--alarm); }
+.row[data-prohibited='true'],
+.row[data-serious='true'] { box-shadow: inset 3px 0 0 var(--alarm); }
 
 .row-grid {
   display: grid;
@@ -334,7 +335,7 @@ input, select, textarea {
 
 .line {
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr);
+  grid-template-columns: 72px minmax(0, 1fr);
   gap: var(--s2);
   margin-top: 3px;
   font-size: var(--t-12);
@@ -342,6 +343,11 @@ input, select, textarea {
 .line-label { color: var(--ink-4); }
 .line-body { color: var(--ink); min-width: 0; }
 .sep { color: var(--ink-4); margin: 0 3px; }
+
+/* What the participant actually said, quoted. */
+.said { quotes: '\201C' '\201D'; color: var(--ink-2); }
+.serious { color: var(--alarm-ink); }
+.serious .said { color: var(--alarm-ink-2); }
 
 .field[data-changed='true'] { color: var(--modify); font-weight: 560; }
 .field[data-changed='true'] .edit-trigger { color: var(--modify); }
@@ -1202,6 +1208,7 @@ input, select, textarea {
 /* ---------- protocol document ---------- */
 
 .alarm-simple { grid-template-columns: minmax(0, 1fr) auto; }
+.alarm-safety { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
 .alarm-simple:only-child { grid-template-columns: minmax(0, 1fr); }
 
 .study-noprotocol {

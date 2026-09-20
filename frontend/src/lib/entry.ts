@@ -1,4 +1,4 @@
-import type { ConmedEntry, ProposedChange } from '../types/contract';
+import type { ConmedEntry, Effectiveness, ProposedChange } from '../types/contract';
 import { formatPartialDate } from './dates';
 
 /** Fields the coordinator can correct inline before promoting. */
@@ -11,6 +11,36 @@ export const FIELD_LABEL: Record<EditableField, string> = {
   frequency: 'Frequency',
   indication: 'Indication',
 };
+
+export const EFFECTIVENESS_LABEL: Record<Effectiveness, string> = {
+  working: 'Working',
+  partly: 'Partly working',
+  not_working: 'Not working',
+  unsure: 'Not sure',
+};
+
+/** Only what the participant volunteered or was asked: null means never asked. */
+export function sideEffectsLine(entry: ConmedEntry): { text: string; serious: boolean } | null {
+  const note = entry.sideEffectsNote?.trim();
+  switch (entry.sideEffects) {
+    case 'none':
+      return { text: 'None reported', serious: false };
+    case 'unsure':
+      return { text: 'Not sure', serious: false };
+    case 'reported':
+      return { text: note || 'Reported', serious: false };
+    case 'serious':
+      return { text: note || 'Reported', serious: true };
+    default:
+      // A note with no classification is still worth showing.
+      return note ? { text: note, serious: false } : null;
+  }
+}
+
+/** A row the coordinator should look at promptly, whatever else they are doing. */
+export function hasSeriousSymptom(change: ProposedChange): boolean {
+  return change.proposed.sideEffects === 'serious';
+}
 
 export const CHANGE_TAG: Record<ProposedChange['changeType'], string> = {
   add: 'ADD',

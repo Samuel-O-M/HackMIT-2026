@@ -43,6 +43,23 @@ function buildContext({ plannerState, conversation, patientRecord, opening = fal
     );
   }
   parts.push(`### RECENT CONVERSATION\n${formatConversation(conversation)}`);
+  // The closing side-effects question is easy to forget, and a model closes
+  // the call as soon as the ordinary questions run out. So once the sweep has
+  // reached supplements (its last item) and the question is still owed, say so
+  // right beside the conversation. Not before: asked mid-sweep it derails the
+  // read-back.
+  const sweepDone = conversation.some(
+    (t) => t.speaker === 'agent' && /supplement|vitamin|herbal/i.test(t.transcript || '')
+  );
+  if (plannerState?.identity_status === 'verified' && plannerState?.followups?.group_check === 'pending' && sweepDone) {
+    parts.push(
+      '### BEFORE YOU CLOSE THE CALL\nThe closing question about side effects has not been asked yet. Once the ' +
+        'supplements question is answered, ask it — one question, in your own words, for example "before we finish, ' +
+        'has anything you take not agreed with you?" — and only then close. Do not say "that is everything I needed" ' +
+        'first. (Skip it only if the participant has already told you about their side effects, or clearly wants to ' +
+        'finish.)'
+    );
+  }
   if (opening) {
     parts.push(
       '### CALL EVENT\nThe call has just connected. The participant has picked up and has not said anything yet. ' +

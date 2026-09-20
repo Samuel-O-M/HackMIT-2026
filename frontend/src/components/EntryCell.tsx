@@ -2,10 +2,12 @@ import type { ReactNode } from 'react';
 import type { ConmedEntry } from '../types/contract';
 import { isApproximate } from '../lib/dates';
 import {
+  EFFECTIVENESS_LABEL,
   FIELD_LABEL,
   displayName,
   isSingleAdministration,
   isUnresolved,
+  sideEffectsLine,
   startLine,
   stopLine,
 } from '../lib/entry';
@@ -85,6 +87,7 @@ export function EntryCell({
   }
 
   const unresolved = isUnresolved(entry);
+  const side = sideEffectsLine(entry);
   const has = (field: string) => changed?.has(field) ?? false;
 
   return (
@@ -145,6 +148,32 @@ export function EntryCell({
       {atcClass && (
         <Line label="Class">
           <span>{atcClass}</span>
+        </Line>
+      )}
+
+      {entry.stopReason && (
+        <Line label="Reason">
+          <q className="said">{entry.stopReason}</q>
+        </Line>
+      )}
+
+      {entry.effectiveness && (
+        <Line label="Effect">
+          <span>{EFFECTIVENESS_LABEL[entry.effectiveness]}</span>
+        </Line>
+      )}
+
+      {side && (
+        <Line label="Side effects">
+          {side.serious ? (
+            <span className="serious" role="alert">
+              <b>Possible serious symptom</b> <q className="said">{side.text}</q>
+            </span>
+          ) : entry.sideEffects === 'reported' ? (
+            <q className="said">{side.text}</q>
+          ) : (
+            <span>{side.text}</span>
+          )}
         </Line>
       )}
 

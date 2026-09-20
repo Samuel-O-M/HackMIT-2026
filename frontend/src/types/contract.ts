@@ -29,7 +29,25 @@ export interface ConmedEntry {
   stopDate: string | null;
   stopDatePrecision: DatePrecision;
   ongoing: boolean;
+  /**
+   * Follow-up answers from the call, in the participant's terms. All optional:
+   * absent or null means the agent never asked, which is not the same as "no".
+   */
+  effectiveness?: Effectiveness | null;
+  sideEffects?: SideEffects | null;
+  /** What they said, when they reported something. Verbatim. */
+  sideEffectsNote?: string | null;
+  /** Why they stopped or changed it. Verbatim. */
+  stopReason?: string | null;
 }
+
+export type Effectiveness = 'working' | 'partly' | 'not_working' | 'unsure';
+/**
+ * `serious` is only ever set for the fixed red-flag list in the agent's policy
+ * (chest pain, trouble breathing, swelling, ...). It is not a severity
+ * judgement; it exists so a person sees it quickly.
+ */
+export type SideEffects = 'none' | 'reported' | 'serious' | 'unsure';
 
 export interface ProhibitedHit {
   ruleId: string;
@@ -69,4 +87,14 @@ export interface ReconciliationSession {
   endedAt: string | null;
   status: SessionStatus;
   changes: ProposedChange[];
+  /**
+   * Symptoms the participant described that are not tied to one medication
+   * ("I get chest tightness sometimes"). A person needs to see these, but there
+   * is no medication row to hang them on. Words are the participant's own.
+   */
+  safetyFlags?: SafetyFlag[];
+}
+
+export interface SafetyFlag {
+  detail: string;
 }

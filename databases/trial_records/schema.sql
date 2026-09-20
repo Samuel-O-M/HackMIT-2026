@@ -133,7 +133,13 @@ CREATE TABLE conmed_entries (
   start_date_precision TEXT NOT NULL CHECK (start_date_precision IN ('day','month','year','unknown')),
   stop_date            TEXT,
   stop_date_precision  TEXT NOT NULL CHECK (stop_date_precision IN ('day','month','year','unknown')),
-  ongoing              INTEGER NOT NULL CHECK (ongoing IN (0,1))
+  ongoing              INTEGER NOT NULL CHECK (ongoing IN (0,1)),
+  -- Follow-up answers from the call, in the participant's terms. NULL = never
+  -- asked, which is not the same as "no".
+  effectiveness        TEXT CHECK (effectiveness IN ('working','partly','not_working','unsure')),
+  side_effects         TEXT CHECK (side_effects IN ('none','reported','serious','unsure')),
+  side_effects_note    TEXT,            -- verbatim, when something was reported
+  stop_reason          TEXT             -- verbatim: why they stopped or changed it
 );
 
 CREATE TABLE proposed_changes (

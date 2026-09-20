@@ -10,6 +10,7 @@ import { clock, formatDateTime } from '../lib/dates';
 import { navigate } from '../router';
 import { ChangeRow } from '../components/ChangeRow';
 import { ProhibitedAlert } from '../components/ProhibitedAlert';
+import { SafetyAlert } from '../components/SafetyAlert';
 import {
   DeviationDialog,
   QueryDialog,
@@ -178,6 +179,8 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
             </dl>
           </div>
         </header>
+
+        <SafetyAlert changes={session.changes} flags={session.safetyFlags} onJump={jump} />
 
         <ProhibitedAlert
           changes={session.changes}

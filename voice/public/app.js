@@ -370,6 +370,13 @@
     box.appendChild(det(`missing (${missing.length})`, [missing.length ? ul(missing) : el('p', 'muted small', '—')], missing.length > 0));
     const nq = st.next_questions || [];
     box.appendChild(det(`next questions (${nq.length})`, [nq.length ? ul(nq) : el('p', 'muted small', '—')], nq.length > 0));
+    // Follow-ups: what the agent has asked about how medicines are going, out of
+    // the per-call cap, and the question the planner would offer next.
+    const fu = st.followups;
+    if (fu) {
+      box.appendChild(kv('follow-ups', `${fu.used} of ${data.maxFollowups ?? 3} optional asked · closing question ${fu.group_check}${fu.covered?.length ? ` · covered: ${fu.covered.join(', ')}` : ''}`));
+    }
+    box.appendChild(kv('next follow-up', st.followup ? `${st.followup.kind}${st.followup.medication ? ` · ${st.followup.medication}` : ''}: ${st.followup.question}` : null));
     const flags = st.flags || [];
     box.appendChild(det(`flags (${flags.length})`, [flags.length ? ul(flags, (f) => `${f.type}: ${f.detail}${f.protocol_section ? ` (§${f.protocol_section})` : ''}`) : el('p', 'muted small', '—')], flags.length > 0));
     box.appendChild(det('planner state JSON', [pre(st)]));
