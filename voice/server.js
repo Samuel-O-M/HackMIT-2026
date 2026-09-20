@@ -179,6 +179,14 @@ async function handleTranscribe(req, res) {
   applyAllowed(searchParams, params, STT_PARAMS);
   if (!params.has('model')) params.set('model', DEEPGRAM_STT_MODEL);
 
+  // LOCAL-AI HOOK (STT). To use the local Parakeet-unified-en-0.6B server in
+  // ../local-ai/stt instead of Deepgram, replace the two
+  // `https://api.deepgram.com/v1/listen?...` URLs below with
+  // `${process.env.LOCAL_STT_URL || 'http://127.0.0.1:5001'}/api/transcribe`
+  // and drop the `Authorization: Token ...` header. The local server accepts the
+  // same raw-audio and {url} bodies and returns {transcript, raw}. See
+  // local-ai/README.md §"Use it from the voice app". Live /ws/listen stays on
+  // Deepgram (Parakeet's streaming path is not proxied yet).
   let dgRes;
   if (contentType.startsWith('application/json')) {
     // Transcribe a remote file by URL.
@@ -246,6 +254,12 @@ async function handleTts(req, res) {
   applyAllowed(searchParams, params, TTS_PARAMS);
   if (!params.has('model')) params.set('model', DEEPGRAM_TTS_MODEL);
 
+  // LOCAL-AI HOOK (TTS). To use the local Qwen3-TTS-12Hz-0.6B server in
+  // ../local-ai/tts instead of Deepgram, replace the next line with
+  //   const url = `${process.env.LOCAL_TTS_URL || 'http://127.0.0.1:5002'}/api/tts?${params}`;
+  // and drop the `Authorization: Token ...` header below. The local server takes
+  // the same {text} body and returns audio/wav. Deepgram-only query params
+  // (model, encoding, container, ...) are ignored. See local-ai/README.md.
   const url = `https://api.deepgram.com/v1/speak?${params}`;
   const dgRes = await fetch(url, {
     method: 'POST',
@@ -648,6 +662,187 @@ async function handleCallAction(req, res, callId, action) {
   sendJson(res, 200, { ok: true, call }, true);
 }
 
+// ---------------------------------------------------------------------------
+// Live call stream
+//
+// The coordinator watches a call happen. Two things come down this stream and
+// nothing else: the conversation, and every change the agent has staged against
+// the participant's record. Not the planner's internals — a coordinator reading
+// a live call needs to see what was said and what it changed, not how the model
+// arrived at it.
+//
+// The brain already writes every turn to `utterances` and every proposal to the
+// staged_* tables as the call runs, so this is a reader over that, diffed and
+// pushed. It is deliberately a poll inside an SSE frame rather than hooks in the
+// brain: the brain has one job (talking to the participant) and should not grow
+// a second one (notifying dashboards).
+// ---------------------------------------------------------------------------
+
+/** Turns after `sinceSeq`, oldest first. `patient` speaker -> `participant`. */
+function liveTurns(sessionId, sinceSeq) {
+  const rows =
+    patient().query(
+      'SELECT seq, speaker, transcript FROM utterances WHERE session_id = ? AND seq > ? ORDER BY seq',
+      sessionId,
+      sinceSeq
+    ) || [];
+  return rows.map((r) => ({
+    seq: r.seq,
+    speaker: r.speaker === 'patient' ? 'participant' : 'agent',
+    text: r.transcript,
+  }));
+}
+
+/**
+ * Every modification the agent has staged, in a shape a coordinator can read as
+ * a changelog. `action` is the verb: add, stop, modify, or record.
+ */
+function liveModifications(sessionId) {
+  const p = patient();
+  const out = [];
+
+  const staged = p.query('SELECT * FROM staged_changes WHERE session_id = ? ORDER BY staged_id', sessionId) || [];
+  for (const r of staged) {
+    out.push({
+      key: `med:${r.staged_id}`,
+      kind: 'medication',
+      action: r.change_type || 'add',
+      name: r.canonical_name || r.reported_text || 'Unresolved',
+      detail: [r.dose, r.frequency].filter(Boolean).join(' · ') || null,
+      reportedText: r.reported_text || null,
+      unresolved: !r.rxcui,
+    });
+  }
+
+  const adherence = p.query('SELECT * FROM staged_adherence WHERE session_id = ? ORDER BY staged_adherence_id', sessionId) || [];
+  for (const r of adherence) {
+    out.push({
+      key: `adh:${r.staged_adherence_id}`,
+      kind: 'adherence',
+      action: 'record',
+      name: r.canonical_name || r.reported_text || 'Adherence',
+      detail:
+        r.extent === 'missed' && r.days_missed != null
+          ? `${r.days_missed} of ${r.recall_days ?? 7} days missed`
+          : r.extent || null,
+      reportedText: r.reported_text || null,
+    });
+  }
+
+  const behaviours = p.query('SELECT * FROM staged_behaviours WHERE session_id = ? ORDER BY staged_behaviour_id', sessionId) || [];
+  for (const r of behaviours) {
+    out.push({
+      key: `beh:${r.staged_behaviour_id}`,
+      kind: 'behaviour',
+      action: 'record',
+      name: r.behaviour_code,
+      detail: r.status || null,
+      reportedText: r.reported_text || null,
+    });
+  }
+
+  const symptoms = p.query('SELECT * FROM staged_symptoms WHERE session_id = ? ORDER BY staged_symptom_id', sessionId) || [];
+  for (const r of symptoms) {
+    out.push({
+      key: `sym:${r.staged_symptom_id}`,
+      kind: 'symptom',
+      action: 'record',
+      name: r.symptom || r.canonical_name || 'Symptom',
+      detail: r.severity || null,
+      reportedText: r.reported_text || null,
+    });
+  }
+
+  return out;
+}
+
+/** The session row, reduced to what the coordinator's header needs. */
+function liveSession(sessionId) {
+  const row = patient().get(
+    `SELECT session_id, subject_id, study_id, status, identity_status, outcome, started_at, ended_at
+       FROM call_sessions WHERE session_id = ?`,
+    sessionId
+  );
+  if (!row) return null;
+  return {
+    subjectId: row.subject_id,
+    studyId: row.study_id,
+    status: row.status,
+    identityStatus: row.identity_status,
+    outcome: row.outcome,
+    startedAt: row.started_at,
+    endedAt: row.ended_at,
+  };
+}
+
+/**
+ * GET /api/brain/live?sessionId=…  (server-sent events)
+ *
+ * Emits `session` (status changes), `turn` (each new utterance, in order), and
+ * `modification` (each staged change, re-emitted when it changes). A client can
+ * drop and reconnect: the first `session` and the replay of current turns and
+ * modifications make the stream self-describing from any point.
+ */
+function handleBrainLive(req, res) {
+  const sessionId = new URL(req.url, 'http://localhost').searchParams.get('sessionId');
+
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    Connection: 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+    'X-Accel-Buffering': 'no',
+  });
+  res.write('retry: 2000\n\n');
+  const send = (event) => res.write(`data: ${JSON.stringify(event)}\n\n`);
+
+  if (!sessionId) {
+    send({ type: 'error', error: 'missing sessionId' });
+    res.end();
+    return;
+  }
+
+  send({ type: 'ready', at: new Date().toISOString() });
+
+  let lastSeq = 0;
+  const sentMods = new Map();
+  let lastSessionSig = null;
+
+  const tick = () => {
+    try {
+      const session = liveSession(sessionId);
+      if (session) {
+        const sig = `${session.status}|${session.identityStatus}|${session.outcome}|${session.endedAt}`;
+        if (sig !== lastSessionSig) {
+          lastSessionSig = sig;
+          send({ type: 'session', session });
+        }
+      }
+      for (const turn of liveTurns(sessionId, lastSeq)) {
+        lastSeq = turn.seq;
+        send({ type: 'turn', turn: { speaker: turn.speaker, text: turn.text } });
+      }
+      for (const mod of liveModifications(sessionId)) {
+        const json = JSON.stringify(mod);
+        if (sentMods.get(mod.key) !== json) {
+          sentMods.set(mod.key, json);
+          send({ type: 'modification', modification: mod });
+        }
+      }
+    } catch (err) {
+      send({ type: 'error', error: String((err && err.message) || err) });
+    }
+  };
+
+  tick();
+  const poll = setInterval(tick, 800);
+  const keepAlive = setInterval(() => res.write(': ping\n\n'), 15000);
+  req.on('close', () => {
+    clearInterval(poll);
+    clearInterval(keepAlive);
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   try {
     const { pathname } = new URL(req.url, 'http://localhost');
@@ -666,6 +861,7 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/brain/state' && req.method === 'GET') return await handleBrainState(req, res);
     if (pathname === '/api/brain/debug' && req.method === 'GET') return await handleBrainDebug(req, res);
     if (pathname === '/api/brain/log' && req.method === 'GET') return await handleBrainLog(req, res);
+    if (pathname === '/api/brain/live' && req.method === 'GET') return handleBrainLive(req, res);
 
     // The dashboard lives on another origin, so these need preflight.
     if (pathname.startsWith('/api/calls') && req.method === 'OPTIONS') {

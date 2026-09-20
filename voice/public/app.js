@@ -1185,6 +1185,26 @@
     if (e.key === 'Enter') sendTyped();
   });
 
+  // ------------------------------------------------------------- idle clock
+  //
+  // The idle screen is a clock and nothing else — the handset does not offer to
+  // place a call, it waits to be rung. Ticking locally keeps the screen honest
+  // without a network round-trip.
+  function tickClock() {
+    const now = new Date();
+    const time = $('#idleTime');
+    const date = $('#idleDate');
+    if (time) {
+      time.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      time.dateTime = now.toISOString();
+    }
+    if (date) {
+      date.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+    }
+  }
+  tickClock();
+  window.setInterval(tickClock, 15000);
+
   async function loadHealth() {
     try {
       const h = await fetchJson('/api/health');
