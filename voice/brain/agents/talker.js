@@ -10,7 +10,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const config = require('../config');
-const { chatWithTools } = require('../lib/openai');
+const { chatWithTools, chatWithToolsStream } = require('../lib/openai');
+const { FILLERS, createChunker, speakable } = require('../lib/speech');
 const { formatConversation } = require('../lib/format');
 const { schemasFor, dispatch } = require('../tools');
 const patientTools = require('../tools/patient');
@@ -92,4 +93,54 @@ async function respond({ plannerState, conversation, subjectId, sessionId }) {
   return { say: cleanSpoken(text), toolCalls, model };
 }
 
-module.exports = { respond, cleanSpoken, SYSTEM_PROMPT };
+/**
+ * Same turn as respond(), but speech is handed out as it is written.
+ * `onChunk({ text, filler })` fires for each short piece that is ready to be
+ * spoken. If the model reaches for a tool before saying anything, a short
+ * "one moment" filler goes out first so the line is never silent.
+ */
+async function respondStream({ plannerState, conversation, subjectId, sessionId, onChunk }) {
+  let patientRecord = null;
+  try {
+    patientRecord = await loadPatientRecord(subjectId);
+  } catch {
+    patientRecord = null; // grounding must never break the turn
+  }
+  const messages = [
+    { role: 'system', content: SYSTEM_PROMPT },
+    { role: 'user', content: buildContext({ plannerState, conversation, patientRecord }) },
+  ];
+
+  let count = 0;
+  let filled = false;
+  const send = (text, filler = false) => {
+    const clean = speakable(text, { first: count === 0 });
+    if (!clean) return;
+    count++;
+    onChunk({ text: clean, filler });
+  };
+  const chunker = createChunker((piece) => send(piece));
+
+  const { text, toolCalls, model } = await chatWithToolsStream({
+    messages,
+    tools: schemasFor('talker'),
+    model: config.talkerModel,
+    effort: config.talkerEffort,
+    maxRounds: config.maxToolRounds,
+    execute: (name, args) => dispatch(name, args, { subjectId, sessionId }),
+    onText: (delta) => chunker.push(delta),
+    onToolStart: ({ spokenSoFar }) => {
+      // Speak what the model already wrote before the tool wait; only fill the
+      // silence if it has said nothing at all this turn.
+      chunker.flush();
+      if (!spokenSoFar.trim() && !filled) {
+        filled = true;
+        send(FILLERS[Math.floor(Math.random() * FILLERS.length)], true);
+      }
+    },
+  });
+  chunker.flush();
+  return { say: cleanSpoken(text), toolCalls, model };
+}
+
+module.exports = { respond, respondStream, cleanSpoken, SYSTEM_PROMPT };

@@ -170,7 +170,7 @@ class Brain {
    * Fast path. Runs only the Talker and returns immediately.
    * Kicks the planner off in the background.
    */
-  async handleTurn({ sessionId, subjectId, userText }) {
+  async handleTurn({ sessionId, subjectId, userText, onEvent }) {
     this.init();
     const session = this.ensureSession(sessionId, subjectId);
     subjectId = session.subject_id;
@@ -181,12 +181,21 @@ class Brain {
     const conversation = this.getConversation(sessionId);
 
     const t0 = Date.now();
-    const { say, toolCalls, model } = await talker.respond({
-      plannerState: state,
-      conversation,
-      subjectId,
-      sessionId,
-    });
+    let firstChunkMs = null;
+    // With `onEvent` the reply is streamed: short speakable chunks go out as
+    // the model writes them. Without it, behaviour is unchanged.
+    const { say, toolCalls, model } = onEvent
+      ? await talker.respondStream({
+          plannerState: state,
+          conversation,
+          subjectId,
+          sessionId,
+          onChunk: (chunk) => {
+            if (firstChunkMs === null) firstChunkMs = Date.now() - t0;
+            onEvent({ type: 'say', ...chunk });
+          },
+        })
+      : await talker.respond({ plannerState: state, conversation, subjectId, sessionId });
     const latencyMs = Date.now() - t0;
 
     this.saveUtterance(sessionId, 'agent', say);
@@ -196,13 +205,13 @@ class Brain {
       at: new Date().toISOString(),
       userText,
       say,
-      talker: { model, latencyMs, toolCalls, stateUsed: state },
+      talker: { model, latencyMs, firstChunkMs, toolCalls, stateUsed: state },
     };
 
     // Fire-and-forget: the patient never waits for the planner.
     const planned = this.schedulePlan(sessionId, subjectId);
 
-    return { say, state, toolCalls, model, latencyMs, sessionId, planning: Boolean(planned) };
+    return { say, state, toolCalls, model, latencyMs, firstChunkMs, sessionId, planning: Boolean(planned) };
   }
 
   /** Queue a planner run (collapses bursts). Returns the running promise, if any. */
