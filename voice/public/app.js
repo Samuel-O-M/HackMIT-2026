@@ -901,7 +901,11 @@
         handleStt(m);
       };
       ws.onerror = () => showError('Live STT socket error');
-      ws.onclose = () => { if (call) endCall(); };
+      ws.onclose = (ev) => {
+        // A dropped STT socket ends the call, so say why in the session log.
+        if (call) log('stt.closed', { code: ev.code, reason: ev.reason });
+        if (call) endCall();
+      };
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const source = ctx.createMediaStreamSource(stream);
