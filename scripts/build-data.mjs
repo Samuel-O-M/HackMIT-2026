@@ -297,7 +297,81 @@ for (const trial of trials) {
     const promoted = dayOffset < 0 && chance(r, 0.55);
     if (promoted) for (const c of changes) c.reviewStatus = 'accepted';
 
-    sessions.push({ sessionId, subjectId, studyId: trial.studyId, nctId: trial.nctId, startedAt: started, endedAt: ended, status: promoted ? 'completed' : 'awaiting_review', changes });
+    // What the call found beyond the list: adherence, tolerability, the
+    // protocol's non-drug rules, and who was actually on the phone. Synthetic
+    // like the rest of the call content — the trials and the protocol rules
+    // these are checked against are real.
+    const onLog = changes.map((c) => c.current?.canonicalName).filter(Boolean);
+    const adherence = onLog.slice(0, 2).map((name) => {
+      const missed = chance(r, 0.38) ? 1 + Math.floor(r() * 4) : 0;
+      return {
+        canonicalName: name,
+        isStudyDrug: false,
+        extent: missed === 0 ? 'as_prescribed' : missed >= 4 ? 'stopped' : 'missed_some',
+        daysMissed: missed === 0 ? 0 : missed,
+        recallDays: 7,
+        reasons: missed === 0 ? [] : [pick(r, ['forgot', 'side_effects', 'ran_out', 'too_many'])],
+        reportedText: missed === 0
+          ? 'Yes, every day, no trouble with that one.'
+          : pick(r, ['I miss the evening one now and then.', 'A couple of days I forgot it.', 'I ran out before the repeat came through.']),
+      };
+    });
+
+    // Symptoms, with the label check the bridge would have resolved live.
+    const SYMPTOMS = [
+      { symptom: 'nausea', onLabel: true }, { symptom: 'headache', onLabel: true },
+      { symptom: 'fatigue', onLabel: true }, { symptom: 'trouble sleeping', onLabel: false },
+      { symptom: 'a metallic taste', onLabel: false }, { symptom: 'dizziness', onLabel: true },
+    ];
+    const symptoms = onLog.length && chance(r, 0.45)
+      ? [pick(r, SYMPTOMS)].map((sx) => ({
+          canonicalName: onLog[0], isStudyDrug: false, symptom: sx.symptom,
+          severity: chance(r, 0.4) ? pick(r, ['mild', 'moderate']) : null,
+          since: null, sincePrecision: 'unknown',
+          onLabel: sx.onLabel, labelSource: 'openFDA drug/label',
+          reportedText: `I have had some ${sx.symptom} since starting it.`,
+        }))
+      : [];
+
+    // Every one of these trials is cemiplimab, so these are its real rules.
+    const drinks = Math.floor(r() * 4);
+    const behaviours = [
+      {
+        behaviourCode: 'alcohol',
+        status: chance(r, 0.12) ? 'declined_to_answer' : drinks === 0 ? 'denied' : 'reported',
+        reportedText: drinks === 0 ? 'No, I do not drink.' : `A glass ${drinks > 2 ? 'most nights' : 'now and then'}.`,
+        frequency: drinks === 0 ? null : drinks > 2 ? 'most days' : 'monthly or less',
+        quantity: drinks === 0 ? null : `${drinks} standard drink${drinks === 1 ? '' : 's'}`,
+        period: 'typical week', instrument: 'AUDIT-C', instrumentScore: null, // set below, only when answered
+        rule: { ruleType: 'monitored', threshold: 'Record usual intake; no fixed limit', protocolSection: '5.7', rationale: 'Intake is needed to interpret liver function tests during treatment.' },
+        breachesRule: false,
+      },
+      {
+        behaviourCode: 'contraception',
+        // A 'required' rule: the finding is that it is NOT being followed.
+        status: chance(r, 0.08) ? 'denied' : 'reported',
+        reportedText: null, frequency: null, quantity: null, period: null,
+        instrument: null, instrumentScore: null,
+        rule: { ruleType: 'required', threshold: 'Highly effective contraception during treatment and for 6 months after the last dose', protocolSection: '5.6', rationale: 'Reproductive toxicity of the study drug has not been established.' },
+        breachesRule: false,
+      },
+    ];
+    for (const b of behaviours) {
+      if (b.rule.ruleType === 'required') b.breachesRule = b.status === 'denied';
+      // A screen only has a score if the questions were answered.
+      if (b.instrument && b.status !== 'declined_to_answer' && b.status !== 'unknown') {
+        b.instrumentScore = drinks === 0 ? 0 : drinks + 1;
+      }
+    }
+
+    const caregiver = chance(r, 0.18);
+    const callParticipants = {
+      caregiverPresent: caregiver,
+      caregiverRelationship: caregiver ? pick(r, ['daughter', 'son', 'husband', 'wife']) : null,
+      caregiverAuthStatus: caregiver ? 'authorised' : 'none',
+    };
+
+    sessions.push({ sessionId, subjectId, studyId: trial.studyId, nctId: trial.nctId, startedAt: started, endedAt: ended, status: promoted ? 'completed' : 'awaiting_review', changes, adherence, symptoms, behaviours, callParticipants });
 
     // A transcript that matches the changes it produced.
     const turns = [{ atMs: 0, speaker: 'agent', text: `Good morning. This is the study team calling ahead of your ${visitName} visit. Do you have a few minutes to go through your medications?` }, { atMs: 5600, speaker: 'participant', text: 'Yes, that is fine.' }];

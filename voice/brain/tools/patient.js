@@ -18,6 +18,9 @@ const READ_SCOPES = [
   'planner_state',
   'transcript',
   'advice',
+  'behaviour_rules',
+  'adherence',
+  'authorised_contacts',
 ];
 
 function read({ subjectId, sessionId, scope, limit }) {
@@ -64,6 +67,35 @@ function read({ subjectId, sessionId, scope, limit }) {
           )
         : [];
     }
+    case 'behaviour_rules': {
+      needSubject();
+      const e = p.get('SELECT study_id FROM enrollments WHERE subject_id = ?', subjectId);
+      return e
+        ? p.query(
+            `SELECT behaviour_code, rule_type, threshold, instrument, protocol_section, rationale
+               FROM behaviour_rules WHERE study_id = ? ORDER BY behaviour_code`,
+            e.study_id
+          )
+        : [];
+    }
+    case 'adherence': {
+      if (!sessionId) return [];
+      return p.query(
+        `SELECT canonical_name, is_study_drug, extent, days_missed, recall_days, reasons
+           FROM staged_adherence WHERE session_id = ? ORDER BY staged_adherence_id`,
+        sessionId
+      );
+    }
+    case 'authorised_contacts': {
+      needSubject();
+      // Relationship and role only. The agent decides whether it may speak to
+      // someone; it has no reason to be handed their name and read it aloud.
+      return p.query(
+        `SELECT contact_id, relationship, role, authorised
+           FROM authorised_contacts WHERE subject_id = ? AND authorised = 1`,
+        subjectId
+      );
+    }
     case 'planner_state': {
       if (!sessionId) return null;
       const row = p.get('SELECT state FROM planner_state WHERE session_id = ?', sessionId);
@@ -92,7 +124,14 @@ function read({ subjectId, sessionId, scope, limit }) {
   }
 }
 
-const WRITE_OPS = ['set_planner_state', 'add_medication_change', 'add_advice'];
+const WRITE_OPS = [
+  'set_planner_state',
+  'add_medication_change',
+  'add_advice',
+  'add_adherence_report',
+  'add_behaviour_report',
+  'add_symptom_report',
+];
 
 function update({ subjectId, sessionId, op, payload = {} }) {
   const p = patient();
@@ -159,6 +198,125 @@ function update({ subjectId, sessionId, op, payload = {} }) {
       return { ok: true, op, staged: true };
     }
 
+    case 'add_adherence_report': {
+      if (!sessionId) throw new Error('add_adherence_report requires a session.');
+      const name = payload.canonical_name || null;
+      const extent = ['as_prescribed', 'missed_some', 'stopped', 'never_started', 'unknown']
+        .includes(payload.extent) ? payload.extent : 'unknown';
+
+      // A count only means something next to the window it was counted over.
+      const recall = Number(payload.recall_days) > 0 ? Number(payload.recall_days) : 7;
+      let missed = payload.days_missed == null ? null : Number(payload.days_missed);
+      if (missed != null && (!Number.isFinite(missed) || missed < 0 || missed > recall)) missed = null;
+
+      const dupe = name && p.get(
+        `SELECT staged_adherence_id FROM staged_adherence
+          WHERE session_id = ? AND ifnull(canonical_name,'') = ifnull(?,'') LIMIT 1`,
+        sessionId, name
+      );
+      if (dupe) {
+        p.execute(
+          `UPDATE staged_adherence SET extent = ?, days_missed = ?, recall_days = ?,
+                  reasons = ?, reported_text = ? WHERE staged_adherence_id = ?`,
+          extent, missed, recall,
+          JSON.stringify(payload.reasons || []), payload.reported_text || null,
+          dupe.staged_adherence_id
+        );
+        return { ok: true, op, updated: true };
+      }
+
+      p.execute(
+        `INSERT INTO staged_adherence
+           (session_id, subject_id, study_id, log_id, canonical_name, is_study_drug,
+            extent, days_missed, recall_days, reasons, reported_text)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+        sessionId, subjectId,
+        p.get('SELECT study_id FROM call_sessions WHERE session_id = ?', sessionId)?.study_id || null,
+        payload.log_id == null ? null : Number(payload.log_id),
+        name,
+        payload.is_study_drug ? 1 : 0,
+        extent, missed, recall,
+        JSON.stringify(payload.reasons || []),
+        payload.reported_text || null
+      );
+      return { ok: true, op, staged: true };
+    }
+
+    case 'add_behaviour_report': {
+      if (!sessionId) throw new Error('add_behaviour_report requires a session.');
+      const code = String(payload.behaviour_code || '').trim().toLowerCase();
+      if (!code) throw new Error('add_behaviour_report requires a behaviour_code.');
+      // "declined_to_answer" must survive as itself. Folding it into "denied"
+      // would turn a refusal into a negative finding, which it is not.
+      const status = ['reported', 'denied', 'declined_to_answer', 'unknown']
+        .includes(payload.status) ? payload.status : 'unknown';
+
+      const dupe = p.get(
+        `SELECT staged_behaviour_id FROM staged_behaviours
+          WHERE session_id = ? AND behaviour_code = ? LIMIT 1`,
+        sessionId, code
+      );
+      const score = payload.instrument_score == null ? null : Number(payload.instrument_score);
+      if (dupe) {
+        p.execute(
+          `UPDATE staged_behaviours SET status = ?, reported_text = ?, frequency = ?,
+                  quantity = ?, period = ?, instrument = ?, instrument_score = ?
+            WHERE staged_behaviour_id = ?`,
+          status, payload.reported_text || null, payload.frequency || null,
+          payload.quantity || null, payload.period || null,
+          payload.instrument || null, Number.isFinite(score) ? score : null,
+          dupe.staged_behaviour_id
+        );
+        return { ok: true, op, updated: true };
+      }
+
+      p.execute(
+        `INSERT INTO staged_behaviours
+           (session_id, subject_id, study_id, behaviour_code, reported_text, status,
+            frequency, quantity, period, instrument, instrument_score)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+        sessionId, subjectId,
+        p.get('SELECT study_id FROM call_sessions WHERE session_id = ?', sessionId)?.study_id || null,
+        code, payload.reported_text || null, status,
+        payload.frequency || null, payload.quantity || null, payload.period || null,
+        payload.instrument || null, Number.isFinite(score) ? score : null
+      );
+      return { ok: true, op, staged: true };
+    }
+
+    case 'add_symptom_report': {
+      if (!sessionId) throw new Error('add_symptom_report requires a session.');
+      const symptom = String(payload.symptom || '').trim();
+      if (!symptom) throw new Error('add_symptom_report requires a symptom.');
+      const sev = ['mild', 'moderate', 'severe'].includes(payload.severity) ? payload.severity : null;
+
+      const dupe = p.get(
+        `SELECT staged_symptom_id FROM staged_symptoms
+          WHERE session_id = ? AND lower(symptom) = lower(?)
+            AND ifnull(canonical_name,'') = ifnull(?,'') LIMIT 1`,
+        sessionId, symptom, payload.canonical_name || null
+      );
+      if (dupe) return { ok: true, op, skipped: 'duplicate' };
+
+      p.execute(
+        `INSERT INTO staged_symptoms
+           (session_id, subject_id, study_id, canonical_name, is_study_drug, symptom,
+            severity, since, since_precision, on_label, label_source, reported_text)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+        sessionId, subjectId,
+        p.get('SELECT study_id FROM call_sessions WHERE session_id = ?', sessionId)?.study_id || null,
+        payload.canonical_name || null,
+        payload.is_study_drug ? 1 : 0,
+        symptom, sev,
+        payload.since || null,
+        payload.since_precision || 'unknown',
+        payload.on_label == null ? null : (payload.on_label ? 1 : 0),
+        payload.label_source || null,
+        payload.reported_text || null
+      );
+      return { ok: true, op, staged: true };
+    }
+
     case 'add_advice': {
       if (!sessionId) throw new Error('add_advice requires a session.');
       p.execute(
@@ -180,6 +338,79 @@ function update({ subjectId, sessionId, op, payload = {} }) {
 // Identity verification (deterministic — the model must NOT compare dates)
 // ---------------------------------------------------------------------------
 
+
+/**
+ * Does this behaviour trip the participant's protocol?
+ *
+ * The drug path resolves a name to an RxCUI and matches a rule. Behaviours
+ * have no RxNorm concept, so the protocol rule is the whole answer — which is
+ * why the codes are a closed set rather than free text.
+ */
+function checkBehaviour({ subjectId, behaviour_code }) {
+  const p = patient();
+  const code = String(behaviour_code || '').trim().toLowerCase();
+  if (!code) return { error: 'behaviour_code required' };
+  const e = p.get('SELECT study_id FROM enrollments WHERE subject_id = ?', subjectId);
+  if (!e) return { restricted: false, reason: 'no enrollment on file' };
+
+  const rule = p.get(
+    `SELECT behaviour_code, rule_type, threshold, instrument, protocol_section, rationale
+       FROM behaviour_rules WHERE study_id = ? AND behaviour_code = ?`,
+    e.study_id, code
+  );
+  if (!rule) return { restricted: false, behaviour_code: code };
+  return {
+    restricted: rule.rule_type !== 'monitored',
+    behaviour_code: code,
+    rule_type: rule.rule_type,
+    threshold: rule.threshold || null,
+    instrument: rule.instrument || null,
+    protocol_section: rule.protocol_section || null,
+    rationale: rule.rationale || null,
+  };
+}
+
+/**
+ * May the agent speak to the person who is not the participant?
+ *
+ * Only if the site recorded them beforehand. A caller asserting a relationship
+ * is not authorisation — that is the whole point of the check, and the reason
+ * this reads a table rather than believing the transcript.
+ *
+ * Like the identity check, this returns an outcome. It never returns who is on
+ * the list, which would let a caller guess their way onto it.
+ */
+function verifyCaregiver({ subjectId, sessionId, name, given_name, family_name, relationship }) {
+  const p = patient();
+  const rows = p.query(
+    'SELECT contact_id, given_name, family_name, relationship, role FROM authorised_contacts WHERE subject_id = ? AND authorised = 1',
+    subjectId
+  ) || [];
+
+  const claimed = normName([name, given_name, family_name].filter(Boolean).join(' '));
+  const claimedRel = normName(relationship);
+  const match = rows.find((r) => {
+    const nameOk = claimed
+      ? claimed.includes(normName(r.given_name)) && claimed.includes(normName(r.family_name))
+      : false;
+    const relOk = claimedRel ? normName(r.relationship) === claimedRel : false;
+    // Name is the strong signal; relationship alone is not enough to pass.
+    return nameOk && (relOk || !claimedRel);
+  });
+
+  const status = match ? 'authorised' : rows.length ? 'not_authorised' : 'none';
+  if (sessionId) {
+    p.execute(
+      `UPDATE call_sessions
+          SET caregiver_present = 1, caregiver_auth_status = ?, caregiver_contact_id = ?, caregiver_relationship = ?
+        WHERE session_id = ?`,
+      status, match ? match.contact_id : null, match ? match.relationship : null, sessionId
+    );
+  }
+  return match
+    ? { authorised: true, relationship: match.relationship, role: match.role }
+    : { authorised: false, reason: rows.length ? 'not on the authorisation list' : 'no authorised contacts on file' };
+}
 
 function normName(s) {
   return String(s || '').toLowerCase().replace(/[^a-z]/g, '');
@@ -234,4 +465,7 @@ function safeParse(s) {
   }
 }
 
-module.exports = { read, update, verifyIdentity, normalizeDob, READ_SCOPES, WRITE_OPS };
+module.exports = {
+  read, update, verifyIdentity, checkBehaviour, verifyCaregiver,
+  normalizeDob, READ_SCOPES, WRITE_OPS,
+};

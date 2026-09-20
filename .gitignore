@@ -11,3 +11,4 @@ databases/**/*.db
 databases/call_sessions/contacts.json
 databases/**/*.db-shm
 databases/**/*.db-wal
+api/medical_data/.cache/

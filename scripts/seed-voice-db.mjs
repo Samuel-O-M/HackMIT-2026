@@ -34,6 +34,12 @@ for (const t of trials) iStudy.run(t.studyId, t.nctId, t.shortTitle, protocols[t
 
 const iPatient = db.prepare('INSERT INTO patients (subject_id,given_name,family_name,dob,phone,preferred_language) VALUES (?,?,?,?,?,?)');
 const iEnrol = db.prepare('INSERT INTO enrollments (subject_id,study_id,enrolled_date,arm) VALUES (?,?,?,?)');
+// Who the site has recorded as authorised to speak on a participant's behalf.
+// Names live here and in the gitignored contact layer only — never in
+// patient_data, which holds subject ids by design.
+const iContact = db.prepare(
+  'INSERT INTO authorised_contacts (subject_id,given_name,family_name,relationship,role,authorised,consent_on_file) VALUES (?,?,?,?,?,?,?)'
+);
 const contacts = {};
 roster.forEach((p, i) => {
   const n = Number(p.subjectId.replace(/\D/g, '')) || i;
@@ -43,6 +49,19 @@ roster.forEach((p, i) => {
   iPatient.run(p.subjectId, given, family, dob, `555-0${String(100 + (n % 800))}`, 'en');
   iEnrol.run(p.subjectId, p.studyId, typeof p.enrolledDate === 'string' ? p.enrolledDate.slice(0, 10) : null, null);
   contacts[p.subjectId] = { given, family, dob };
+
+  // Roughly one participant in four has someone recorded on their
+  // authorisation form. In an oncology trial that is if anything low — the
+  // person who fills the pill organiser is very often not the participant.
+  if (n % 4 === 0) {
+    const rel = ['daughter', 'son', 'husband', 'wife', 'carer'][n % 5];
+    const cGiven = GIVEN[(n * 3 + 5) % GIVEN.length];
+    // Family members usually share a surname; a paid carer does not.
+    const cFamily = rel === 'carer' ? FAMILY[(n * 11 + 3) % FAMILY.length] : family;
+    iContact.run(p.subjectId, cGiven, cFamily, rel,
+      rel === 'carer' ? 'caregiver' : 'caregiver', 1, p.enrolledDate ? String(p.enrolledDate).slice(0, 10) : null);
+    contacts[p.subjectId].caregiver = { given: cGiven, family: cFamily, relationship: rel };
+  }
 });
 
 // The medication log the agent reads back: the "current" side of each change.
@@ -72,9 +91,61 @@ for (const [studyId, doc] of Object.entries(protocols)) {
   }
 }
 
+/**
+ * Non-drug protocol requirements.
+ *
+ * All eight trials are cemiplimab, an anti-PD-1 monoclonal antibody, so the
+ * rules below are the ones those protocols actually carry. Notably absent:
+ * grapefruit. It is the textbook example of a dietary restriction, and it is
+ * meaningless here — grapefruit inhibits CYP3A4, and a monoclonal antibody is
+ * catabolised to peptides, not metabolised by CYP enzymes. Seeding it would
+ * have produced a convincing demo of a rule no oncologist would write.
+ *
+ * Contraception and pregnancy come from the reproductive-toxicity language
+ * common to every PD-1 protocol. Smoking is carried only on the lung-cancer
+ * studies, where smoking status is a real recorded covariate; sun exposure only
+ * on the skin-cancer studies.
+ *
+ * A production system extracts these from the protocol PDF the same way
+ * prohibited drugs already are. This is the seam that would feed it.
+ */
+const NSCLC = ['R2810-ONC-1624', 'R2810-ONC-16111', 'R2810-ONC-16113'];
+const SKIN = ['R2810-ONC-1540', 'R2810-ONC-1620'];
+
+const iBRule = db.prepare(
+  'INSERT INTO behaviour_rules (study_id,behaviour_code,rule_type,threshold,instrument,protocol_section,rationale) VALUES (?,?,?,?,?,?,?)'
+);
+let brules = 0;
+for (const t of trials) {
+  const id = t.studyId;
+  const add = (code, type, threshold, instrument, section, why) => {
+    iBRule.run(id, code, type, threshold, instrument, section, why);
+    brules++;
+  };
+  add('contraception', 'required',
+    'Highly effective contraception during treatment and for 6 months after the last dose',
+    null, '5.6', 'Reproductive toxicity of the study drug has not been established.');
+  add('pregnancy', 'prohibited', 'Pregnancy or breastfeeding at any point during treatment',
+    null, '5.6', 'Immunoglobulin crosses the placenta and is excreted in breast milk.');
+  add('blood_donation', 'prohibited', 'No donation during treatment or for 30 days after the last dose',
+    null, '5.7', 'Protects the participant, and recipients, during active immunotherapy.');
+  add('alcohol', 'monitored', 'Record usual intake; no fixed limit',
+    'AUDIT-C', '5.7', 'Intake is needed to interpret liver function tests during treatment.');
+  if (NSCLC.includes(id)) {
+    add('nicotine', 'monitored', 'Record current status and any change since screening',
+      null, '5.7', 'Smoking status is a stratification covariate in this population.');
+  }
+  if (SKIN.includes(id)) {
+    add('sun_exposure', 'monitored', 'Record sun protection practice',
+      null, '5.7', 'UV exposure is a driver of new lesions in this population.');
+  }
+}
+
 db.exec('PRAGMA foreign_keys = ON');
 console.log(`voice db seeded from patient_data:`);
-console.log(`  studies ${trials.length} · patients ${roster.length} · medications ${meds} · rules ${rules}`);
+const contactCount = db.prepare('SELECT COUNT(*) AS n FROM authorised_contacts').get().n;
+console.log(`  studies ${trials.length} · patients ${roster.length} · medications ${meds} · drug rules ${rules} · behaviour rules ${brules}`);
+console.log(`  authorised contacts ${contactCount}`);
 db.close();
 
 // The driver needs the names it just invented in order to pass identity check.

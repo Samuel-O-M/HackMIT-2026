@@ -81,10 +81,19 @@ function seedPatient() {
   const db = new DatabaseSync(PATIENT_DB);
 
   db.exec(`
+    -- Children before parents. A foreign key to a table that has already been
+    -- dropped is a constraint failure, not a no-op, so this order is load
+    -- bearing: every table here must appear before the ones it references.
     DROP TABLE IF EXISTS advice_log;
     DROP TABLE IF EXISTS planner_state;
     DROP TABLE IF EXISTS utterances;
+    DROP TABLE IF EXISTS staged_symptoms;
+    DROP TABLE IF EXISTS staged_adherence;
+    DROP TABLE IF EXISTS staged_behaviours;
+    DROP TABLE IF EXISTS staged_changes;
     DROP TABLE IF EXISTS call_sessions;
+    DROP TABLE IF EXISTS authorised_contacts;
+    DROP TABLE IF EXISTS behaviour_rules;
     DROP TABLE IF EXISTS protocol_rules;
     DROP TABLE IF EXISTS medications;
     DROP TABLE IF EXISTS enrollments;
@@ -143,15 +152,22 @@ function seedPatient() {
       protocol_section TEXT,
       rationale        TEXT
     );
-    CREATE TABLE call_sessions (
-      session_id TEXT PRIMARY KEY,
-      subject_id TEXT NOT NULL REFERENCES patients(subject_id),
-      study_id   TEXT,
-      started_at TEXT DEFAULT (datetime('now')),
-      ended_at   TEXT,
-      status     TEXT DEFAULT 'open',
-      identity_status   TEXT DEFAULT 'unverified',
-      identity_attempts INTEGER DEFAULT 0
+    -- People other than the participant who may lawfully be spoken to.
+    --
+    -- Consent is not something the agent can infer from the call. Either the
+    -- site recorded this person on the participant's authorisation form before
+    -- the call, or the agent may not discuss anything with them. A caller who
+    -- says "I'm her daughter, she's right here" is not authorisation.
+    CREATE TABLE authorised_contacts (
+      contact_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+      subject_id      TEXT NOT NULL REFERENCES patients(subject_id),
+      given_name      TEXT,
+      family_name     TEXT,
+      relationship    TEXT,
+      -- caregiver | legally_authorised_representative | interpreter
+      role            TEXT DEFAULT 'caregiver',
+      authorised      INTEGER DEFAULT 0,
+      consent_on_file TEXT
     );
     -- What the call proposes. NOT the medication log.
     --
@@ -179,6 +195,124 @@ function seedPatient() {
       ongoing      INTEGER,
       created_at   TEXT DEFAULT (datetime('now'))
     );
+    CREATE TABLE call_sessions (
+      session_id TEXT PRIMARY KEY,
+      subject_id TEXT NOT NULL REFERENCES patients(subject_id),
+      study_id   TEXT,
+      started_at TEXT DEFAULT (datetime('now')),
+      ended_at   TEXT,
+      status     TEXT DEFAULT 'open',
+      identity_status   TEXT DEFAULT 'unverified',
+      identity_attempts INTEGER DEFAULT 0,
+      -- Who was actually on the call. A spouse or adult child is often the one
+      -- who knows what is in the pill organiser, and a coordinator reading the
+      -- record later needs to know whose account this was.
+      caregiver_present     INTEGER DEFAULT 0,
+      caregiver_contact_id  INTEGER REFERENCES authorised_contacts(contact_id),
+      caregiver_relationship TEXT,
+      -- none | authorised | not_authorised | unverified. Never the details the
+      -- caller offered — only whether they cleared the check.
+      caregiver_auth_status TEXT DEFAULT 'none'
+    );
+
+    -- Non-drug protocol requirements.
+    --
+    -- Protocols restrict more than medication: alcohol, nicotine, grapefruit,
+    -- sun exposure, strenuous exercise, blood donation, contraception. These
+    -- are as reportable as a prohibited drug and nobody was asking about them.
+    --
+    -- The rule_type 'required' is not a typo. Contraception compliance is a rule the
+    -- participant must MEET, so the flag fires on absence rather than presence.
+    CREATE TABLE behaviour_rules (
+      behaviour_rule_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      study_id          TEXT NOT NULL REFERENCES studies(study_id),
+      behaviour_code    TEXT NOT NULL,
+      -- prohibited | restricted | monitored | required
+      rule_type         TEXT NOT NULL,
+      threshold         TEXT,
+      -- A validated screen, where one exists for this behaviour (e.g. AUDIT-C).
+      instrument        TEXT,
+      protocol_section  TEXT,
+      rationale         TEXT
+    );
+
+    -- What the call heard about those behaviours. Staged, never the record.
+    CREATE TABLE staged_behaviours (
+      staged_behaviour_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id     TEXT NOT NULL REFERENCES call_sessions(session_id),
+      subject_id     TEXT NOT NULL REFERENCES patients(subject_id),
+      study_id       TEXT,
+      behaviour_code TEXT NOT NULL,
+      reported_text  TEXT,
+      -- reported | denied | declined_to_answer | unknown. "Declined" is a real
+      -- answer and must survive to the coordinator, not be recorded as "no".
+      status         TEXT,
+      frequency      TEXT,
+      quantity       TEXT,
+      period         TEXT,
+      instrument     TEXT,
+      instrument_score INTEGER,
+      created_at     TEXT DEFAULT (datetime('now'))
+    );
+
+    -- Whether they are actually taking what is on the log.
+    --
+    -- The log records what was prescribed. Reconciling it against what is
+    -- being swallowed is a different question, and the one that decides
+    -- whether an efficacy signal means anything.
+    CREATE TABLE staged_adherence (
+      staged_adherence_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id    TEXT NOT NULL REFERENCES call_sessions(session_id),
+      subject_id    TEXT NOT NULL REFERENCES patients(subject_id),
+      study_id      TEXT,
+      log_id        INTEGER,
+      canonical_name TEXT,
+      is_study_drug INTEGER DEFAULT 0,
+      -- as_prescribed | missed_some | stopped | never_started | unknown
+      extent        TEXT,
+      -- A count over a stated window, not a frequency adverb. "How many days
+      -- out of the last seven" is answerable; "how often do you forget" invites
+      -- the answer the participant thinks is wanted.
+      days_missed   INTEGER,
+      recall_days   INTEGER DEFAULT 7,
+      -- JSON array of coded reasons: forgot | side_effects | felt_better |
+      -- cost | too_many | ran_out | instructions_unclear | other
+      reasons       TEXT,
+      reported_text TEXT,
+      created_at    TEXT DEFAULT (datetime('now'))
+    );
+
+    -- Symptoms the participant reported, per medication.
+    --
+    -- The reason this exists: comparing clinician-reported to patient-reported
+    -- adverse events, some symptoms are under-reported by clinicians by a
+    -- factor of fifty. The participant is the only one who knows, and nobody
+    -- was asking them between visits.
+    --
+    -- This is NOT an adverse-event determination. Causality, grading and
+    -- expectedness are the investigator's to assign. This records what was
+    -- said, with the label that prompted the question, and hands it over.
+    CREATE TABLE staged_symptoms (
+      staged_symptom_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id     TEXT NOT NULL REFERENCES call_sessions(session_id),
+      subject_id     TEXT NOT NULL REFERENCES patients(subject_id),
+      study_id       TEXT,
+      canonical_name TEXT,
+      is_study_drug  INTEGER DEFAULT 0,
+      symptom        TEXT NOT NULL,
+      -- Their words, not a grade. 'mild'|'moderate'|'severe' only if they used
+      -- one; otherwise null. Never inferred from tone.
+      severity       TEXT,
+      since          TEXT,
+      since_precision TEXT DEFAULT 'unknown',
+      -- Whether this symptom appears on the drug's own FDA label, and where
+      -- that was checked. An unlabelled symptom is the interesting one.
+      on_label       INTEGER,
+      label_source   TEXT,
+      reported_text  TEXT,
+      created_at     TEXT DEFAULT (datetime('now'))
+    );
+
     CREATE TABLE utterances (
       utterance_id INTEGER PRIMARY KEY AUTOINCREMENT,
       session_id   TEXT NOT NULL REFERENCES call_sessions(session_id),
@@ -226,6 +360,24 @@ function seedPatient() {
     rule.run('S1', 'prohibited', null, classId, '6.5', 'NSAIDs prohibited from 7 days before first dose through end of study.');
   }
   rule.run('S1', 'monitored', '6809', null, '6.6', 'Metformin permitted but monitored for glycemic control.');
+
+  // Non-drug restrictions. Every one of these is a real protocol clause type:
+  // alcohol and hepatotoxicity, grapefruit and CYP3A4, live vaccines, UV
+  // exposure on photosensitising agents, and contraception — which is a
+  // requirement, so the flag fires when it is ABSENT.
+  const brule = db.prepare(
+    'INSERT INTO behaviour_rules (study_id, behaviour_code, rule_type, threshold, instrument, protocol_section, rationale) VALUES (?,?,?,?,?,?,?)'
+  );
+  brule.run('S1', 'alcohol', 'restricted', 'No more than 7 standard drinks per week, none within 48 hours of a dose',
+    'AUDIT-C', '5.3.1', 'Study drug is hepatically cleared; alcohol confounds liver function tests.');
+  brule.run('S1', 'grapefruit', 'prohibited', 'None for the duration of dosing', null, '5.3.2',
+    'Grapefruit inhibits CYP3A4 and raises study drug exposure unpredictably.');
+  brule.run('S1', 'nicotine', 'monitored', 'Record current use and any change since screening', null, '5.3.3',
+    'Smoking status induces CYP1A2 and is a covariate in the PK model.');
+  brule.run('S1', 'contraception', 'required', 'Two effective methods for participants of childbearing potential',
+    null, '5.3.4', 'Reproductive toxicity is unknown for this agent.');
+  brule.run('S1', 'blood_donation', 'prohibited', 'No donation during the study or for 30 days after the last dose',
+    null, '5.3.5', 'Protects the participant from compounded haemoglobin decline.');
 
   db.close();
   return PATIENT_DB;

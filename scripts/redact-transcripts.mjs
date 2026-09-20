@@ -32,8 +32,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   for (const [sessionId, turns] of Object.entries(transcripts)) {
     const who = contacts[bySession[sessionId]];
     if (!who) continue;
+    // The participant and anyone authorised to speak for them. A caregiver is
+    // named aloud as often as the participant and is no more publishable.
+    const people = [who, who.caregiver].filter(Boolean);
     for (const turn of turns) {
-      const next = redactText(turn.text, who);
+      const next = people.reduce((text, person) => redactText(text, person), turn.text);
       if (next !== turn.text) {
         leaks.push({ sessionId, before: turn.text });
         turn.text = next;

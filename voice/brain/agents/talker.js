@@ -17,7 +17,10 @@ const patientTools = require('../tools/patient');
 
 const POLICY = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'policy.md'), 'utf8');
 const ROLE = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'talker.md'), 'utf8');
-const SYSTEM_PROMPT = `${POLICY}\n\n---\n\n${ROLE}`;
+// How to ask, as opposed to what to ask. Only the Talker needs this — the
+// Thinker decides the next question, the Talker decides how it lands.
+const CONVERSATION = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'conversation.md'), 'utf8');
+const SYSTEM_PROMPT = `${POLICY}\n\n---\n\n${ROLE}\n\n---\n\n${CONVERSATION}`;
 
 function cleanSpoken(text) {
   let out = String(text || '').trim();

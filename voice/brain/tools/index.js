@@ -109,16 +109,95 @@ const patientUpdateSchema = {
       properties: {
         op: {
           type: 'string',
-          enum: ['set_planner_state', 'add_medication_change', 'add_advice'],
+          enum: [
+            'set_planner_state', 'add_medication_change', 'add_advice',
+            'add_adherence_report', 'add_behaviour_report', 'add_symptom_report',
+          ],
         },
         payload: {
           type: 'object',
           description:
             'For add_medication_change: {reported_text, canonical_name, rxcui, status, start_date, stop_date, precision}. ' +
-            'For add_advice: {topic_id, text}. For set_planner_state: {state}.',
+            'For add_advice: {topic_id, text}. For set_planner_state: {state}. ' +
+            'For add_adherence_report: {canonical_name, is_study_drug, extent, days_missed, recall_days, reasons[], reported_text} ' +
+            'where extent is as_prescribed|missed_some|stopped|never_started|unknown. ' +
+            'For add_behaviour_report: {behaviour_code, status, frequency, quantity, period, instrument, instrument_score, reported_text} ' +
+            'where status is reported|denied|declined_to_answer|unknown. ' +
+            'For add_symptom_report: {canonical_name, is_study_drug, symptom, severity, since, ' +
+            'since_precision, on_label, label_source, reported_text} — record what they said, ' +
+            'never a causality or severity judgement of your own.',
         },
       },
       required: ['op', 'payload'],
+    },
+  },
+};
+
+const checkBehaviourSchema = {
+  type: 'function',
+  function: {
+    name: 'check_behaviour',
+    description:
+      'Check a non-drug behaviour (alcohol, nicotine, grapefruit, contraception, blood ' +
+      'donation, sun exposure, strenuous exercise) against this participant\'s protocol. ' +
+      'Returns the rule, including whether it is prohibited, restricted to a threshold, ' +
+      'monitored, or REQUIRED — a required rule is breached by absence, not by presence.',
+    parameters: {
+      type: 'object',
+      properties: {
+        behaviour_code: {
+          type: 'string',
+          description:
+            'alcohol | nicotine | grapefruit | contraception | blood_donation | ' +
+            'sun_exposure | strenuous_exercise | recreational_drugs | caffeine',
+        },
+      },
+      required: ['behaviour_code'],
+    },
+  },
+};
+
+const verifyCaregiverSchema = {
+  type: 'function',
+  function: {
+    name: 'verify_caregiver',
+    description:
+      'Check whether someone other than the participant may be spoken to. Call this the ' +
+      'moment a second person joins or answers. Returns authorised true/false only — it ' +
+      'never reveals who is on the list. Someone stating a relationship is NOT ' +
+      'authorisation; only this tool is.',
+    parameters: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'full name as stated, if given' },
+        given_name: { type: 'string' },
+        family_name: { type: 'string' },
+        relationship: { type: 'string', description: 'as stated, e.g. daughter, husband, carer' },
+      },
+      required: [],
+    },
+  },
+};
+
+const drugSafetySchema = {
+  type: 'function',
+  function: {
+    name: 'drug_safety',
+    description:
+      "Look up a drug's FDA label (openFDA) for its documented side effects and get " +
+      'grounded follow-up questions to ask about it. Call this before asking a participant ' +
+      'how they are getting on with a medication. Never name a side effect the label did ' +
+      'not list — returns {symptoms, questions, source}. Ask the open question first; the ' +
+      'suggested symptoms are a prompt of last resort, never a checklist to read out.',
+    parameters: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'Generic/ingredient name, e.g. "metformin hydrochloride", "ibuprofen".',
+        },
+      },
+      required: ['name'],
     },
   },
 };
@@ -159,11 +238,26 @@ const ALL = {
     schema: verifyIdentitySchema,
     run: (args, ctx) => patientData.verifyIdentity({ ...args, subjectId: ctx.subjectId, sessionId: ctx.sessionId }),
   },
+  drug_safety: {
+    schema: drugSafetySchema,
+    run: (args) => require('../../../api/medical_data/openfda').drugSafety(args.name),
+  },
+  check_behaviour: {
+    schema: checkBehaviourSchema,
+    run: (args, ctx) => patientData.checkBehaviour({ ...args, subjectId: ctx.subjectId }),
+  },
+  verify_caregiver: {
+    schema: verifyCaregiverSchema,
+    run: (args, ctx) => patientData.verifyCaregiver({ ...args, subjectId: ctx.subjectId, sessionId: ctx.sessionId }),
+  },
 };
 
 function schemasFor(which) {
   if (which === 'thinker') {
-    return [ALL.health_search.schema, ALL.check_prohibited.schema, ALL.patient_read.schema, ALL.verify_identity.schema];
+    return [
+      ALL.health_search.schema, ALL.check_prohibited.schema, ALL.patient_read.schema,
+      ALL.verify_identity.schema, ALL.check_behaviour.schema, ALL.drug_safety.schema,
+    ];
   }
   return [
     ALL.health_search.schema,
@@ -171,6 +265,9 @@ function schemasFor(which) {
     ALL.patient_read.schema,
     ALL.patient_update.schema,
     ALL.verify_identity.schema,
+    ALL.check_behaviour.schema,
+    ALL.verify_caregiver.schema,
+    ALL.drug_safety.schema,
   ];
 }
 

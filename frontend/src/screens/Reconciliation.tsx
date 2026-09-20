@@ -10,6 +10,10 @@ import { clock, formatDateTime } from '../lib/dates';
 import { navigate } from '../router';
 import { ChangeRow } from '../components/ChangeRow';
 import { ProhibitedAlert } from '../components/ProhibitedAlert';
+import { AdherencePanel } from '../components/AdherencePanel';
+import { BehaviourPanel } from '../components/BehaviourPanel';
+import { SymptomPanel } from '../components/SymptomPanel';
+import { CaregiverNote } from '../components/CaregiverNote';
 import {
   DeviationDialog,
   QueryDialog,
@@ -179,8 +183,11 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
           </div>
         </header>
 
+        <CaregiverNote participants={session.callParticipants} />
+
         <ProhibitedAlert
           changes={session.changes}
+          behaviours={session.behaviours}
           deviations={deviations}
           locked={locked}
           onJump={jump}
@@ -231,6 +238,14 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
             </div>
           </div>
         )}
+
+        {/* Below the diff: the call found these, but they are not promoted to
+            the medication log — they are context the coordinator carries into
+            the visit. Keeping them under the diff preserves the reading order
+            the screen was built around. */}
+        <SymptomPanel reports={session.symptoms ?? []} />
+        <AdherencePanel reports={session.adherence ?? []} />
+        <BehaviourPanel reports={session.behaviours ?? []} />
       </div>
 
       {session.changes.length > 0 && (

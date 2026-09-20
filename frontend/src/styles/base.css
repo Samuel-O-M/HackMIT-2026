@@ -1404,3 +1404,141 @@ input, select, textarea {
 .detail[data-tone='alarm'] .disclose-btn:hover { color: var(--alarm); }
 .detail[data-tone='alarm'] .disclose-btn i { border-left-color: var(--alarm-ink-3); }
 .detail[data-tone='alarm'] .detail-body { border-left-color: var(--alarm-dim); color: var(--alarm-ink-2); }
+
+/* ---------------------------------------------------------------------------
+   Call findings: adherence and the protocol's non-drug rules.
+
+   These sit below the diff and are deliberately quiet. The prohibited alert is
+   the only loud thing on this screen — anything here that genuinely breaches a
+   protocol has already been lifted into that alert, so these panels carry the
+   full record rather than the alarm. Tone is carried by a 2px left border and
+   weight, not by fill: three filled panels would read as three warnings.
+--------------------------------------------------------------------------- */
+.findings {
+  margin: var(--s5) 0 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.findings-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border-bottom: 1px solid var(--line);
+}
+
+.findings-head h2 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.findings-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.findings-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding: var(--s3) var(--s4);
+  border-bottom: 1px solid var(--line);
+  border-left: 2px solid transparent;
+}
+
+.findings-item:last-child {
+  border-bottom: 0;
+}
+
+/* Pulls the eye without raising an alarm. */
+.findings-item[data-tone='attention'] {
+  border-left-color: var(--caution);
+  background: var(--surface-2);
+}
+
+.findings-item[data-tone='note'] {
+  border-left-color: var(--line-2);
+}
+
+.findings-main {
+  min-width: 0;
+}
+
+.findings-name {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  font-weight: 550;
+  color: var(--ink);
+}
+
+.findings-item[data-tone='attention'] .findings-name {
+  font-weight: 650;
+}
+
+.findings-meta {
+  margin-top: 2px;
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+.findings-tag {
+  flex: none;
+  padding: 1px 6px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.quote {
+  margin: 0 0 var(--s2);
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+/* Who was on the call. A line, not a card — it is context, not a finding. */
+.callnote {
+  margin: var(--s4) 0 0;
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--line-3);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+
+.callnote strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.callnote[data-tone='attention'] {
+  border-color: var(--alarm-line);
+  border-left-color: var(--alarm);
+  background: var(--alarm-wash);
+  color: var(--alarm-ink-2);
+}
+
+.callnote[data-tone='attention'] strong {
+  color: var(--alarm-ink);
+}
+
+@media (max-width: 640px) {
+  .findings-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--s2);
+  }
+}

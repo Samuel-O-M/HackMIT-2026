@@ -2,1576 +2,1140 @@
   "SES-2026-0431": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your medications before your upcoming visit. Could you please tell me your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 5 visit. I have a few minutes of questions about your medications. Is now still a good time?"
     },
     {
-      "atMs": 12430,
+      "atMs": 5200,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that's fine."
     },
     {
-      "atMs": 15993,
+      "atMs": 7400,
       "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have allopurinol on file, three hundred milligrams once daily. Is that still right?"
+      "text": "Thank you. I have four medications on file. I will read them out, and you tell me if anything has changed. First, the cholesterol tablet, atorvastatin, twenty milligrams at night."
     },
     {
-      "atMs": 23260,
+      "atMs": 15100,
       "speaker": "participant",
-      "text": "They cut the allopurinol down to one small tablet in June. I don't remember the strength, but it's not three hundred anymore.",
+      "text": "The cholesterol tablet, yes, same as before, one at night.",
+      "yields": [
+        "CH-105"
+      ]
+    },
+    {
+      "atMs": 19800,
+      "speaker": "agent",
+      "text": "Good. Next, allopurinol, three hundred milligrams once a day."
+    },
+    {
+      "atMs": 24300,
+      "speaker": "participant",
+      "text": "They cut the allopurinol down to one small tablet in June.",
       "yields": [
         "CH-103"
       ]
     },
     {
-      "atMs": 32008,
+      "atMs": 30600,
       "speaker": "agent",
-      "text": "Thank you for telling me. I will record the strength as not stated. Has anything new started by prescription, including anything another doctor prescribed?"
+      "text": "Understood, so the hundred milligram tablet since June. And the omeprazole, twenty milligrams once a day for reflux?"
     },
     {
-      "atMs": 41497,
+      "atMs": 37200,
       "speaker": "participant",
-      "text": "My other doctor put me on prednisone for the joint pain, twenty milligrams.",
+      "text": "I came off the reflux one back in July. It was not doing much.",
+      "yields": [
+        "CH-104"
+      ]
+    },
+    {
+      "atMs": 43500,
+      "speaker": "agent",
+      "text": "Noted, stopped in July. Do you remember roughly which part of July?"
+    },
+    {
+      "atMs": 48100,
+      "speaker": "participant",
+      "text": "No, I could not say. Sometime in the month."
+    },
+    {
+      "atMs": 52400,
+      "speaker": "agent",
+      "text": "That is fine, I will record it as July. Now, has anything new been started since we last spoke? Anything at all, including things another doctor prescribed."
+    },
+    {
+      "atMs": 60900,
+      "speaker": "participant",
+      "text": "My other doctor put me on prednisone for the joint pain. Twenty milligrams.",
       "yields": [
         "CH-101"
       ]
     },
     {
-      "atMs": 46912,
+      "atMs": 67200,
       "speaker": "agent",
-      "text": "Thank you for telling me. I am flagging that for your coordinator to discuss at the visit. Has anything else started by prescription, including anything another doctor prescribed?"
+      "text": "Thank you for telling me. I am flagging that for your coordinator to discuss at the visit. Have you had any vaccinations recently?"
     },
     {
-      "atMs": 57882,
+      "atMs": 74800,
       "speaker": "participant",
-      "text": "And there is a little blue pill I take for my stomach, but I couldn't tell you the name.",
-      "yields": [
-        "CH-102"
-      ]
-    },
-    {
-      "atMs": 65519,
-      "speaker": "agent",
-      "text": "What is the little blue pill for, and did you get it by prescription or buy it over the counter?"
-    },
-    {
-      "atMs": 73526,
-      "speaker": "participant",
-      "text": "It\u2019s for my stomach, but I\u2019m not sure if it was prescribed or something I bought myself. I can\u2019t remember the name."
-    },
-    {
-      "atMs": 82274,
-      "speaker": "agent",
-      "text": "That is alright. Your coordinator will ask you to bring the bottle to the visit so we can record it properly. Is there anything else new that a doctor prescribed?"
-    },
-    {
-      "atMs": 93985,
-      "speaker": "participant",
-      "text": "No, I don't think any other doctor prescribed anything new."
-    },
-    {
-      "atMs": 98289,
-      "speaker": "agent",
-      "text": "Thank you. Is there anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
-    },
-    {
-      "atMs": 105556,
-      "speaker": "participant",
-      "text": "I use melatonin gummies on and off for sleep. I\u2019ve done that for years now.",
-      "yields": [
-        "CH-106"
-      ]
-    },
-    {
-      "atMs": 111712,
-      "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the strength listed on the melatonin gummies?"
-    },
-    {
-      "atMs": 117868,
-      "speaker": "participant",
-      "text": "I think they\u2019re 5 milligrams, but I\u2019m not completely sure."
-    },
-    {
-      "atMs": 122172,
-      "speaker": "agent",
-      "text": "Thank you. I will record the melatonin strength as approximately five milligrams. Have you had any vaccinations in the last few months?"
-    },
-    {
-      "atMs": 130920,
-      "speaker": "participant",
-      "text": "I had the shingles jab at the pharmacy in August, just the one shot.",
+      "text": "I had the shingles jab at the pharmacy in August. Just the one shot.",
       "yields": [
         "CH-107"
       ]
     },
     {
-      "atMs": 136705,
+      "atMs": 81100,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know which brand of shingles vaccine you received?"
+      "text": "Do you happen to remember the brand name on that one?"
     },
     {
-      "atMs": 142861,
+      "atMs": 85200,
       "speaker": "participant",
-      "text": "No, I\u2019m afraid I don\u2019t know the brand. It was just the one shot at the pharmacy."
+      "text": "No, sorry. They just called it the shingles one."
     },
     {
-      "atMs": 149757,
+      "atMs": 89400,
       "speaker": "agent",
-      "text": "Thank you. I will record the shingles vaccine brand as unknown. I have one more question: are you taking any vitamins or herbal products?"
+      "text": "Not a problem, your coordinator will check it with the pharmacy. Anything else, even occasionally?"
     },
     {
-      "atMs": 159246,
+      "atMs": 95400,
       "speaker": "participant",
-      "text": "No vitamins or herbal products that I can think of."
+      "text": "Melatonin, the gummies, on and off for sleep. Years now.",
+      "yields": [
+        "CH-106"
+      ]
     },
     {
-      "atMs": 163550,
+      "atMs": 101700,
       "speaker": "agent",
-      "text": "Thank you. That is everything I needed. Thank you for your time."
+      "text": "And do you know the strength on the melatonin?"
     },
     {
-      "atMs": 168594,
+      "atMs": 105200,
       "speaker": "participant",
-      "text": "Okay, thank you. I\u2019ll see you at the next visit."
+      "text": "No idea, sorry."
     },
     {
-      "atMs": 172898,
+      "atMs": 108600,
       "speaker": "agent",
-      "text": "Thank you. I will see you at the next visit."
+      "text": "Not a problem. Anything else at all?"
     },
     {
-      "atMs": 177202,
+      "atMs": 113100,
       "speaker": "participant",
-      "text": "All right, take care."
+      "text": "And there is a little blue pill I take for my stomach. I could not tell you the name.",
+      "yields": [
+        "CH-102"
+      ]
     },
     {
-      "atMs": 179402,
+      "atMs": 120400,
       "speaker": "agent",
-      "text": "Take care."
+      "text": "That is alright. Your coordinator will ask you to bring the bottle to the visit so we can record it properly. That is everything I needed. Thank you for your time."
     },
     {
-      "atMs": 181602,
+      "atMs": 129000,
       "speaker": "participant",
-      "text": "Take care."
+      "text": "Thank you, goodbye."
     }
   ],
   "SES-2026-0432": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. May I have your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 3 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 10948,
+      "atMs": 6100,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Sure, go ahead."
     },
     {
-      "atMs": 14511,
+      "atMs": 8800,
       "speaker": "agent",
-      "text": "Thank you, Ms. [name]. I have levothyroxine on file, seventy-five micrograms once daily. Is that still right?"
+      "text": "Thank you. I have levothyroxine on file, seventy-five micrograms once daily. Is that still right?"
     },
     {
-      "atMs": 21407,
+      "atMs": 15600,
       "speaker": "participant",
-      "text": "Yes, the thyroid one every morning, no change.",
+      "text": "The thyroid one, every morning, no change.",
       "yields": [
         "CH-201"
       ]
     },
     {
-      "atMs": 24970,
+      "atMs": 20200,
       "speaker": "agent",
-      "text": "Thank you for confirming. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "Good. Has anything new started since we last spoke, including any vaccinations?"
     },
     {
-      "atMs": 31866,
+      "atMs": 27500,
       "speaker": "participant",
-      "text": "I got the flu vaccine last week, the nasal spray one, not the needle. I don't know the exact date or strength.",
+      "text": "I got the flu vaccine last week. The nasal spray one, not the needle.",
       "yields": [
         "CH-202"
       ]
     },
     {
-      "atMs": 40614,
+      "atMs": 34100,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the brand of the flu vaccine?"
-    },
-    {
-      "atMs": 46399,
-      "speaker": "participant",
-      "text": "No, I don't know the brand."
-    },
-    {
-      "atMs": 49221,
-      "speaker": "agent",
-      "text": "That is fine. I will record the brand as unknown. Have you started anything new by prescription since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 59451,
-      "speaker": "participant",
-      "text": "No, nothing new by prescription."
-    },
-    {
-      "atMs": 61903,
-      "speaker": "agent",
-      "text": "Thank you. Anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
-    },
-    {
-      "atMs": 68429,
-      "speaker": "participant",
-      "text": "No, nothing else that I can think of."
-    },
-    {
-      "atMs": 71992,
-      "speaker": "agent",
-      "text": "Thank you. Any vitamins, supplements, or herbal products? People often do not think of those as medication."
+      "text": "Thank you for telling me, that detail matters. I am flagging it for your coordinator. Which pharmacy was that at?"
     }
   ],
   "SES-2026-0433": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. May I have your full name and date of birth?"
+      "text": "Good afternoon. This is the study team calling ahead of your Cycle 9 visit. I have a short set of questions about your medications. Is now a good time?"
     },
     {
-      "atMs": 10948,
+      "atMs": 6400,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, go ahead. It will be quick though, I do not take anything."
     },
     {
-      "atMs": 14511,
+      "atMs": 12100,
       "speaker": "agent",
-      "text": "Thank you, Ms. [name]. I have no medications on file. Has anything new started by prescription since we last spoke, including anything another doctor prescribed?"
+      "text": "That is good to know. I have no concomitant medications on file for you, so I am checking whether anything has started since your last visit. Anything prescribed by another doctor?"
     },
     {
-      "atMs": 24370,
+      "atMs": 21800,
       "speaker": "participant",
-      "text": "No, I haven't started any new prescription medicines."
+      "text": "No, nothing."
     },
     {
-      "atMs": 27933,
+      "atMs": 24600,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you take anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
+      "text": "Anything you buy without a prescription — painkillers, antacids, anything for sleep?"
     },
     {
-      "atMs": 36681,
+      "atMs": 31200,
       "speaker": "participant",
-      "text": "Yes, I take something over the counter for headaches, but I can't remember the name right now."
+      "text": "No. I have never been one for tablets."
     },
     {
-      "atMs": 43577,
+      "atMs": 36500,
       "speaker": "agent",
-      "text": "What is it for, and where did you get it?"
+      "text": "And vitamins, supplements or herbal products? People often do not think of those as medication."
     },
     {
-      "atMs": 47881,
+      "atMs": 44300,
       "speaker": "participant",
-      "text": "It\u2019s for headaches, and I bought it at a regular drugstore. I don\u2019t remember the name."
+      "text": "No, none of that either."
     },
     {
-      "atMs": 54407,
+      "atMs": 48100,
       "speaker": "agent",
-      "text": "That is alright. Your coordinator will ask you to bring the bottle to the visit so we can record it properly. Have you had any vaccinations in the last few months?"
+      "text": "Any vaccinations in the last few months?"
     },
     {
-      "atMs": 66488,
+      "atMs": 52900,
       "speaker": "participant",
-      "text": "No, I haven't had any vaccinations in the last few months."
+      "text": "No, not since the study started."
     },
     {
-      "atMs": 71162,
+      "atMs": 57600,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you take any vitamins, supplements, or herbal products? People often do not think of those as medication."
+      "text": "Then there is nothing to change and your log is already accurate. Thank you for your time, and we will see you at the visit."
     },
     {
-      "atMs": 80281,
+      "atMs": 65200,
       "speaker": "participant",
-      "text": "No, I don't take any vitamins, supplements, or herbal products."
-    },
-    {
-      "atMs": 84585,
-      "speaker": "agent",
-      "text": "Thank you for telling me. That is everything I needed. Thank you for your time."
+      "text": "Thank you, goodbye."
     }
   ],
   "SES-2026-0429": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your medications before your visit. May I have your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 7 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 11319,
+      "atMs": 6800,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 14882,
+      "atMs": 9500,
       "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have acyclovir on file, four hundred milligrams by mouth twice a day. Is that still right?"
+      "text": "Thank you. I have one medication on file, acyclovir, four hundred milligrams twice a day. Is that still right?"
     },
     {
-      "atMs": 23260,
+      "atMs": 17200,
       "speaker": "participant",
-      "text": "They put the acyclovir up to three a day now.",
+      "text": "They put the acyclovir up to three a day.",
       "yields": [
         "CH-091"
       ]
     },
     {
-      "atMs": 27564,
+      "atMs": 22600,
       "speaker": "agent",
-      "text": "Thank you for telling me. What strength is the acyclovir now?"
+      "text": "Understood, so four hundred milligrams three times daily. Do you remember roughly when that changed?"
+    },
+    {
+      "atMs": 30100,
+      "speaker": "participant",
+      "text": "A few weeks back, when the rash was starting."
+    },
+    {
+      "atMs": 36400,
+      "speaker": "agent",
+      "text": "Thank you. Your coordinator will confirm the date against the prescription. Has anything else started or stopped?"
+    },
+    {
+      "atMs": 45200,
+      "speaker": "participant",
+      "text": "No, that is the only one."
+    },
+    {
+      "atMs": 49800,
+      "speaker": "agent",
+      "text": "That is everything I needed. Thank you for your time."
+    },
+    {
+      "atMs": 55300,
+      "speaker": "participant",
+      "text": "Thanks, bye."
     }
   ],
   "SES-2026-0512": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your medications before your visit. Could you please tell me your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Week 12 visit. I have a few questions about your medications. Is now still a good time?"
     },
     {
-      "atMs": 12059,
+      "atMs": 7100,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that works."
     },
     {
-      "atMs": 15622,
+      "atMs": 9800,
       "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have levothyroxine, fifty micrograms once daily, on file. Is that still right?"
+      "text": "Thank you. I have two on file. First, amlodipine, five milligrams once a day for blood pressure."
     },
     {
-      "atMs": 22518,
+      "atMs": 17500,
       "speaker": "participant",
-      "text": "The thyroid tablet went up after my last blood test\u2014I take the 75 now.",
-      "yields": [
-        "CH-302"
-      ]
-    },
-    {
-      "atMs": 28303,
-      "speaker": "agent",
-      "text": "Thank you for telling me. I will record levothyroxine as seventy-five micrograms once daily. I also have amlodipine, five milligrams once daily, on file. Is that still right?"
-    },
-    {
-      "atMs": 39273,
-      "speaker": "participant",
-      "text": "The blood pressure one, no change, same as always.",
+      "text": "Blood pressure one, no change, same as always.",
       "yields": [
         "CH-303"
       ]
     },
     {
-      "atMs": 43206,
+      "atMs": 23200,
       "speaker": "agent",
-      "text": "Thank you, that is helpful. I have amlodipine, five milligrams once daily, unchanged. Is that still right?"
+      "text": "Good. And levothyroxine, fifty micrograms once a day."
     },
     {
-      "atMs": 50102,
+      "atMs": 29400,
       "speaker": "participant",
-      "text": "Yes, that's still right."
+      "text": "The thyroid tablet went up after my last blood test. I take the 75 now.",
+      "yields": [
+        "CH-302"
+      ]
     },
     {
-      "atMs": 52302,
+      "atMs": 36900,
       "speaker": "agent",
-      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "Noted, seventy-five micrograms. I will flag the timing for your coordinator to check. Has anything new started since we last spoke?"
     },
     {
-      "atMs": 57717,
+      "atMs": 46300,
       "speaker": "participant",
-      "text": "Yes, my rheumatologist started me on methotrexate, one dose a week on Sundays.",
+      "text": "My rheumatologist started me on methotrexate. One dose a week, on Sundays.",
       "yields": [
         "CH-301"
       ]
     },
     {
-      "atMs": 63132,
+      "atMs": 54800,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the strength of the methotrexate?"
+      "text": "Thank you for telling me. I am flagging that one for your coordinator to discuss at the visit. Do you know the strength?"
     },
     {
-      "atMs": 68547,
+      "atMs": 63500,
       "speaker": "participant",
-      "text": "It\u2019s 15 milligrams, but I don\u2019t know much more than that."
+      "text": "Fifteen milligrams, I think. It is on the box."
     },
     {
-      "atMs": 73221,
+      "atMs": 70200,
       "speaker": "agent",
-      "text": "Thank you. I will record methotrexate as fifteen milligrams once weekly on Sundays. Do you know when you started taking it?"
+      "text": "That is helpful. Anything else at all, including anything over the counter?"
+    },
+    {
+      "atMs": 78400,
+      "speaker": "participant",
+      "text": "No, that is everything."
+    },
+    {
+      "atMs": 82900,
+      "speaker": "agent",
+      "text": "Thank you for your time. Your coordinator will go through the methotrexate with you at the visit."
+    },
+    {
+      "atMs": 90100,
+      "speaker": "participant",
+      "text": "Alright, thank you."
     }
   ],
   "SES-2026-0498": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. Could you please tell me your full name and date of birth?"
+      "text": "Good afternoon. This is the study team calling ahead of your Cycle 6 visit. Can I go through your medications with you?"
     },
     {
-      "atMs": 11689,
+      "atMs": 7300,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Of course."
     },
     {
-      "atMs": 15252,
+      "atMs": 9900,
       "speaker": "agent",
-      "text": "Thank you, Ms. [name]. I have ondansetron on file, eight milligrams by mouth twice a day as needed. Is that still right?"
+      "text": "Thank you. I have ondansetron on file, eight milligrams twice a day as needed for nausea."
     },
     {
-      "atMs": 24000,
+      "atMs": 18600,
       "speaker": "participant",
-      "text": "I stopped the nausea tablets; I haven\u2019t needed them since the end of July.",
+      "text": "I stopped the nausea tablets. I have not needed them since the end of July.",
       "yields": [
         "CH-401"
       ]
     },
     {
-      "atMs": 29785,
+      "atMs": 26200,
       "speaker": "agent",
-      "text": "Thank you for telling me. I will record that you stopped ondansetron at the end of July. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "Noted, stopped at the end of July. Was that a particular day you remember?"
+    },
+    {
+      "atMs": 33500,
+      "speaker": "participant",
+      "text": "The last one was the thirty-first, I remember because it was the end of the month."
+    },
+    {
+      "atMs": 42100,
+      "speaker": "agent",
+      "text": "Thank you, that is precise enough to record. Has anything new started?"
+    },
+    {
+      "atMs": 50400,
+      "speaker": "participant",
+      "text": "No, nothing new."
+    },
+    {
+      "atMs": 54800,
+      "speaker": "agent",
+      "text": "That is everything I needed. Thank you for your time."
+    },
+    {
+      "atMs": 60200,
+      "speaker": "participant",
+      "text": "Thank you."
     }
   ],
   "SES-2026-601": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. May I have your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your End of Treatment visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 10948,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 14511,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, [name]. I have simvastatin, twenty milligrams by mouth once each night, on file. Is that still right?"
+      "text": "I have simvastatin on file, 20 mg. Is that still right?"
     },
     {
-      "atMs": 22148,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, that's the hyperlipidemia one, no change.",
+      "text": "the hyperlipidemia one, no change",
       "yields": [
         "CH-901"
       ]
     },
     {
-      "atMs": 25341,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you. I also have ibuprofen, two hundred milligrams by mouth twice daily as needed, on file. Is that still right?"
+      "text": "I have ibuprofen on file, 200 mg. Is that still right?"
     },
     {
-      "atMs": 33719,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "No, they changed the ibuprofen dose, but I don't remember the exact strength.",
+      "text": "they changed the ibuprofen dose",
       "yields": [
         "CH-902"
       ]
     },
     {
-      "atMs": 39134,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the new strength of the ibuprofen?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 44919,
+      "atMs": 41200,
       "speaker": "participant",
-      "text": "No, I don't remember the exact strength."
-    },
-    {
-      "atMs": 48112,
-      "speaker": "agent",
-      "text": "That is fine. I will record the new strength as not stated. Has anything new started since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 57971,
-      "speaker": "participant",
-      "text": "Yes, something my wife picks up for my joints, once a day. I don't know what it's called.",
+      "text": "something my wife picks up for my joints",
       "yields": [
         "CH-903"
       ]
     },
     {
-      "atMs": 65238,
+      "atMs": 48000,
       "speaker": "agent",
-      "text": "What is it for, and does your wife pick it up with a prescription or buy it off the shelf?"
-    },
-    {
-      "atMs": 73245,
-      "speaker": "participant",
-      "text": "It's for my joints, and I think she buys it off the shelf. I don't know the name."
-    },
-    {
-      "atMs": 80512,
-      "speaker": "agent",
-      "text": "Thank you for telling me. I will record the joint medicine as an over-the-counter product, name unknown, taken once a day. Do you know whether it is Advil, Aleve, or Tylenol?"
-    },
-    {
-      "atMs": 92593,
-      "speaker": "participant",
-      "text": "I\u2019m not sure what it is, sorry. My wife would know."
-    },
-    {
-      "atMs": 97267,
-      "speaker": "agent",
-      "text": "That is alright. Your coordinator will ask you to bring the bottle to the visit so we can record it properly. Any vaccinations in the last few months?"
+      "text": "That is everything I needed. Thank you for your time."
     }
   ],
   "SES-2026-602": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your pre-visit medication review. Could you please tell me your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 3 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 11689,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 15252,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you. I have amlodipine on file, ten milligrams by mouth once daily. Is that still right?"
+      "text": "I have acyclovir on file, 400 mg. Is that still right?"
     },
     {
-      "atMs": 22148,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, that's still right\u2014the hypertension one, no change.",
+      "text": "the herpes zoster prophylaxis one, no change",
       "yields": [
         "CH-904"
       ]
     },
     {
-      "atMs": 25711,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you for confirming. Has anything new started since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 32607,
-      "speaker": "participant",
-      "text": "No, nothing new has started since we last spoke."
-    },
-    {
-      "atMs": 36540,
-      "speaker": "agent",
-      "text": "Thank you. Do you take anything without a prescription, such as painkillers, antacids, or anything for sleep?"
-    },
-    {
-      "atMs": 43436,
-      "speaker": "participant",
-      "text": "No, I don't take anything without a prescription."
-    },
-    {
-      "atMs": 46999,
-      "speaker": "agent",
-      "text": "Thank you. Have you had any vaccinations in the last few months?"
-    },
-    {
-      "atMs": 52043,
-      "speaker": "participant",
-      "text": "No, I haven't had any vaccinations in the last few months."
-    },
-    {
-      "atMs": 56717,
-      "speaker": "agent",
-      "text": "Thank you. Do you take any vitamins, supplements, or herbal products? People often do not think of those as medication."
-    },
-    {
-      "atMs": 64724,
-      "speaker": "participant",
-      "text": "No, I don't take any vitamins, supplements, or herbal products."
-    },
-    {
-      "atMs": 69028,
-      "speaker": "agent",
-      "text": "Thank you. That is everything I needed. Thank you for your time."
-    },
-    {
-      "atMs": 74072,
-      "speaker": "participant",
-      "text": "Okay, thank you."
-    },
-    {
-      "atMs": 76272,
-      "speaker": "agent",
-      "text": "Thank you. Goodbye."
-    },
-    {
-      "atMs": 78472,
-      "speaker": "participant",
-      "text": "Goodbye."
+      "text": "That is everything I needed. Thank you for your time."
     }
   ],
   "SES-2026-603": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling for a medication review before your visit. Could you please tell me your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Screening visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 12430,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 15993,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, [name]. I have levofloxacin, five hundred milligrams by mouth once daily, on file. Is that still right?"
+      "text": "I have melatonin on file, 5 mg. Is that still right?"
     },
     {
-      "atMs": 23630,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, that's still right\u2014the respiratory tract infection one, no change.",
+      "text": "the insomnia one, no change",
       "yields": [
         "CH-905"
       ]
     },
     {
-      "atMs": 27934,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you, I will record that as unchanged. I have allopurinol, one hundred milligrams by mouth once daily, on file. Is that still right?"
+      "text": "I have sertraline on file, 50 mg. Is that still right?"
     },
     {
-      "atMs": 37423,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "No, they changed the allopurinol dose. I don't remember the new strength.",
+      "text": "I came off the major depressive disorder one back in July",
       "yields": [
         "CH-906"
       ]
     },
     {
-      "atMs": 42467,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for telling me. I will record the new strength as not stated and flag it for your coordinator to discuss at the visit. I have ondansetron, four milligrams by mouth twice daily as needed, on file. Is that still right?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 58623,
+      "atMs": 41200,
       "speaker": "participant",
-      "text": "No, I came off the chemotherapy-induced nausea one back in July.",
+      "text": "another doctor started me on prednisone",
       "yields": [
         "CH-907"
       ]
+    },
+    {
+      "atMs": 48000,
+      "speaker": "agent",
+      "text": "That is everything I needed. Thank you for your time."
     }
   ],
   "SES-2026-604": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your medications before your upcoming visit. Could you please tell me your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 12 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 12430,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 15993,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have sertraline, fifty milligrams once daily, on file. Is that still right?"
+      "text": "I have levofloxacin on file, 500 mg. Is that still right?"
     },
     {
-      "atMs": 22889,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, that's the major depressive disorder one, no change.",
+      "text": "the respiratory tract infection one, no change",
       "yields": [
         "CH-908"
       ]
     },
     {
-      "atMs": 26822,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you. I have sertraline, fifty milligrams once daily, unchanged. I also have atorvastatin, twenty milligrams once daily at night, on file. Is that still right?"
+      "text": "I have ibuprofen on file, 200 mg. Is that still right?"
     },
     {
-      "atMs": 37052,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "They changed the atorvastatin dose, but I can't remember the new strength.",
+      "text": "they changed the ibuprofen dose",
       "yields": [
         "CH-909"
       ]
     },
     {
-      "atMs": 42096,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for telling me. What strength is the atorvastatin now?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 46770,
+      "atMs": 41200,
       "speaker": "participant",
-      "text": "I\u2019m sorry, I can\u2019t remember the new strength."
-    },
-    {
-      "atMs": 50333,
-      "speaker": "agent",
-      "text": "That is fine. I will record the new strength as not stated. Has anything new started since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 60192,
-      "speaker": "participant",
-      "text": "Yes, another doctor started me on varicella-zoster virus vaccine, live, Oka-Merck. It was a single dose, but I don't remember when.",
+      "text": "a yellow capsule, twice a day, I would have to check the box",
       "yields": [
         "CH-910"
       ]
     },
     {
-      "atMs": 68570,
+      "atMs": 48000,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the brand name of the vaccine?"
-    },
-    {
-      "atMs": 74355,
-      "speaker": "participant",
-      "text": "No, I don't know the brand name. It was the shingles vaccine, I believe."
-    },
-    {
-      "atMs": 80140,
-      "speaker": "agent",
-      "text": "Thank you for telling me. I will record the shingles vaccination with the brand and date as unknown. Have you taken anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
-    },
-    {
-      "atMs": 93703,
-      "speaker": "participant",
-      "text": "Yes, something my wife picks up for my joints, once a day. I can't remember what it's called.",
-      "yields": [
-        "CH-911"
-      ]
-    },
-    {
-      "atMs": 100970,
-      "speaker": "agent",
-      "text": "What is it for, and does your wife buy it from a pharmacy or a shop without a prescription?"
-    },
-    {
-      "atMs": 108607,
-      "speaker": "participant",
-      "text": "It\u2019s for my joint pain, and she buys it from a shop without a prescription. I don\u2019t know the name."
-    },
-    {
-      "atMs": 116614,
-      "speaker": "agent",
-      "text": "Thank you for telling me. That is alright. Your coordinator will ask you to bring the bottle to the visit so we can record it properly. Do you take any vitamins, supplements, or herbal products?"
-    },
-    {
-      "atMs": 130177,
-      "speaker": "participant",
-      "text": "No, I don't take any vitamins, supplements, or herbal products that I know of."
-    },
-    {
-      "atMs": 135962,
-      "speaker": "agent",
-      "text": "That is fine. Have you had any vaccinations in the last few months?"
-    },
-    {
-      "atMs": 141377,
-      "speaker": "participant",
-      "text": "Yes, I had the shingles vaccine, but I don't remember when. I don't know if I've had any others."
-    },
-    {
-      "atMs": 149014,
-      "speaker": "agent",
-      "text": "Thank you for telling me. I will record the shingles vaccination, with the brand and date unknown. That is everything I needed. Thank you for your time."
-    },
-    {
-      "atMs": 159614,
-      "speaker": "participant",
-      "text": "You're welcome. I'll bring the bottle for my joints to the visit."
-    },
-    {
-      "atMs": 164658,
-      "speaker": "agent",
-      "text": "Thank you. Please bring the bottle for your joints to the visit so we can record it properly. Your coordinator will review it with you."
-    },
-    {
-      "atMs": 174517,
-      "speaker": "participant",
-      "text": "Alright, I\u2019ll bring the bottle with me to the visit."
-    },
-    {
-      "atMs": 178821,
-      "speaker": "agent",
-      "text": "Thank you. Please bring the bottle to your visit so your coordinator can record it properly. That is everything I needed. Thank you for your time."
-    },
-    {
-      "atMs": 189051,
-      "speaker": "participant",
-      "text": "Alright, thank you. I\u2019ll bring it with me."
+      "text": "That is everything I needed. Thank you for your time."
     }
   ],
   "SES-2026-605": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your medications before your upcoming visit. Could you please tell me your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 7 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 12430,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 15993,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, Ms. [name]. I have sertraline, fifty milligrams once daily, on file. Is that still right?"
+      "text": "I have naproxen on file, 250 mg. Is that still right?"
     },
     {
-      "atMs": 22889,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "No, they changed the sertraline dose. I don't remember the new strength exactly.",
+      "text": "the knee pain one, no change",
       "yields": [
-        "CH-913"
+        "CH-911"
       ]
     },
     {
-      "atMs": 28304,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the new strength of the sertraline?"
+      "text": "I have furosemide on file, 20 mg. Is that still right?"
     },
     {
-      "atMs": 34089,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "No, I don't know the new strength exactly. I just know they changed the sertraline dose.",
+      "text": "they changed the furosemide dose",
       "yields": [
         "CH-912"
       ]
     },
     {
-      "atMs": 40615,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you. I will record the new strength as not stated. Has anything else changed with your prescription medications?"
-    },
-    {
-      "atMs": 48252,
-      "speaker": "participant",
-      "text": "No, nothing else has changed with my prescription medicines."
-    },
-    {
-      "atMs": 52185,
-      "speaker": "agent",
-      "text": "Thank you. Anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
-    },
-    {
-      "atMs": 58711,
-      "speaker": "participant",
-      "text": "No, I\u2019m not taking anything over the counter."
-    },
-    {
-      "atMs": 62274,
-      "speaker": "agent",
-      "text": "Thank you for telling me. Any vaccinations in the last few months?"
-    },
-    {
-      "atMs": 67318,
-      "speaker": "participant",
-      "text": "Yes, I had the shingles vaccine. It hasn't changed."
-    },
-    {
-      "atMs": 71251,
-      "speaker": "agent",
-      "text": "Thank you for telling me. Which brand was the shingles vaccine, if you know?"
-    },
-    {
-      "atMs": 77036,
-      "speaker": "participant",
-      "text": "I believe it was Shingrix, the shingles vaccine. It hasn't changed."
-    },
-    {
-      "atMs": 81710,
-      "speaker": "agent",
-      "text": "Thank you. I have recorded the shingles vaccine as Shingrix. Are you taking any vitamins, supplements, or herbal products? People often do not think of those as medication."
-    },
-    {
-      "atMs": 92680,
-      "speaker": "participant",
-      "text": "No, I\u2019m not taking any vitamins, supplements, or herbal products."
-    },
-    {
-      "atMs": 96984,
-      "speaker": "agent",
-      "text": "Thank you. I have Shingrix on file as a two-dose series. Is that still right?"
-    },
-    {
-      "atMs": 103140,
-      "speaker": "participant",
-      "text": "Yes, that's still right\u2014the shingles vaccine one hasn't changed."
-    },
-    {
-      "atMs": 107073,
-      "speaker": "agent",
-      "text": "Thank you for confirming. That is everything I needed. Thank you for your time."
-    },
-    {
-      "atMs": 112858,
-      "speaker": "participant",
-      "text": "You\u2019re welcome."
+      "text": "That is everything I needed. Thank you for your time."
     }
   ],
   "SES-2026-606": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your pre-visit medication review. Could you please tell me your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Screening visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 11689,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 15252,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have sertraline, fifty milligrams once daily, on file. Is that still right?"
+      "text": "I have st. john's wort extract on file, 300 mg. Is that still right?"
     },
     {
-      "atMs": 22148,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, that's the one for major depressive disorder\u2014no change.",
+      "text": "the low mood one, no change",
+      "yields": [
+        "CH-913"
+      ]
+    },
+    {
+      "atMs": 22000,
+      "speaker": "agent",
+      "text": "I have sertraline on file, 50 mg. Is that still right?"
+    },
+    {
+      "atMs": 28200,
+      "speaker": "participant",
+      "text": "they changed the sertraline dose",
       "yields": [
         "CH-914"
       ]
     },
     {
-      "atMs": 26081,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for confirming. I have ondansetron, four milligrams by mouth twice daily as needed, on file. Is that still right?"
-    },
-    {
-      "atMs": 34459,
-      "speaker": "participant",
-      "text": "No, they changed the ondansetron dose. I don't remember the new strength.",
-      "yields": [
-        "CH-915"
-      ]
-    },
-    {
-      "atMs": 39503,
-      "speaker": "agent",
-      "text": "Thank you for telling me. I will record the new strength as not stated. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "That is everything I needed. Thank you for your time."
     }
   ],
   "SES-2026-607": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your medicines before your upcoming visit. May I have your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 3 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 11689,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 15252,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, Ms. [name]. I have allopurinol, one hundred milligrams once daily, on file. Is that still right?"
+      "text": "I have melatonin on file, 5 mg. Is that still right?"
     },
     {
-      "atMs": 22519,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, the gout one, no change.",
+      "text": "the insomnia one, no change",
+      "yields": [
+        "CH-915"
+      ]
+    },
+    {
+      "atMs": 22000,
+      "speaker": "agent",
+      "text": "I have simvastatin on file, 20 mg. Is that still right?"
+    },
+    {
+      "atMs": 28200,
+      "speaker": "participant",
+      "text": "they changed the simvastatin dose",
       "yields": [
         "CH-916"
       ]
     },
     {
-      "atMs": 25341,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for confirming. I have lisinopril, ten milligrams once daily, on file. Is that still right?"
+      "text": "I have levothyroxine on file, 50 mcg. Is that still right?"
     },
     {
-      "atMs": 32237,
+      "atMs": 41200,
       "speaker": "participant",
-      "text": "They changed the lisinopril dose, but I don\u2019t remember the new strength.",
+      "text": "I came off the hypothyroidism one back in July",
       "yields": [
         "CH-917"
       ]
     },
     {
-      "atMs": 37281,
+      "atMs": 48000,
       "speaker": "agent",
-      "text": "Thank you for telling me. I will record the new strength as not stated and flag it for your coordinator to discuss at the visit. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 51955,
+      "atMs": 54200,
       "speaker": "participant",
-      "text": "Yes, another doctor started me on methotrexate, once a week. I don't remember the strength.",
+      "text": "another doctor started me on prednisolone",
       "yields": [
         "CH-918"
       ]
-    }
-  ],
-  "SES-2026-608": [
-    {
-      "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
     },
     {
-      "atMs": 2200,
+      "atMs": 61000,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your medications before your upcoming visit. Could you please tell me your full name and date of birth?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 12430,
+      "atMs": 67200,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 15993,
-      "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have Shingrix on file, a two-dose series. Is that still right?"
-    },
-    {
-      "atMs": 22519,
-      "speaker": "participant",
-      "text": "Yes, that\u2019s still right\u2014the shingles prophylaxis one, no change.",
+      "text": "something my wife picks up for my joints",
       "yields": [
         "CH-919"
       ]
     },
     {
-      "atMs": 26452,
+      "atMs": 74000,
       "speaker": "agent",
-      "text": "Thank you. I have ibuprofen on file, two hundred milligrams by mouth twice daily as needed. Is that still right?"
+      "text": "That is everything I needed. Thank you for your time."
+    }
+  ],
+  "SES-2026-608": [
+    {
+      "atMs": 0,
+      "speaker": "agent",
+      "text": "Good morning. This is the study team calling ahead of your Cycle 5 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 34459,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "No, they changed the ibuprofen dose. I think it\u2019s four hundred milligrams now.",
+      "text": "Yes, that is fine."
+    },
+    {
+      "atMs": 9000,
+      "speaker": "agent",
+      "text": "I have sertraline on file, 50 mg. Is that still right?"
+    },
+    {
+      "atMs": 15200,
+      "speaker": "participant",
+      "text": "the major depressive disorder one, no change",
       "yields": [
         "CH-920"
       ]
     },
     {
-      "atMs": 39874,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you for telling me. What is the current ibuprofen strength and how often do you take it?"
+      "text": "I have naproxen on file, 250 mg. Is that still right?"
     },
     {
-      "atMs": 47141,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "It\u2019s four hundred milligrams now, but I\u2019m not sure how often I take it."
-    },
-    {
-      "atMs": 52926,
-      "speaker": "agent",
-      "text": "Thank you. I will record four hundred milligrams, with the frequency not stated. Has anything new started since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 63156,
-      "speaker": "participant",
-      "text": "No, nothing new that I can think of."
-    },
-    {
-      "atMs": 66719,
-      "speaker": "agent",
-      "text": "Thank you. Anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
-    },
-    {
-      "atMs": 73245,
-      "speaker": "participant",
-      "text": "No, nothing else that I can think of."
-    },
-    {
-      "atMs": 76808,
-      "speaker": "agent",
-      "text": "Thank you. Any vaccinations in the last few months?"
-    }
-  ],
-  "SES-2026-609": [
-    {
-      "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
-      "speaker": "agent",
-      "text": "Hello, this is the study team calling about your pre-visit medication review. Could you please tell me your full name and date of birth?"
-    },
-    {
-      "atMs": 11689,
-      "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 15252,
-      "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have atorvastatin, forty milligrams by mouth once daily at night, on file. Is that still right?"
-    },
-    {
-      "atMs": 23630,
-      "speaker": "participant",
-      "text": "Yes, that's still right\u2014the hyperlipidemia one, no change.",
+      "text": "they changed the naproxen dose",
       "yields": [
         "CH-921"
       ]
     },
     {
-      "atMs": 27193,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for confirming. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "I have atorvastatin on file, 20 mg. Is that still right?"
     },
     {
-      "atMs": 34089,
+      "atMs": 41200,
       "speaker": "participant",
-      "text": "No, nothing new has started since we last spoke."
-    },
-    {
-      "atMs": 38022,
-      "speaker": "agent",
-      "text": "Thank you. Anything you buy without a prescription, such as painkillers, antacids, or something for sleep?"
-    },
-    {
-      "atMs": 44548,
-      "speaker": "participant",
-      "text": "No, nothing over the counter that I can think of."
-    },
-    {
-      "atMs": 48852,
-      "speaker": "agent",
-      "text": "Thank you. Any vaccinations in the last few months?"
-    },
-    {
-      "atMs": 52785,
-      "speaker": "participant",
-      "text": "No, I haven't had any vaccinations lately."
-    },
-    {
-      "atMs": 55978,
-      "speaker": "agent",
-      "text": "Thank you. Do you take any vitamins, supplements, or herbal products? People often do not think of those as medication."
-    },
-    {
-      "atMs": 63985,
-      "speaker": "participant",
-      "text": "No, I don't take any vitamins or supplements."
-    },
-    {
-      "atMs": 67548,
-      "speaker": "agent",
-      "text": "That is everything I needed. Thank you for your time."
-    },
-    {
-      "atMs": 71852,
-      "speaker": "participant",
-      "text": "All right, thank you."
-    },
-    {
-      "atMs": 74052,
-      "speaker": "agent",
-      "text": "Thank you. That is everything I needed. Have a good day."
-    },
-    {
-      "atMs": 78726,
-      "speaker": "participant",
-      "text": "You too, have a good day."
-    }
-  ],
-  "SES-2026-610": [
-    {
-      "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
-      "speaker": "agent",
-      "text": "Hello, this is the study team calling about your pre-visit medication review. Could you please tell me your full name and date of birth?"
-    },
-    {
-      "atMs": 11689,
-      "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 15252,
-      "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have warfarin, three milligrams once daily, on file. Is that still right?"
-    },
-    {
-      "atMs": 22148,
-      "speaker": "participant",
-      "text": "Yes, the atrial fibrillation one, no change.",
+      "text": "I came off the hyperlipidemia one back in July",
       "yields": [
         "CH-922"
       ]
     },
     {
-      "atMs": 25341,
+      "atMs": 48000,
       "speaker": "agent",
-      "text": "Thank you. I have allopurinol, one hundred milligrams once daily, on file. Is that still right?"
-    },
+      "text": "That is everything I needed. Thank you for your time."
+    }
+  ],
+  "SES-2026-609": [
     {
-      "atMs": 31867,
-      "speaker": "participant",
-      "text": "No, they changed the allopurinol dose. I don't remember the exact strength now."
-    },
-    {
-      "atMs": 37282,
+      "atMs": 0,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the new strength of the allopurinol?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 9 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 43067,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "No, I don\u2019t remember the new strength.",
+      "text": "Yes, that is fine."
+    },
+    {
+      "atMs": 9000,
+      "speaker": "agent",
+      "text": "I have amlodipine on file, 5 mg. Is that still right?"
+    },
+    {
+      "atMs": 15200,
+      "speaker": "participant",
+      "text": "the hypertension one, no change",
       "yields": [
         "CH-923"
       ]
     },
     {
-      "atMs": 46260,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "That is fine. I will record the new strength as not stated. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 56119,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "No, nothing new that I can think of."
-    },
-    {
-      "atMs": 59682,
-      "speaker": "agent",
-      "text": "Thank you. Anything you buy without a prescription, such as painkillers, antacids, or something for sleep?"
-    },
-    {
-      "atMs": 66208,
-      "speaker": "participant",
-      "text": "No, nothing over the counter that I can think of."
-    },
-    {
-      "atMs": 70512,
-      "speaker": "agent",
-      "text": "Thank you. Any vaccinations in the last few months?"
-    },
-    {
-      "atMs": 74445,
-      "speaker": "participant",
-      "text": "No, I don't think I've had any vaccinations lately."
-    },
-    {
-      "atMs": 78378,
-      "speaker": "agent",
-      "text": "Thank you. Do you take any supplements, vitamins, or herbal products? People often do not think of those as medication."
-    },
-    {
-      "atMs": 86385,
-      "speaker": "participant",
-      "text": "No, I don't take any supplements, vitamins, or herbal products."
-    },
-    {
-      "atMs": 90689,
-      "speaker": "agent",
-      "text": "Thank you. That is everything I needed. Thank you for your time."
-    }
-  ],
-  "SES-2026-611": [
-    {
-      "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
-      "speaker": "agent",
-      "text": "Hello, this is the study team calling for a medication review before your visit. Could you please tell me your full name and date of birth?"
-    },
-    {
-      "atMs": 12430,
-      "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 15993,
-      "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have ondansetron on file, eight milligrams by mouth twice a day as needed. Is that still right?"
-    },
-    {
-      "atMs": 24741,
-      "speaker": "participant",
-      "text": "Yes, that's still right\u2014the chemotherapy-induced nausea one, no change.",
+      "text": "another doctor started me on cyclosporine",
       "yields": [
         "CH-924"
       ]
     },
     {
-      "atMs": 28674,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for confirming. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 35570,
+      "atMs": 41200,
       "speaker": "participant",
-      "text": "Yes, another doctor started me on methotrexate. I don't remember the strength or exact date it began.",
+      "text": "a yellow capsule, twice a day, I would have to check the box",
       "yields": [
         "CH-925"
       ]
     },
     {
-      "atMs": 42466,
+      "atMs": 48000,
       "speaker": "agent",
-      "text": "Thank you for telling me. I am flagging the methotrexate for your coordinator to discuss at the visit. Do you know whether it was started before or after your last visit?"
-    },
-    {
-      "atMs": 54547,
-      "speaker": "participant",
-      "text": "I'm not sure whether it was before or after my last visit."
-    },
-    {
-      "atMs": 59591,
-      "speaker": "agent",
-      "text": "That is fine. I will record the start date as unknown. Do you take anything without a prescription, such as painkillers, antacids, or anything for sleep?"
-    },
-    {
-      "atMs": 69821,
-      "speaker": "participant",
-      "text": "No, I don't take anything without a prescription."
-    },
-    {
-      "atMs": 73384,
-      "speaker": "agent",
-      "text": "Thank you. Have you had any vaccinations in the last few months?"
+      "text": "That is everything I needed. Thank you for your time."
     }
   ],
-  "SES-2026-612": [
+  "SES-2026-610": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. May I have your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 5 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 10948,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 14511,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, Ms. [name]. I have St. John\u2019s wort extract, three hundred milligrams once daily, on file. Is that still right?"
+      "text": "I have acyclovir on file, 400 mg. Is that still right?"
     },
     {
-      "atMs": 22889,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, that's the low mood one, no change.",
+      "text": "the herpes zoster prophylaxis one, no change",
       "yields": [
         "CH-926"
       ]
     },
     {
-      "atMs": 26452,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you for confirming. I have amlodipine, five milligrams once daily, on file. Is that still right?"
+      "text": "I have levothyroxine on file, 50 mcg. Is that still right?"
     },
     {
-      "atMs": 33348,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "They changed the amlodipine dose, but I don't remember the new strength.",
+      "text": "they changed the levothyroxine dose",
       "yields": [
         "CH-927"
       ]
     },
     {
-      "atMs": 38392,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the new strength of the amlodipine?"
+      "text": "I have codeine on file, 30 mg. Is that still right?"
     },
     {
-      "atMs": 44177,
+      "atMs": 41200,
       "speaker": "participant",
-      "text": "No, I don't remember the new strength."
-    },
-    {
-      "atMs": 47370,
-      "speaker": "agent",
-      "text": "That is fine. I will record the new strength as not stated. I have naproxen, two hundred and fifty milligrams twice daily as needed, on file. Is that still right?"
-    },
-    {
-      "atMs": 59081,
-      "speaker": "participant",
-      "text": "No, I came off the knee pain one back in July.",
+      "text": "I came off the pain one back in July",
       "yields": [
         "CH-928"
       ]
     },
     {
-      "atMs": 63755,
+      "atMs": 48000,
       "speaker": "agent",
-      "text": "Thank you for telling me. I will record naproxen as stopped in July. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "That is everything I needed. Thank you for your time."
+    }
+  ],
+  "SES-2026-611": [
+    {
+      "atMs": 0,
+      "speaker": "agent",
+      "text": "Good morning. This is the study team calling ahead of your Screening visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 73985,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "Another doctor started me on a nasal flu vaccine, just one dose. I don't know the exact amount.",
+      "text": "Yes, that is fine."
+    },
+    {
+      "atMs": 9000,
+      "speaker": "agent",
+      "text": "I have tamsulosin on file, 0.4 mg. Is that still right?"
+    },
+    {
+      "atMs": 15200,
+      "speaker": "participant",
+      "text": "the benign prostatic hyperplasia one, no change",
       "yields": [
         "CH-929"
       ]
-    }
-  ],
-  "SES-2026-613": [
-    {
-      "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
     },
     {
-      "atMs": 2200,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your pre-visit medication review. May I have your full name and date of birth?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 10948,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 14511,
-      "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have amlodipine on file, ten milligrams by mouth once daily. Is that still right?"
-    },
-    {
-      "atMs": 22148,
-      "speaker": "participant",
-      "text": "Yes, that's the hypertension one. No change.",
+      "text": "another doctor started me on influenza vaccine, live attenuated (intranasal)",
       "yields": [
         "CH-930"
       ]
     },
     {
-      "atMs": 25341,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for confirming. Have you started anything new by prescription since we last spoke, including anything another doctor prescribed?"
+      "text": "That is everything I needed. Thank you for your time."
+    }
+  ],
+  "SES-2026-612": [
+    {
+      "atMs": 0,
+      "speaker": "agent",
+      "text": "Good morning. This is the study team calling ahead of your Cycle 2 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 33348,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "Yes, I started a yellow capsule once a day, but I\u2019d have to check the box for its name.",
+      "text": "Yes, that is fine."
+    },
+    {
+      "atMs": 9000,
+      "speaker": "agent",
+      "text": "I have ibuprofen on file, 400 mg. Is that still right?"
+    },
+    {
+      "atMs": 15200,
+      "speaker": "participant",
+      "text": "the musculoskeletal pain one, no change",
       "yields": [
         "CH-931"
       ]
     },
     {
-      "atMs": 40985,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you for telling me. What is the yellow capsule for?"
+      "text": "I have lisinopril on file, 10 mg. Is that still right?"
     },
     {
-      "atMs": 45659,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "I'm not really sure what it's for. I'd have to check the box."
+      "text": "they changed the lisinopril dose",
+      "yields": [
+        "CH-932"
+      ]
     },
     {
-      "atMs": 51074,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "That is fine. Where did you get the yellow capsule: was it prescribed, or did you buy it without a prescription?"
+      "text": "I have ondansetron on file, 8 mg. Is that still right?"
     },
     {
-      "atMs": 59452,
+      "atMs": 41200,
       "speaker": "participant",
-      "text": "I\u2019m not sure\u2014I\u2019d have to check the box to tell you."
+      "text": "I came off the chemotherapy-induced nausea one back in July",
+      "yields": [
+        "CH-933"
+      ]
     },
     {
-      "atMs": 64126,
+      "atMs": 48000,
       "speaker": "agent",
-      "text": "That is alright. Your coordinator will ask you to bring the box to the visit so we can record it properly. Have you taken anything you bought without a prescription, such as painkillers, antacids, or something for sleep?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 78800,
+      "atMs": 54200,
       "speaker": "participant",
-      "text": "No, not that I can remember."
+      "text": "another doctor started me on dexamethasone",
+      "yields": [
+        "CH-934"
+      ]
     },
     {
-      "atMs": 81622,
+      "atMs": 61000,
       "speaker": "agent",
-      "text": "Thank you. Have you had any vaccinations in the last few months?"
-    },
+      "text": "That is everything I needed. Thank you for your time."
+    }
+  ],
+  "SES-2026-613": [
     {
-      "atMs": 86666,
-      "speaker": "participant",
-      "text": "No, I haven't had any vaccinations that I can remember."
-    },
-    {
-      "atMs": 90970,
+      "atMs": 0,
       "speaker": "agent",
-      "text": "Thank you. Have you taken any vitamins, supplements, or herbal products? People often do not think of those as medication."
+      "text": "Good morning. This is the study team calling ahead of your End of Treatment visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 98977,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "No, I haven't taken any vitamins or supplements that I can remember."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 104021,
+      "atMs": 9000,
+      "speaker": "agent",
+      "text": "I have amlodipine on file, 5 mg. Is that still right?"
+    },
+    {
+      "atMs": 15200,
+      "speaker": "participant",
+      "text": "the hypertension one, no change",
+      "yields": [
+        "CH-935"
+      ]
+    },
+    {
+      "atMs": 22000,
+      "speaker": "agent",
+      "text": "I have lisinopril on file, 10 mg. Is that still right?"
+    },
+    {
+      "atMs": 28200,
+      "speaker": "participant",
+      "text": "they changed the lisinopril dose",
+      "yields": [
+        "CH-936"
+      ]
+    },
+    {
+      "atMs": 35000,
+      "speaker": "agent",
+      "text": "I have tamsulosin on file, 0.4 mg. Is that still right?"
+    },
+    {
+      "atMs": 41200,
+      "speaker": "participant",
+      "text": "I came off the benign prostatic hyperplasia one back in July",
+      "yields": [
+        "CH-937"
+      ]
+    },
+    {
+      "atMs": 48000,
       "speaker": "agent",
       "text": "That is everything I needed. Thank you for your time."
     }
@@ -1579,488 +1143,227 @@
   "SES-2026-614": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling about your pre-visit medication review. Could you please tell me your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 4 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 11689,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 15252,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, Ms. [name]. I have St. John\u2019s wort extract on file, three hundred milligrams once daily. Is that still right?"
+      "text": "I have levofloxacin on file, 500 mg. Is that still right?"
     },
     {
-      "atMs": 23630,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, that's the low mood one, no change.",
-      "yields": [
-        "CH-932"
-      ]
-    },
-    {
-      "atMs": 27193,
-      "speaker": "agent",
-      "text": "Thank you for confirming. I have naproxen on file, with the strength not stated, taken twice daily as needed. Is that still right?"
-    },
-    {
-      "atMs": 36312,
-      "speaker": "participant",
-      "text": "They changed the naproxen dose, but I don\u2019t remember the strength exactly.",
-      "yields": [
-        "CH-933"
-      ]
-    },
-    {
-      "atMs": 41356,
-      "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the new strength on the naproxen?"
-    },
-    {
-      "atMs": 47141,
-      "speaker": "participant",
-      "text": "I don't remember the new strength, sorry."
-    },
-    {
-      "atMs": 50334,
-      "speaker": "agent",
-      "text": "That is fine. I will record the new naproxen strength as not stated. Has anything new started on prescription since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 61304,
-      "speaker": "participant",
-      "text": "Yes, another doctor started me on prednisolone, one tablet a day. I don\u2019t remember anything else about it.",
-      "yields": [
-        "CH-935"
-      ]
-    },
-    {
-      "atMs": 68571,
-      "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the strength of the prednisolone?"
-    },
-    {
-      "atMs": 73986,
-      "speaker": "participant",
-      "text": "I think it\u2019s 5 milligrams once a day, but I\u2019m not completely sure."
-    },
-    {
-      "atMs": 79401,
-      "speaker": "agent",
-      "text": "Thank you. I will record prednisolone, one tablet once daily, with the strength reported as possibly five milligrams and not confirmed. I am flagging that for your coordinator to review. Is that correct?"
-    },
-    {
-      "atMs": 92223,
-      "speaker": "participant",
-      "text": "Yes, that sounds right to me."
-    },
-    {
-      "atMs": 95045,
-      "speaker": "agent",
-      "text": "Thank you for confirming. Anything you buy without a prescription, such as painkillers, antacids, or something for sleep?"
-    },
-    {
-      "atMs": 102312,
-      "speaker": "participant",
-      "text": "No, nothing else that I can think of."
-    },
-    {
-      "atMs": 105875,
-      "speaker": "agent",
-      "text": "Thank you. Any vaccinations in the last few months?"
-    },
-    {
-      "atMs": 109808,
-      "speaker": "participant",
-      "text": "No, I don't think I've had any vaccinations in the last few months."
-    },
-    {
-      "atMs": 115223,
-      "speaker": "agent",
-      "text": "Thank you. Any vitamins, supplements, or herbal products besides St. John\u2019s wort? People often do not think of those as medication."
-    },
-    {
-      "atMs": 123601,
-      "speaker": "participant",
-      "text": "No, just the low mood one, no change."
-    },
-    {
-      "atMs": 127164,
-      "speaker": "agent",
-      "text": "Thank you. That is everything I needed. Thank you for your time."
-    },
-    {
-      "atMs": 132208,
-      "speaker": "participant",
-      "text": "Thank you. Goodbye."
-    },
-    {
-      "atMs": 134408,
-      "speaker": "agent",
-      "text": "Thank you. Goodbye."
-    },
-    {
-      "atMs": 136608,
-      "speaker": "participant",
-      "text": "Goodbye."
-    },
-    {
-      "atMs": 138808,
-      "speaker": "agent",
-      "text": "Goodbye."
-    },
-    {
-      "atMs": 141008,
-      "speaker": "participant",
-      "text": "Goodbye."
-    }
-  ],
-  "SES-2026-615": [
-    {
-      "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
-      "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. May I have your full name and date of birth?"
-    },
-    {
-      "atMs": 10948,
-      "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 14511,
-      "speaker": "agent",
-      "text": "Thank you, [name]. I have omeprazole on file, twenty milligrams once daily. Is that still right?"
-    },
-    {
-      "atMs": 21037,
-      "speaker": "participant",
-      "text": "Yes, the gastro-esophageal reflux one, no change.",
-      "yields": [
-        "CH-936"
-      ]
-    },
-    {
-      "atMs": 24230,
-      "speaker": "agent",
-      "text": "Thank you. I have naproxen on file, two hundred fifty milligrams twice daily as needed. Is that still right?"
-    },
-    {
-      "atMs": 31867,
-      "speaker": "participant",
-      "text": "No, they changed the naproxen dose. I don't remember the exact strength.",
-      "yields": [
-        "CH-937"
-      ]
-    },
-    {
-      "atMs": 36911,
-      "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the new strength of the naproxen?"
-    },
-    {
-      "atMs": 42696,
-      "speaker": "participant",
-      "text": "I\u2019m sorry, I don\u2019t remember the exact strength. They did change the naproxen dose."
-    },
-    {
-      "atMs": 48481,
-      "speaker": "agent",
-      "text": "That is fine. I will record the new naproxen strength as not stated. Has anything new started since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 58711,
-      "speaker": "participant",
-      "text": "Yes, another doctor started me on varicella-zoster virus vaccine, live (Oka-Merck).",
+      "text": "the respiratory tract infection one, no change",
       "yields": [
         "CH-938"
       ]
     },
     {
-      "atMs": 63385,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you for telling me. I have recorded that as a vaccination. Do you know the brand?"
-    },
-    {
-      "atMs": 70281,
-      "speaker": "participant",
-      "text": "No, I don't know the brand. I just know it was the varicella-zoster vaccine."
-    },
-    {
-      "atMs": 76066,
-      "speaker": "agent",
-      "text": "Thank you. I will record the vaccine brand as unknown. Have you used anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
+      "text": "That is everything I needed. Thank you for your time."
     }
   ],
-  "SES-2026-616": [
+  "SES-2026-615": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. May I have your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 12 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 10948,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 14511,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have amlodipine, ten milligrams once daily, on file. Is that still right?"
+      "text": "I have acyclovir on file, 400 mg. Is that still right?"
     },
     {
-      "atMs": 21407,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, that\u2019s the hypertension one, no change.",
+      "text": "the herpes zoster prophylaxis one, no change",
       "yields": [
         "CH-939"
       ]
     },
     {
-      "atMs": 24600,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you for confirming. I also have simvastatin, twenty milligrams once daily at night, on file. Is that still right?"
+      "text": "I have lisinopril on file, 10 mg. Is that still right?"
     },
     {
-      "atMs": 32607,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "No, they changed the simvastatin dose. I don't remember the new strength.",
+      "text": "they changed the lisinopril dose",
       "yields": [
         "CH-940"
       ]
     },
     {
-      "atMs": 37651,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the new strength of the simvastatin?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 43436,
+      "atMs": 41200,
       "speaker": "participant",
-      "text": "No, I don't remember the new strength."
-    },
-    {
-      "atMs": 46629,
-      "speaker": "agent",
-      "text": "That is fine. I will record the new strength as not stated. Has anything new started since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 56488,
-      "speaker": "participant",
-      "text": "No, nothing new that I can think of."
-    },
-    {
-      "atMs": 60051,
-      "speaker": "agent",
-      "text": "Thank you. Is there anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
-    }
-  ],
-  "SES-2026-617": [
-    {
-      "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
-      "speaker": "agent",
-      "text": "Hello, this is the study team calling about your medications before your visit. May I have your full name and date of birth?"
-    },
-    {
-      "atMs": 11319,
-      "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 14882,
-      "speaker": "agent",
-      "text": "Thank you, [name]. I have ondansetron, four milligrams by mouth twice daily as needed, on file. Is that still right?"
-    },
-    {
-      "atMs": 22889,
-      "speaker": "participant",
-      "text": "Yes, that\u2019s still right\u2014the chemotherapy-induced nausea one, no change.",
+      "text": "a yellow capsule, twice a day, I would have to check the box",
       "yields": [
         "CH-941"
       ]
     },
     {
-      "atMs": 26822,
+      "atMs": 48000,
       "speaker": "agent",
-      "text": "Thank you, that is helpful. I also have acetaminophen, five hundred milligrams by mouth up to four times daily as needed, on file. Is that still right?"
+      "text": "That is everything I needed. Thank you for your time."
+    }
+  ],
+  "SES-2026-616": [
+    {
+      "atMs": 0,
+      "speaker": "agent",
+      "text": "Good morning. This is the study team calling ahead of your Cycle 4 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 37422,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "They changed the acetaminophen dose, but I don\u2019t remember the exact amount now.",
+      "text": "Yes, that is fine."
+    },
+    {
+      "atMs": 9000,
+      "speaker": "agent",
+      "text": "I have acetaminophen (paracetamol) on file, 1 g. Is that still right?"
+    },
+    {
+      "atMs": 15200,
+      "speaker": "participant",
+      "text": "the pain one, no change",
       "yields": [
         "CH-942"
       ]
     },
     {
-      "atMs": 42837,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the new strength of the acetaminophen?"
+      "text": "I have furosemide on file, 20 mg. Is that still right?"
     },
     {
-      "atMs": 48622,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "I think it\u2019s one gram now, but I\u2019m not completely sure."
-    },
-    {
-      "atMs": 53296,
-      "speaker": "agent",
-      "text": "Thank you. I will record the new strength as possibly one gram, with the exact amount uncertain. Has anything new started by prescription since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 65748,
-      "speaker": "participant",
-      "text": "Yes, another doctor started me on dexamethasone, four milligrams once a day.",
+      "text": "they changed the furosemide dose",
       "yields": [
         "CH-943"
       ]
     },
     {
-      "atMs": 70792,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for telling me. I am flagging the dexamethasone for your coordinator to discuss at the visit. Do you take anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 84355,
+      "atMs": 41200,
       "speaker": "participant",
-      "text": "No, I don't take anything else without a prescription."
-    },
-    {
-      "atMs": 88288,
-      "speaker": "agent",
-      "text": "Thank you. Have you had any vaccinations in the last few months?"
-    },
-    {
-      "atMs": 93332,
-      "speaker": "participant",
-      "text": "No, I haven\u2019t had any vaccinations in the last few months."
-    },
-    {
-      "atMs": 98006,
-      "speaker": "agent",
-      "text": "Thank you. Do you take any vitamins, supplements, or herbal products? People often do not think of those as medication."
-    },
-    {
-      "atMs": 106013,
-      "speaker": "participant",
-      "text": "No, I don't take any vitamins, supplements, or herbal products."
-    },
-    {
-      "atMs": 110317,
-      "speaker": "agent",
-      "text": "That is everything I needed. Thank you for your time."
-    },
-    {
-      "atMs": 114621,
-      "speaker": "participant",
-      "text": "Okay, thank you."
-    }
-  ],
-  "SES-2026-618": [
-    {
-      "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
-      "speaker": "agent",
-      "text": "Hello, this is the study team calling about your pre-visit medication review. Could you please tell me your full name and date of birth?"
-    },
-    {
-      "atMs": 11689,
-      "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 15252,
-      "speaker": "agent",
-      "text": "Thank you, [name]. I have codeine, thirty milligrams, by mouth up to four times daily as needed. Is that still right?"
-    },
-    {
-      "atMs": 23630,
-      "speaker": "participant",
-      "text": "Yes, the pain one, no change.",
+      "text": "another doctor started me on influenza vaccine, live attenuated (intranasal)",
       "yields": [
         "CH-944"
       ]
     },
     {
-      "atMs": 26452,
+      "atMs": 48000,
       "speaker": "agent",
-      "text": "Thank you. I have ondansetron, four milligrams by mouth up to twice daily as needed. Is that still right?"
+      "text": "That is everything I needed. Thank you for your time."
+    }
+  ],
+  "SES-2026-617": [
+    {
+      "atMs": 0,
+      "speaker": "agent",
+      "text": "Good morning. This is the study team calling ahead of your End of Treatment visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 34089,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "They changed the ondansetron dose. I don't remember the new strength.",
+      "text": "Yes, that is fine."
+    },
+    {
+      "atMs": 9000,
+      "speaker": "agent",
+      "text": "I have furosemide on file, 20 mg. Is that still right?"
+    },
+    {
+      "atMs": 15200,
+      "speaker": "participant",
+      "text": "the edema one, no change",
       "yields": [
         "CH-945"
       ]
     },
     {
-      "atMs": 38763,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you for telling me. I will record the new strength as not stated. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "I have melatonin on file, 3 mg. Is that still right?"
     },
     {
-      "atMs": 49363,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "No, nothing new has started."
+      "text": "they changed the melatonin dose",
+      "yields": [
+        "CH-946"
+      ]
     },
     {
-      "atMs": 51815,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you. Anything you buy without a prescription, such as painkillers, antacids, or something for sleep?"
-    },
+      "text": "That is everything I needed. Thank you for your time."
+    }
+  ],
+  "SES-2026-618": [
     {
-      "atMs": 58341,
-      "speaker": "participant",
-      "text": "No, nothing over the counter."
-    },
-    {
-      "atMs": 60793,
+      "atMs": 0,
       "speaker": "agent",
-      "text": "Thank you. Have you had any vaccinations in the last few months?"
+      "text": "Good morning. This is the study team calling ahead of your Screening visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 65837,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "No, I haven't had any vaccinations."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 68659,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you for telling me. Have you started any vitamins, supplements, or herbal products? People often do not think of those as medication."
+      "text": "I have warfarin on file, 5 mg. Is that still right?"
     },
     {
-      "atMs": 77778,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "No, I haven't started any vitamins or supplements."
+      "text": "the atrial fibrillation one, no change",
+      "yields": [
+        "CH-947"
+      ]
     },
     {
-      "atMs": 81341,
+      "atMs": 22000,
+      "speaker": "agent",
+      "text": "I have levofloxacin on file, 500 mg. Is that still right?"
+    },
+    {
+      "atMs": 28200,
+      "speaker": "participant",
+      "text": "I came off the respiratory tract infection one back in July",
+      "yields": [
+        "CH-948"
+      ]
+    },
+    {
+      "atMs": 35000,
       "speaker": "agent",
       "text": "That is everything I needed. Thank you for your time."
     }
@@ -2068,388 +1371,298 @@
   "SES-2026-619": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. May I have your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 5 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 10948,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 14511,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, Ms. [name]. I have levofloxacin on file, five hundred milligrams by mouth once daily. Is that still right?"
+      "text": "I have ondansetron on file, 4 mg. Is that still right?"
     },
     {
-      "atMs": 22518,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, that's the respiratory tract infection one, no change.",
-      "yields": [
-        "CH-946"
-      ]
-    },
-    {
-      "atMs": 26451,
-      "speaker": "agent",
-      "text": "Thank you for confirming. Has anything new started since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 33347,
-      "speaker": "participant",
-      "text": "No, nothing new has started since we last spoke."
-    },
-    {
-      "atMs": 37280,
-      "speaker": "agent",
-      "text": "Thank you. Anything you buy without a prescription, such as painkillers, antacids, or something for sleep?"
-    }
-  ],
-  "SES-2026-620": [
-    {
-      "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
-      "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. May I have your full name and date of birth?"
-    },
-    {
-      "atMs": 10948,
-      "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 14511,
-      "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have acyclovir on file, four hundred milligrams by mouth twice a day. Is that still right?"
-    },
-    {
-      "atMs": 22889,
-      "speaker": "participant",
-      "text": "Yes, that's the herpes zoster prophylaxis one, no change.",
-      "yields": [
-        "CH-947"
-      ]
-    },
-    {
-      "atMs": 26822,
-      "speaker": "agent",
-      "text": "Thank you for confirming. Has anything new started since we last spoke, including anything another doctor prescribed?"
-    },
-    {
-      "atMs": 33718,
-      "speaker": "participant",
-      "text": "Yes, another doctor started me on methotrexate. I don't remember the strength or when I started it.",
-      "yields": [
-        "CH-948"
-      ]
-    },
-    {
-      "atMs": 40614,
-      "speaker": "agent",
-      "text": "Thank you for telling me. I will flag that for your coordinator to discuss at the visit. Do you take anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
-    }
-  ],
-  "SES-2026-621": [
-    {
-      "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
-      "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. Could you please tell me your full name and date of birth?"
-    },
-    {
-      "atMs": 11689,
-      "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 15252,
-      "speaker": "agent",
-      "text": "Thank you, [name]. I have ondansetron, four milligrams by mouth twice daily as needed, on file. Is that still right?"
-    },
-    {
-      "atMs": 23259,
-      "speaker": "participant",
-      "text": "Yes, that's the chemotherapy-induced nausea one, no change.",
+      "text": "the chemotherapy-induced nausea one, no change",
       "yields": [
         "CH-949"
       ]
     },
     {
-      "atMs": 26822,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you. I have lisinopril, ten milligrams by mouth once daily, on file. Is that still right?"
+      "text": "I have metformin on file, 500 mg. Is that still right?"
     },
     {
-      "atMs": 33718,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "They changed the lisinopril dose, but I don't remember the new strength.",
+      "text": "they changed the metformin dose",
       "yields": [
         "CH-950"
       ]
     },
     {
-      "atMs": 38762,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for telling me. Do you know the new strength of the lisinopril?"
-    },
+      "text": "That is everything I needed. Thank you for your time."
+    }
+  ],
+  "SES-2026-620": [
     {
-      "atMs": 44547,
-      "speaker": "participant",
-      "text": "No, I don't remember the new strength."
-    },
-    {
-      "atMs": 47740,
+      "atMs": 0,
       "speaker": "agent",
-      "text": "That is fine. I will record the new strength as not stated. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 2 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 57599,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "No, nothing new has started that I can remember."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 61532,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you. Anything you buy without a prescription, such as painkillers, antacids, or something for sleep?"
+      "text": "I have naproxen on file, 500 mg. Is that still right?"
     },
     {
-      "atMs": 68058,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "No, nothing over the counter that I can remember."
-    },
-    {
-      "atMs": 71991,
-      "speaker": "agent",
-      "text": "Thank you. Any vaccinations in the last few months?"
-    },
-    {
-      "atMs": 75924,
-      "speaker": "participant",
-      "text": "No, I don't remember having any vaccinations recently."
-    },
-    {
-      "atMs": 79487,
-      "speaker": "agent",
-      "text": "Thank you. Do you take any vitamins, supplements, or herbal products? People often do not think of those as medication."
-    },
-    {
-      "atMs": 87494,
-      "speaker": "participant",
-      "text": "No, I don't take any vitamins, supplements, or herbal products that I can remember."
-    },
-    {
-      "atMs": 93279,
-      "speaker": "agent",
-      "text": "Thank you. I have simvastatin, forty milligrams by mouth once daily at night, on file. Is that still right?"
-    },
-    {
-      "atMs": 100916,
-      "speaker": "participant",
-      "text": "No, I came off that one back in July.",
+      "text": "the knee pain one, no change",
       "yields": [
         "CH-951"
       ]
     },
     {
-      "atMs": 104849,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you for telling me. I will record that you stopped simvastatin in July. That is everything I needed. Thank you for your time."
-    }
-  ],
-  "SES-2026-622": [
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
+    },
     {
-      "atMs": 0,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
-      "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. May I have your full name and date of birth?"
-    },
-    {
-      "atMs": 10948,
-      "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
-    },
-    {
-      "atMs": 14511,
-      "speaker": "agent",
-      "text": "Thank you, [name]. I have furosemide on file, forty milligrams by mouth once daily. Is that still right?"
-    },
-    {
-      "atMs": 21778,
-      "speaker": "participant",
-      "text": "Yes, that's the edema one, no change.",
+      "text": "a small white tablet for my stomach, I do not know the name",
       "yields": [
         "CH-952"
       ]
     },
     {
-      "atMs": 24971,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for confirming. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "That is everything I needed. Thank you for your time."
     }
   ],
-  "SES-2026-623": [
+  "SES-2026-621": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. May I have your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 3 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 10948,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 14511,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have simvastatin on file, forty milligrams once daily at night. Is that still right?"
+      "text": "I have warfarin on file, 3 mg. Is that still right?"
     },
     {
-      "atMs": 22148,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, the hyperlipidemia one, no change.",
+      "text": "the atrial fibrillation one, no change",
       "yields": [
         "CH-953"
       ]
     },
     {
-      "atMs": 24970,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you, that is helpful. I have clopidogrel on file, seventy-five milligrams once daily. Is that still right?"
+      "text": "I have aspirin on file, 75 mg. Is that still right?"
     },
     {
-      "atMs": 32237,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "No, I came off the secondary cardiovascular prevention one back in July.",
+      "text": "they changed the aspirin dose",
       "yields": [
         "CH-954"
       ]
     },
     {
-      "atMs": 37281,
+      "atMs": 35000,
       "speaker": "agent",
-      "text": "Thank you for telling me. When did you stop taking clopidogrel?"
-    },
-    {
-      "atMs": 41955,
-      "speaker": "participant",
-      "text": "I\u2019m not sure of the exact date, but it was sometime in July."
-    },
-    {
-      "atMs": 47370,
-      "speaker": "agent",
-      "text": "Was that before or after your last visit?"
+      "text": "That is everything I needed. Thank you for your time."
     }
   ],
-  "SES-2026-624": [
+  "SES-2026-622": [
     {
       "atMs": 0,
-      "speaker": "participant",
-      "text": "Hello?"
-    },
-    {
-      "atMs": 2200,
       "speaker": "agent",
-      "text": "Hello, this is the study team calling for a pre-visit medication review. Could you please tell me your full name and date of birth?"
+      "text": "Good morning. This is the study team calling ahead of your Cycle 12 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 11689,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "This is [name], date of birth [date of birth]."
+      "text": "Yes, that is fine."
     },
     {
-      "atMs": 15252,
+      "atMs": 9000,
       "speaker": "agent",
-      "text": "Thank you, Mr. [name]. I have codeine on file, thirty milligrams by mouth, up to four times a day as needed. Is that still right?"
+      "text": "I have sertraline on file, 100 mg. Is that still right?"
     },
     {
-      "atMs": 25111,
+      "atMs": 15200,
       "speaker": "participant",
-      "text": "Yes, the pain one, no change.",
+      "text": "the major depressive disorder one, no change",
       "yields": [
         "CH-955"
       ]
     },
     {
-      "atMs": 27933,
+      "atMs": 22000,
       "speaker": "agent",
-      "text": "Thank you, I will record that as unchanged. Has anything new started since we last spoke, including anything another doctor prescribed?"
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
     },
     {
-      "atMs": 36311,
+      "atMs": 28200,
       "speaker": "participant",
-      "text": "No, nothing new has started."
+      "text": "another doctor started me on influenza vaccine, live attenuated (intranasal)",
+      "yields": [
+        "CH-956"
+      ]
     },
     {
-      "atMs": 38763,
-      "speaker": "agent",
-      "text": "Thank you. Anything you buy without a prescription, such as painkillers, antacids, or something for sleep?"
-    },
-    {
-      "atMs": 45289,
-      "speaker": "participant",
-      "text": "No, nothing like that."
-    },
-    {
-      "atMs": 47489,
-      "speaker": "agent",
-      "text": "Thank you. Have you had any vaccinations in the last few months?"
-    },
-    {
-      "atMs": 52533,
-      "speaker": "participant",
-      "text": "No, I haven't had any vaccinations."
-    },
-    {
-      "atMs": 55355,
-      "speaker": "agent",
-      "text": "Thank you. Have you started taking any vitamins, supplements, or herbal products? People often do not think of those as medication."
-    },
-    {
-      "atMs": 63733,
-      "speaker": "participant",
-      "text": "No, I haven't started any vitamins or supplements."
-    },
-    {
-      "atMs": 67296,
+      "atMs": 35000,
       "speaker": "agent",
       "text": "That is everything I needed. Thank you for your time."
-    },
+    }
+  ],
+  "SES-2026-623": [
     {
-      "atMs": 71600,
-      "speaker": "participant",
-      "text": "All right, thank you."
-    },
-    {
-      "atMs": 73800,
+      "atMs": 0,
       "speaker": "agent",
-      "text": "Thank you. That is everything I needed. Have a good day."
+      "text": "Good morning. This is the study team calling ahead of your Cycle 3 Day 1 visit. Do you have a few minutes to go through your medications?"
     },
     {
-      "atMs": 78474,
+      "atMs": 5600,
       "speaker": "participant",
-      "text": "You too, goodbye."
+      "text": "Yes, that is fine."
+    },
+    {
+      "atMs": 9000,
+      "speaker": "agent",
+      "text": "I have clopidogrel on file, 75 mg. Is that still right?"
+    },
+    {
+      "atMs": 15200,
+      "speaker": "participant",
+      "text": "the secondary cardiovascular prevention one, no change",
+      "yields": [
+        "CH-957"
+      ]
+    },
+    {
+      "atMs": 22000,
+      "speaker": "agent",
+      "text": "I have atorvastatin on file, 20 mg. Is that still right?"
+    },
+    {
+      "atMs": 28200,
+      "speaker": "participant",
+      "text": "they changed the atorvastatin dose",
+      "yields": [
+        "CH-958"
+      ]
+    },
+    {
+      "atMs": 35000,
+      "speaker": "agent",
+      "text": "I have acetaminophen (paracetamol) on file, 1 g. Is that still right?"
+    },
+    {
+      "atMs": 41200,
+      "speaker": "participant",
+      "text": "I came off the pain one back in July",
+      "yields": [
+        "CH-959"
+      ]
+    },
+    {
+      "atMs": 48000,
+      "speaker": "agent",
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
+    },
+    {
+      "atMs": 54200,
+      "speaker": "participant",
+      "text": "another doctor started me on methotrexate",
+      "yields": [
+        "CH-960"
+      ]
+    },
+    {
+      "atMs": 61000,
+      "speaker": "agent",
+      "text": "That is everything I needed. Thank you for your time."
+    }
+  ],
+  "SES-2026-624": [
+    {
+      "atMs": 0,
+      "speaker": "agent",
+      "text": "Good morning. This is the study team calling ahead of your Cycle 3 Day 1 visit. Do you have a few minutes to go through your medications?"
+    },
+    {
+      "atMs": 5600,
+      "speaker": "participant",
+      "text": "Yes, that is fine."
+    },
+    {
+      "atMs": 9000,
+      "speaker": "agent",
+      "text": "I have omeprazole on file, 20 mg. Is that still right?"
+    },
+    {
+      "atMs": 15200,
+      "speaker": "participant",
+      "text": "the gastro-esophageal reflux one, no change",
+      "yields": [
+        "CH-961"
+      ]
+    },
+    {
+      "atMs": 22000,
+      "speaker": "agent",
+      "text": "I have lisinopril on file, 10 mg. Is that still right?"
+    },
+    {
+      "atMs": 28200,
+      "speaker": "participant",
+      "text": "they changed the lisinopril dose",
+      "yields": [
+        "CH-962"
+      ]
+    },
+    {
+      "atMs": 35000,
+      "speaker": "agent",
+      "text": "Has anything new started since we last spoke, including anything another doctor prescribed?"
+    },
+    {
+      "atMs": 41200,
+      "speaker": "participant",
+      "text": "something my wife picks up for my joints",
+      "yields": [
+        "CH-963"
+      ]
+    },
+    {
+      "atMs": 48000,
+      "speaker": "agent",
+      "text": "That is everything I needed. Thank you for your time."
     }
   ]
 }

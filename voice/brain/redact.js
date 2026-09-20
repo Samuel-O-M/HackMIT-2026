@@ -54,10 +54,18 @@ function normalise(who) {
   };
 }
 
-function redactTurns(turns, who) {
-  const person = normalise(who);
-  if (!person) return turns;
-  return turns.map((t) => ({ ...t, text: redactText(t.text, person) }));
+/**
+ * `people` is one person or several. A caregiver on the call is named aloud as
+ * often as the participant is, and their name is no more publishable — they
+ * did not consent to appear in a clinical record either.
+ */
+function redactTurns(turns, people) {
+  const list = (Array.isArray(people) ? people : [people]).map(normalise).filter(Boolean);
+  if (!list.length) return turns;
+  return turns.map((t) => ({
+    ...t,
+    text: list.reduce((text, person) => redactText(text, person), t.text),
+  }));
 }
 
 module.exports = { redactText, redactTurns, normalise };

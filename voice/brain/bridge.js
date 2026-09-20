@@ -63,6 +63,17 @@ async function publishSession(sessionId) {
   }
 
   const staged = p.query('SELECT * FROM staged_changes WHERE session_id = ? ORDER BY staged_id', sessionId) || [];
+  const adherence = p.query('SELECT * FROM staged_adherence WHERE session_id = ? ORDER BY staged_adherence_id', sessionId) || [];
+  const behaviours = p.query('SELECT * FROM staged_behaviours WHERE session_id = ? ORDER BY staged_behaviour_id', sessionId) || [];
+  const symptoms = p.query('SELECT * FROM staged_symptoms WHERE session_id = ? ORDER BY staged_symptom_id', sessionId) || [];
+
+  // Which of those behaviours actually breach this protocol. Resolved here
+  // rather than on the call, because a "required" rule is breached by a
+  // participant saying no — the agent's job was to ask, not to adjudicate.
+  const studyId = call.study_id;
+  const behaviourRules = studyId
+    ? p.query('SELECT * FROM behaviour_rules WHERE study_id = ?', studyId) || []
+    : [];
   const turns = p.query('SELECT speaker, transcript FROM utterances WHERE session_id = ? ORDER BY seq', sessionId) || [];
 
   const identity = {
@@ -77,6 +88,92 @@ async function publishSession(sessionId) {
     verifiedAt: call.identity_status === 'verified' ? (call.ended_at || new Date().toISOString()) : null,
   };
 
+  const toBehaviour = (row) => {
+    const rule = behaviourRules.find((r) => r.behaviour_code === row.behaviour_code) || null;
+    // A rule the participant must MEET is breached when they report they are
+    // not meeting it; every other rule type is breached by the behaviour
+    // being present. Declining to answer is neither — it is unresolved.
+    let breach = false;
+    if (rule && row.status !== 'declined_to_answer' && row.status !== 'unknown') {
+      breach = rule.rule_type === 'required'
+        ? row.status === 'denied'
+        : row.status === 'reported' && rule.rule_type !== 'monitored';
+    }
+    return {
+      behaviourCode: row.behaviour_code,
+      status: row.status || 'unknown',
+      reportedText: row.reported_text || null,
+      frequency: row.frequency || null,
+      quantity: row.quantity || null,
+      period: row.period || null,
+      instrument: row.instrument || null,
+      instrumentScore: row.instrument_score == null ? null : Number(row.instrument_score),
+      rule: rule && {
+        ruleType: rule.rule_type,
+        threshold: rule.threshold || null,
+        protocolSection: rule.protocol_section || null,
+        rationale: rule.rationale || null,
+      },
+      breachesRule: breach,
+    };
+  };
+
+  /**
+   * Whether the drug's label lists this symptom.
+   *
+   * Resolved here rather than trusted from the planner. The model was leaving
+   * it null even on turns where it had just called drug_safety, and "is this
+   * on the label" is a string lookup against a cached FDA document — there is
+   * no judgement in it, so there is no reason to ask a model.
+   */
+  const labelCache = (() => {
+    try { return require('../../api/medical_data/openfda'); } catch { return null; }
+  })();
+
+  const toSymptom = (row) => ({
+    canonicalName: row.canonical_name || null,
+    isStudyDrug: row.is_study_drug === 1,
+    symptom: row.symptom,
+    severity: row.severity || null,
+    since: row.since || null,
+    sincePrecision: row.since_precision || 'unknown',
+    // null means not checked. false means the label does not list it, which is
+    // the finding an investigator most wants to see.
+    onLabel: row.on_label == null ? resolvedLabels.get(row.staged_symptom_id) ?? null : row.on_label === 1,
+    labelSource: row.label_source || resolvedSources.get(row.staged_symptom_id) || null,
+    reportedText: row.reported_text || null,
+  });
+
+  const toAdherence = (row) => ({
+    canonicalName: row.canonical_name || null,
+    isStudyDrug: row.is_study_drug === 1,
+    extent: row.extent || 'unknown',
+    daysMissed: row.days_missed == null ? null : Number(row.days_missed),
+    recallDays: row.recall_days == null ? 7 : Number(row.recall_days),
+    reasons: (() => { try { return JSON.parse(row.reasons || '[]'); } catch { return []; } })(),
+    reportedText: row.reported_text || null,
+  });
+
+  // Fill in on_label for anything the planner left unresolved. Cache-only
+  // where possible; a publish must not hang on api.fda.gov.
+  const resolvedLabels = new Map();
+  const resolvedSources = new Map();
+  if (labelCache) {
+    for (const row of symptoms) {
+      if (row.on_label != null || !row.canonical_name) continue;
+      try {
+        const label = await labelCache.labelFor(row.canonical_name);
+        if (!label?.found) continue;
+        const term = String(row.symptom || '').toLowerCase();
+        const listed = label.symptoms.some((sx) => sx.includes(term) || term.includes(sx));
+        resolvedLabels.set(row.staged_symptom_id, listed);
+        resolvedSources.set(row.staged_symptom_id, label.source || 'openFDA drug label');
+      } catch {
+        // Leave it null. "Not checked" is honest; a guess is not.
+      }
+    }
+  }
+
   const payload = {
     session: {
       sessionId,
@@ -88,6 +185,16 @@ async function publishSession(sessionId) {
       // data. It is published so the attempt is on record, and held back.
       status: identity.outcome === 'verified' ? 'awaiting_review' : 'in_progress',
       changes: identity.outcome === 'verified' ? staged.map(toProposedChange) : [],
+      adherence: identity.outcome === 'verified' ? adherence.map(toAdherence) : [],
+      behaviours: identity.outcome === 'verified' ? behaviours.map(toBehaviour) : [],
+      symptoms: identity.outcome === 'verified' ? symptoms.map(toSymptom) : [],
+      // Whose account this is. A coordinator reading a medication list needs to
+      // know it came from the participant's spouse rather than the participant.
+      callParticipants: {
+        caregiverPresent: call.caregiver_present === 1,
+        caregiverRelationship: call.caregiver_relationship || null,
+        caregiverAuthStatus: call.caregiver_auth_status || 'none',
+      },
     },
     identity,
     // Redacted here, at the boundary. The identity exchange stays; the name
@@ -98,7 +205,11 @@ async function publishSession(sessionId) {
         speaker: t.speaker === 'patient' ? 'participant' : 'agent',
         text: t.transcript,
       })),
-      p.get('SELECT given_name, family_name, dob FROM patients WHERE subject_id = ?', call.subject_id),
+      [
+        p.get('SELECT given_name, family_name, dob FROM patients WHERE subject_id = ?', call.subject_id),
+        // Anyone authorised to speak for them is named on the call too.
+        ...(p.query('SELECT given_name, family_name FROM authorised_contacts WHERE subject_id = ?', call.subject_id) || []),
+      ],
     ),
   };
 
@@ -109,8 +220,21 @@ async function publishSession(sessionId) {
       body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error(`${res.status}`);
-    console.log(`[bridge] published ${sessionId} · ${payload.session.changes.length} change(s) · identity ${identity.outcome}`);
-    return { published: true, changes: payload.session.changes.length, identity: identity.outcome };
+    console.log(
+      `[bridge] published ${sessionId} · ${payload.session.changes.length} change(s) · ` +
+      `${payload.session.adherence.length} adherence · ${payload.session.behaviours.length} behaviour(s) · ` +
+      `${payload.session.symptoms.length} symptom(s) · ` +
+      `identity ${identity.outcome}` +
+      (payload.session.callParticipants.caregiverPresent ? ` · caregiver ${payload.session.callParticipants.caregiverAuthStatus}` : '')
+    );
+    return {
+      published: true,
+      changes: payload.session.changes.length,
+      adherence: payload.session.adherence.length,
+      behaviours: payload.session.behaviours.length,
+      symptoms: payload.session.symptoms.length,
+      identity: identity.outcome,
+    };
   } catch (err) {
     console.error('[bridge] could not publish', sessionId, String(err.message || err));
     return { published: false, reason: String(err.message || err), staged: staged.length };

@@ -152,6 +152,10 @@ function findDateSpans(text, isoTarget) {
     // Spoken in words: "the fifteenth of march nineteen fifty four".
     new RegExp(`\\b(?:the\\s+)?[a-z-]+\\s+(?:of\\s+)?${MONTH_RE}\\.?,?\\s+(?:nineteen|twenty)[a-z\\s-]{0,24}\\b`, 'gi'),
     new RegExp(`\\b${MONTH_RE}\\.?\\s+[a-z-]+,?\\s+(?:nineteen|twenty)[a-z\\s-]{0,24}\\b`, 'gi'),
+    // Day as a word, year as digits: "the ninth of September 1948". People mix
+    // the two forms freely, and this one reached a published transcript.
+    new RegExp(`\\b(?:the\\s+)?[a-z-]+\\s+of\\s+${MONTH_RE}\\.?,?\\s+\\d{2,4}\\b`, 'gi'),
+    new RegExp(`\\b${MONTH_RE}\\.?\\s+(?:the\\s+)?[a-z-]+,?\\s+\\d{2,4}\\b`, 'gi'),
   ];
   const spans = [];
   for (const re of patterns) {

@@ -1,10 +1,12 @@
-import type { ProposedChange } from '../types/contract';
+import type { BehaviourReport, ProposedChange } from '../types/contract';
 import type { ProtocolDeviation } from '../types/ui';
 import { displayName } from '../lib/entry';
 import { Disclosure } from './Disclosure';
+import { behaviourLabel, behaviourSummary } from '../lib/callFindings';
 
 interface Props {
   changes: ProposedChange[];
+  behaviours?: BehaviourReport[];
   deviations: ProtocolDeviation[];
   locked: boolean;
   onJump: (changeId: string) => void;
@@ -17,23 +19,36 @@ interface Props {
  */
 export function ProhibitedAlert({
   changes,
+  behaviours = [],
   deviations,
   locked,
   onJump,
   onLogDeviation,
 }: Props) {
   const hits = changes.filter((c) => c.prohibitedHit !== null);
-  if (hits.length === 0) return null;
+  // A protocol breach is a protocol breach whether it was a drug or a pint.
+  // These join the existing alert rather than raising a second one: two things
+  // competing to be the loudest means neither reads as loud.
+  const breaches = behaviours.filter((b) => b.breachesRule);
+  const total = hits.length + breaches.length;
+  if (total === 0) return null;
   const filed = new Map(deviations.map((d) => [d.changeId, d]));
 
   return (
     <section className="alarm" aria-labelledby="alarm-title">
       <header className="alarm-head">
         <h2 id="alarm-title">
-          {hits.length} prohibited medication{hits.length === 1 ? '' : 's'} reported
+          {breaches.length === 0
+            ? `${hits.length} prohibited medication${hits.length === 1 ? '' : 's'} reported`
+            : `${total} protocol finding${total === 1 ? '' : 's'}`}
         </h2>
         <span className="dim">
-          {filed.size === hits.length ? 'Deviations filed' : 'Discuss at the visit'}
+          {/* A deviation is filed against a medication change. With no drug
+              hits there is nothing to have filed, and "0 of 0 filed" was
+              rendering as an all-clear over an unaddressed finding. */}
+          {hits.length > 0 && filed.size === hits.length
+            ? 'Deviations filed'
+            : 'Discuss at the visit'}
         </span>
       </header>
       <ul className="alarm-list">
@@ -77,6 +92,25 @@ export function ProhibitedAlert({
             </li>
           );
         })}
+
+        {breaches.map((b) => (
+          <li className="alarm-item" key={`behaviour-${b.behaviourCode}`}>
+            <div>
+              <div className="alarm-drug">{behaviourLabel(b.behaviourCode)}</div>
+              <div className="alarm-meta">
+                {behaviourSummary(b)}
+                {b.rule?.protocolSection && ` · Protocol §${b.rule.protocolSection}`}
+                {b.rule?.ruleType === 'required' && ' · required by protocol'}
+              </div>
+            </div>
+            {(b.rule?.threshold || b.rule?.rationale) && (
+              <Disclosure tone="alarm" label="What the protocol requires">
+                {b.rule?.threshold && <p>{b.rule.threshold}</p>}
+                {b.rule?.rationale && <p>{b.rule.rationale}</p>}
+              </Disclosure>
+            )}
+          </li>
+        ))}
       </ul>
     </section>
   );
