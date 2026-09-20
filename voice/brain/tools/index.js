@@ -16,6 +16,7 @@
 const health = require('./health');
 const patientData = require('./patient');
 const drugdb = require('../../../api/medical_data');
+const endSignal = require('../endSignal');
 
 const healthSearchSchema = {
   type: 'function',
@@ -283,6 +284,19 @@ const setCallOutcomeSchema = {
   },
 };
 
+const endCallSchema = {
+  type: 'function',
+  function: {
+    name: 'end_call',
+    description:
+      'Hang up. Call this once the conversation is genuinely over — after you have said ' +
+      'your final line. The call ends about a second after the last words are spoken. Say ' +
+      'your goodbye in the same turn, then call this; never ask anything after it. Do not ' +
+      'call it while there is still a question to ask or an answer to wait for.',
+    parameters: { type: 'object', properties: {}, required: [] },
+  },
+};
+
 const verifyIdentitySchema = {
   type: 'function',
   function: {
@@ -327,6 +341,13 @@ const ALL = {
     schema: setCallOutcomeSchema,
     run: (args, ctx) => patientData.setCallOutcome({ ...args, sessionId: ctx.sessionId }),
   },
+  end_call: {
+    schema: endCallSchema,
+    run: (args, ctx) => {
+      endSignal.request(ctx.sessionId);
+      return { ok: true, ending: true };
+    },
+  },
   check_behaviour: {
     schema: checkBehaviourSchema,
     run: (args, ctx) => patientData.checkBehaviour({ ...args, subjectId: ctx.subjectId }),
@@ -342,7 +363,7 @@ function schemasFor(which) {
     return [
       ALL.health_search.schema, ALL.check_prohibited.schema, ALL.patient_read.schema,
       ALL.verify_identity.schema, ALL.check_behaviour.schema, ALL.drug_safety.schema,
-      ALL.set_call_outcome.schema,
+      ALL.set_call_outcome.schema, ALL.end_call.schema,
     ];
   }
   return [
@@ -355,6 +376,7 @@ function schemasFor(which) {
     ALL.verify_caregiver.schema,
     ALL.drug_safety.schema,
     ALL.set_call_outcome.schema,
+    ALL.end_call.schema,
   ];
 }
 

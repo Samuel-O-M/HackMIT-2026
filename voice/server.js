@@ -455,6 +455,7 @@ async function handleBrainTurn(req, res) {
     model: result.model,
     sessionId: result.sessionId,
     planning: result.planning,
+    end: Boolean(result.end),
     latencyMs: result.latencyMs,
     toolCalls: (result.toolCalls || []).map((t) => t.name),
   });
@@ -498,6 +499,7 @@ async function handleBrainTurnStream(req, res) {
       model: result.model,
       sessionId: result.sessionId,
       planning: result.planning,
+      end: Boolean(result.end),
       latencyMs: result.latencyMs,
       firstChunkMs: result.firstChunkMs,
       toolCalls: (result.toolCalls || []).map((t) => t.name),

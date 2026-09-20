@@ -739,6 +739,7 @@
     log(opening ? 'turn.opening' : 'turn.sent', opening ? {} : { text });
 
     let fullSay = '';
+    let endRequested = false;
     let firstSound = false;
     let firstWords = false;
     // The reply appears sentence by sentence as each one starts to be spoken, so
@@ -762,14 +763,6 @@
     });
 
 
-    // A person sometimes acknowledges before answering — not every time, and
-    // not the first turn (that is the greeting). Instant: pre-recorded.
-    const chance = lastHadOpener ? OPENER_CHANCE_AFTER : OPENER_CHANCE;
-    const opener = turnsDone > 0 && Math.random() < chance;
-    const openerText = opener ? speech.filler('ack') : null;
-    lastHadOpener = opener;
-    turnsDone++;
-
     try {
       const res = await fetch('/api/brain/turn/stream', {
         method: 'POST',
@@ -784,13 +777,10 @@
         if (e.type === 'say') {
           speech.say(e.text); // speak it now; the rest is still being written
           log('turn.say', { text: e.text });
-        } else if (e.type === 'wait') {
-          // The agent is about to look something up before saying anything.
-          const said = speech.filler('ack', { only: WAIT_SOUNDS, avoid: openerText });
-          log('turn.wait', { sound: said });
         } else if (e.type === 'done') {
           log('turn.replied', { say: e.say, tools: e.toolCalls, firstChunkMs: e.firstChunkMs, latencyMs: e.latencyMs });
           fullSay = e.say;
+          endRequested = Boolean(e.end);
         } else if (e.type === 'error') {
           throw new Error(e.error);
         }
@@ -809,6 +799,11 @@
         renderDraft();
       }
       setState(call ? (muted ? 'muted' : 'listening') : 'idle');
+    }
+    // The agent asked to hang up (it called end_call): let the last words land,
+    // then end the call.
+    if (endRequested) {
+      setTimeout(() => { if (call) endCall(); }, 1000);
     }
     refreshUntilIdle(4, 1300);
   }
@@ -841,8 +836,8 @@
   // thinking: "I take... um...").
   // How long to wait after speech before replying. Generous on purpose: a short
   // pause is treated as a space inside a turn, not the end of one.
-  const SILENCE_MS = 1000;
-  const SILENCE_TRAILING_MS = 1600;
+  const SILENCE_MS = 500;
+  const SILENCE_TRAILING_MS = 800;
   const FINISHED = /[.?!]["')\]]?\s*$/;
   const noteVoice = () => { lastVoiceAt = Date.now(); };
 
@@ -996,7 +991,6 @@
       $('#sessionPill').textContent = `session ${sessionId.slice(0, 8)}… · ${subjectId}`;
       $('#sessionPill').className = 'pill ok';
       log('session.start', { sessionId, subjectId });
-      loadFillerBank();
       turnsDone = 0;
       lastHadOpener = false;
 
@@ -1030,8 +1024,8 @@
         // endpointing only decides when a final transcript is emitted; when we
         // reply is decided by SILENCE_MS above. Deliberately generous so a
         // natural pause mid-sentence is not read as the end of a turn.
-        params.set('endpointing', '800');
-        params.set('utterance_end_ms', '1500');
+        params.set('endpointing', '400');
+        params.set('utterance_end_ms', '750');
       }
 
       const proto = location.protocol === 'https:' ? 'wss' : 'ws';

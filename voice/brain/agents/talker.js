@@ -10,31 +10,53 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const config = require('../config');
-const { chatWithTools, chatWithToolsStream } = require('../lib/openai');
-const { createChunker, createPlanSplitter, speakable } = require('../lib/speech');
+const { chat, chatWithTools, chatWithToolsStream } = require('../lib/openai');
+const { createChunker, speakable } = require('../lib/speech');
 const { formatConversation } = require('../lib/format');
 const { schemasFor, dispatch } = require('../tools');
 const patientTools = require('../tools/patient');
 
 const POLICY = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'policy.md'), 'utf8');
 const ROLE = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'talker.md'), 'utf8');
-// How to ask, as opposed to what to ask. Only the Talker needs this — the
-// Thinker decides the next question, the Talker decides how it lands.
-const CONVERSATION = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'conversation.md'), 'utf8');
-const SYSTEM_PROMPT = `${POLICY}\n\n---\n\n${ROLE}\n\n---\n\n${CONVERSATION}`;
+const SYSTEM_PROMPT = `${POLICY}\n\n---\n\n${ROLE}`;
+
+/**
+ * One short, spoken line to cover a lookup while the model works.
+ * A tiny, no-reasoning call to the same fast model — so the wording varies and
+ * sounds human, instead of a fixed "okay" clip.
+ */
+const HOLD_PROMPT =
+  'You are a warm phone agent in the middle of a call. The participant has just ' +
+  'spoken and you need a moment to look something up. Reply with ONE short, natural ' +
+  'sentence (at most about ten words) that holds the line, in your own words, and vary ' +
+  'it. No quotes, no markdown. For example: "I understand, give me a second to check.", ' +
+  '"Sorry about that, let me check something.", "One moment, let me look at that."';
+
+async function holdLine(conversation) {
+  try {
+    const { text } = await chat(
+      [
+        { role: 'system', content: HOLD_PROMPT },
+        { role: 'user', content: `Recent conversation:\n${formatConversation(conversation)}\n\nOne holding line:` },
+      ],
+      { model: config.talkerModel, effort: config.talkerEffort }
+    );
+    const line = cleanSpoken(text);
+    return line && line.split(/\s+/).length <= 18 ? line : null;
+  } catch {
+    return null;
+  }
+}
 
 function cleanSpoken(text) {
   let out = String(text || '').trim();
   out = out.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim();
   if (out.startsWith('"') && out.endsWith('"') && out.length > 1) out = out.slice(1, -1).trim();
   out = out.replace(/^(agent|assistant|say|speak|output)\s*[:\-]\s*/i, '').trim();
-  // Safety net: the directive is stripped by the splitter, but a stray marker
-  // must never reach the speaker.
-  out = out.replace(/<<\s*PLAN\s*:[\s\S]*$/i, '').trim();
   return out;
 }
 
-function buildContext({ plannerState, conversation, patientRecord, opening = false }) {
+function buildContext({ plannerState, conversation, patientRecord, opening = false, closing = false }) {
   const state = plannerState
     ? JSON.stringify(plannerState, null, 2)
     : '(no planner state yet — this is the start of the call; greet and confirm identity)';
@@ -49,37 +71,22 @@ function buildContext({ plannerState, conversation, patientRecord, opening = fal
     );
   }
   parts.push(`### RECENT CONVERSATION\n${formatConversation(conversation)}`);
-  // The closing side-effects question is easy to forget, and a model closes
-  // the call as soon as the ordinary questions run out. So once the sweep has
-  // reached supplements (its last item) and the question is still owed, say so
-  // right beside the conversation. Not before: asked mid-sweep it derails the
-  // read-back.
-  const sweepDone = conversation.some(
-    (t) => t.speaker === 'agent' && /supplement|vitamin|herbal/i.test(t.transcript || '')
-  );
-  if (plannerState?.identity_status === 'verified' && plannerState?.followups?.group_check === 'pending' && sweepDone) {
-    parts.push(
-      '### BEFORE YOU CLOSE THE CALL\nThe closing question about side effects has not been asked yet. Once the ' +
-        'supplements question is answered, ask it — one question, in your own words, for example "before we finish, ' +
-        'has anything you take not agreed with you?" — and only then close. Do not say "that is everything I needed" ' +
-        'first. (Skip it only if the participant has already told you about their side effects, or clearly wants to ' +
-        'finish.)'
-    );
-  }
   if (opening) {
     parts.push(
       '### CALL EVENT\nThe call has just connected. The participant has picked up and has not said anything yet. ' +
         'You speak first: open the call as your instructions describe.'
     );
   }
-  // Last line of the prompt, so it is the instruction with the most pull: the
-  // words, then the planner line. Without naming it here the model returns
-  // speech alone and the planner goes back to guessing.
-  parts.push(
-    'Return the words to say out loud, then the planner line as its own last line: ' +
-      '<<PLAN: what the planner should work out next>>. The planner line is required on every turn ' +
-      'and is never spoken. Start with something short and true so it can be said while the rest is still being written.'
-  );
+  // The planner has decided the review is done and asked to hang up. The Talker
+  // gets one last turn, and must use it to say goodbye — not to ask anything.
+  if (closing) {
+    parts.push(
+      '### CALL EVENT — THIS IS YOUR LAST MESSAGE\nThe review is complete. This is your final ' +
+        'message: say one short, warm goodbye and nothing else. Do not ask a question and do not ' +
+        'start a new topic. The call ends right after you speak.'
+    );
+  }
+  parts.push('Return ONLY the words to say out loud.');
   return parts.join('\n\n');
 }
 
@@ -107,7 +114,7 @@ async function loadPatientRecord(subjectId) {
     : null;
 }
 
-async function respond({ plannerState, conversation, subjectId, sessionId }) {
+async function respond({ plannerState, conversation, subjectId, sessionId, closing = false }) {
   let patientRecord = null;
   try {
     patientRecord = await loadPatientRecord(subjectId);
@@ -116,7 +123,7 @@ async function respond({ plannerState, conversation, subjectId, sessionId }) {
   }
   const messages = [
     { role: 'system', content: SYSTEM_PROMPT },
-    { role: 'user', content: buildContext({ plannerState, conversation, patientRecord }) },
+    { role: 'user', content: buildContext({ plannerState, conversation, patientRecord, closing }) },
   ];
   const { text, toolCalls, model } = await chatWithTools({
     messages,
@@ -126,8 +133,7 @@ async function respond({ plannerState, conversation, subjectId, sessionId }) {
     maxRounds: config.maxToolRounds,
     execute: (name, args) => dispatch(name, args, { subjectId, sessionId }),
   });
-  const plan = String(text || '').match(/<<\s*PLAN\s*:([\s\S]*?)(?:>>|$)/i);
-  return { say: cleanSpoken(text), toolCalls, model, directive: plan && plan[1].trim() ? plan[1].trim() : null };
+  return { say: cleanSpoken(text), toolCalls, model };
 }
 
 /**
@@ -136,7 +142,7 @@ async function respond({ plannerState, conversation, subjectId, sessionId }) {
  * `onChunk({ wait: true })` fires once if the model reaches for a tool before
  * saying anything, so the client can fill the silence with a small noise.
  */
-async function respondStream({ plannerState, conversation, subjectId, sessionId, onChunk, opening = false }) {
+async function respondStream({ plannerState, conversation, subjectId, sessionId, onChunk, opening = false, closing = false }) {
   let patientRecord = null;
   try {
     patientRecord = await loadPatientRecord(subjectId);
@@ -145,7 +151,7 @@ async function respondStream({ plannerState, conversation, subjectId, sessionId,
   }
   const messages = [
     { role: 'system', content: SYSTEM_PROMPT },
-    { role: 'user', content: buildContext({ plannerState, conversation, patientRecord, opening }) },
+    { role: 'user', content: buildContext({ plannerState, conversation, patientRecord, opening, closing }) },
   ];
 
   let count = 0;
@@ -157,9 +163,6 @@ async function respondStream({ plannerState, conversation, subjectId, sessionId,
     onChunk({ text: clean });
   };
   const chunker = createChunker((piece) => send(piece));
-  // Speech first, directive last: the splitter feeds the chunker only the words
-  // to say, so the planner line costs the participant nothing.
-  const splitter = createPlanSplitter((piece) => chunker.push(piece));
 
   const { text, toolCalls, model } = await chatWithToolsStream({
     messages,
@@ -168,21 +171,25 @@ async function respondStream({ plannerState, conversation, subjectId, sessionId,
     effort: config.talkerEffort,
     maxRounds: config.maxToolRounds,
     execute: (name, args) => dispatch(name, args, { subjectId, sessionId }),
-    onText: (delta) => splitter.push(delta),
+    onText: (delta) => chunker.push(delta),
     // Speak whatever the model already wrote before the tool wait; if it wrote
     // nothing, tell the client there is a wait to cover.
     onToolStart: ({ spokenSoFar }) => {
-      splitter.flush();
       chunker.flush();
       if (!spokenSoFar.trim() && !waited) {
         waited = true;
-        onChunk({ wait: true });
+        // Cover the lookup with a short spoken line from the model itself
+        // (no reasoning), instead of a pre-recorded "okay" clip.
+        holdLine(conversation)
+          .then((line) => {
+            if (line && count === 0) send(line);
+          })
+          .catch(() => {});
       }
     },
   });
-  splitter.flush();
   chunker.flush();
-  return { say: cleanSpoken(splitter.speech || text), toolCalls, model, directive: splitter.directive };
+  return { say: cleanSpoken(text), toolCalls, model };
 }
 
 module.exports = { respond, respondStream, cleanSpoken, SYSTEM_PROMPT };

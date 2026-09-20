@@ -20,6 +20,7 @@ const { DatabaseSync } = require('node:sqlite');
 
 const { patient, close } = require('./db');
 const { seed, GENERAL_DB, PATIENT_DB } = require('./db/seed');
+const endSignal = require('./endSignal');
 const patientTools = require('./tools/patient');
 const talker = require('./agents/talker');
 const thinker = require('./agents/thinker');
@@ -59,8 +60,6 @@ class Brain {
         state: null,
         plannerRunning: false,
         plannerDirty: false,
-        // What the Talker asked the planner to work out next (consumed by runPlan).
-        plannerDirective: null,
         plannerPromise: null,
         plannerErrors: [],
         lastPlanModel: null,
@@ -203,23 +202,29 @@ class Brain {
 
     const t0 = Date.now();
     let firstChunkMs = null;
+    // If either agent has already asked to hang up, this turn is the Talker's
+    // last: it is told so and says goodbye. The signal is consumed below.
+    const closing = endSignal.peek(sessionId);
     // With `onEvent` the reply is streamed: short speakable chunks go out as
     // the model writes them. Without it, behaviour is unchanged.
-    const { say, toolCalls, model, directive } = onEvent
+    const { say, toolCalls, model } = onEvent
       ? await talker.respondStream({
           plannerState: state,
           conversation,
           subjectId,
           sessionId,
           opening: isOpening,
+          closing,
           onChunk: (chunk) => {
             if (chunk.wait) return onEvent({ type: 'wait' });
             if (firstChunkMs === null) firstChunkMs = Date.now() - t0;
             onEvent({ type: 'say', text: chunk.text });
           },
         })
-      : await talker.respond({ plannerState: state, conversation, subjectId, sessionId });
+      : await talker.respond({ plannerState: state, conversation, subjectId, sessionId, closing });
     const latencyMs = Date.now() - t0;
+    // Either agent may have asked to hang up this turn (the `end_call` tool).
+    const end = endSignal.take(sessionId);
 
     this.saveUtterance(sessionId, 'agent', say);
 
@@ -228,22 +233,18 @@ class Brain {
       at: new Date().toISOString(),
       userText,
       say,
-      talker: { model, latencyMs, firstChunkMs, toolCalls, stateUsed: state, directive },
+      talker: { model, latencyMs, firstChunkMs, toolCalls, stateUsed: state },
     };
 
-    // Fire-and-forget: the patient never waits for the planner. The Talker has
-    // just heard the answer, so it says here what the planner should work out —
-    // the planner is no longer rediscovering the turn on its own.
-    const planned = this.schedulePlan(sessionId, subjectId, directive);
+    // Fire-and-forget: the patient never waits for the planner.
+    const planned = this.schedulePlan(sessionId, subjectId);
 
-    return { say, state, toolCalls, model, latencyMs, firstChunkMs, sessionId, planning: Boolean(planned), directive };
+    return { say, state, toolCalls, model, latencyMs, firstChunkMs, sessionId, planning: Boolean(planned), end };
   }
 
   /** Queue a planner run (collapses bursts). Returns the running promise, if any. */
-  schedulePlan(sessionId, subjectId, directive = null) {
+  schedulePlan(sessionId, subjectId) {
     const rt = this.runtime(sessionId);
-    // Newest directive wins: a burst of turns collapses into one planner run.
-    if (directive) rt.plannerDirective = directive;
     if (rt.plannerRunning) {
       rt.plannerDirty = true;
       return rt.plannerPromise;
@@ -290,15 +291,11 @@ class Brain {
     const conversation = this.getConversation(sessionId, 50);
     const state = { ...(this.getState(sessionId, subjectId) || {}), identity_status: this.identityStatus(sessionId) };
 
-    const directive = rt.plannerDirective;
-    rt.plannerDirective = null;
-
     const { state: next, toolCalls, model } = await thinker.plan({
       plannerState: state,
       conversation,
       subjectId,
       sessionId,
-      directive,
     });
 
     // Apply writes from `to_save` through controlled functions.
