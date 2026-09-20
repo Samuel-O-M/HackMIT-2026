@@ -22,10 +22,15 @@ export { redactText as redact };
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const check = process.argv.includes('--check');
-  const tPath = join(ROOT, 'patient_data', 'participants', 'transcripts.json');
+  // Live calls now publish to patient_data/published/ rather than over the
+  // fixtures. Redaction happens upstream in the bridge either way, but a
+  // backstop that only watches the seed files would stop watching the one
+  // place real conversations actually land.
+  const where = process.argv.includes('--published') ? 'published' : 'participants';
+  const tPath = join(ROOT, 'patient_data', where, 'transcripts.json');
   const transcripts = JSON.parse(readFileSync(tPath, 'utf8'));
   const contacts = JSON.parse(readFileSync(join(ROOT, 'databases', 'call_sessions', 'contacts.json'), 'utf8'));
-  const sessions = JSON.parse(readFileSync(join(ROOT, 'patient_data', 'participants', 'sessions.json'), 'utf8'));
+  const sessions = JSON.parse(readFileSync(join(ROOT, 'patient_data', where, 'sessions.json'), 'utf8'));
   const bySession = Object.fromEntries(sessions.map((s) => [s.sessionId, s.subjectId]));
 
   const leaks = [];
