@@ -467,19 +467,21 @@
   }
 
   // ------------------------------------------------------------- TTS
-  // aura-1, not aura-2: measured across 3 runs each, aura-1 returns first audio
-  // in ~40 ms and a whole sentence in ~100 ms (30-44x realtime), against ~80-120 ms
-  // and ~1.5 s (3x realtime) for aura-2. The clip is fully in hand before it has
-  // finished playing, so a slow tunnel cannot stall speech mid-sentence.
-  const VOICE_MODEL = 'aura-asteria-en'; // keep in sync with scripts/build-fillers.js
+  // Aura-2 (natural). Speech is synthesised sentence by sentence the moment each
+  // one is written, and each sentence is streamed onto the call's AudioContext as
+  // raw PCM arrives (see synthesize / playStream) — so the next sentence is already
+  // being generated while the current one is still playing, and the reply sounds
+  // continuous even though a single Aura-2 sentence takes a moment to generate.
+  const VOICE_MODEL = 'aura-2-helena-en'; // keep in sync with scripts/build-fillers.js
 
   // A little human texture, and no more: the agent sometimes says "Mm-hm" or
-  // "Okay" the instant the participant stops (a pre-recorded clip, so no delay),
-  // and pauses briefly between sentences. Anything longer ("let me check...")
-  // sounded scripted. Clips come from scripts/build-fillers.js.
+  // "Okay" the instant the participant stops (a pre-recorded clip, so no delay).
+  // Clips come from scripts/build-fillers.js.
   const OPENER_CHANCE = 0;          // blind backchannels are off: "mm-hm" then a gap of silence sounds worse than the gap
   const OPENER_CHANCE_AFTER = 0;
-  const BREATH_MS = [130, 300];     // pause between sentences
+  // No artificial pause between sentences: the queue plays each sentence back to
+  // back as soon as its audio is ready, so the reply sounds continuous.
+  const BREATH_MS = [0, 0];
   const SENTENCE_END = /[.!?…]["')\]]?\s*$/;
   const RECENT_FILLERS = 4;         // never repeat a clip heard in the last few
   const WAIT_SOUNDS = ['Okay.', 'Uh-huh.']; // covers a lookup: "okay..." is a person about to go and check
@@ -837,12 +839,18 @@
   // speech_final, which fires at short pauses. Short after a finished sentence,
   // longer when the words just trail off (the speaker is probably still
   // thinking: "I take... um...").
-  const SILENCE_MS = 700;
-  const SILENCE_TRAILING_MS = 1200;
+  // How long to wait after speech before replying. Generous on purpose: a short
+  // pause is treated as a space inside a turn, not the end of one.
+  const SILENCE_MS = 1000;
+  const SILENCE_TRAILING_MS = 1600;
   const FINISHED = /[.?!]["')\]]?\s*$/;
   const noteVoice = () => { lastVoiceAt = Date.now(); };
 
   function maybeFlush() {
+    // Flux releases turns itself (EndOfTurn -> releaseHeldTurn). Running the
+    // silence timer as well enqueued the same turn twice, which duplicated what
+    // the participant said. The timer is only for the nova-3 path.
+    if (USE_FLUX) return;
     if (!call || agentSpeaking || muted || !pendingFinals.length) return;
     const last = pendingFinals[pendingFinals.length - 1];
     const needed = FINISHED.test(last) ? SILENCE_MS : SILENCE_TRAILING_MS;
@@ -857,10 +865,10 @@
     if (text) enqueueTurn(text, { stt: true });
   }
 
-  // Flux (default) reports whole turns: Update carries the words so far, and
-  // EndOfTurn is the model's call that the speaker is done. `?stt=nova` falls
-  // back to the older silence-timer path.
-  const USE_FLUX = new URLSearchParams(location.search).get('stt') !== 'nova';
+  // nova-3 is the default: real-time interims, punctuation, and silence-based
+  // endpointing (tuned below to tolerate natural pauses). `?stt=flux` opts into
+  // Flux, which instead reports whole turns (Update ... EndOfTurn).
+  const USE_FLUX = new URLSearchParams(location.search).get('stt') === 'flux';
   const FLUX_EOT_THRESHOLD = 0.6; // when Flux calls the turn over; the grace below is the real safety net
   const SILENCE = new Int16Array(4096);
 
@@ -1020,10 +1028,10 @@
         params.set('interim_results', 'true');
         params.set('vad_events', 'true');
         // endpointing only decides when a final transcript is emitted; when we
-        // reply is decided by SILENCE_MS above. Deepgram's minimum
-        // utterance_end_ms is 1000.
-        params.set('endpointing', '400');
-        params.set('utterance_end_ms', '1000');
+        // reply is decided by SILENCE_MS above. Deliberately generous so a
+        // natural pause mid-sentence is not read as the end of a turn.
+        params.set('endpointing', '800');
+        params.set('utterance_end_ms', '1500');
       }
 
       const proto = location.protocol === 'https:' ? 'wss' : 'ws';

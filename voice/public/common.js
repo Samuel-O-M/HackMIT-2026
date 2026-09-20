@@ -154,7 +154,6 @@
     ['aura-2-zeus-en', 'zeus — deep, trustworthy (m)'],
     ['aura-2-estrella-es', 'estrella — Spanish (f)'],
     ['aura-2-celeste-es', 'celeste — Spanish (f)'],
-    ['aura-asteria-en', 'asteria — Aura-1 (f)'],
   ];
 
   function fillVoices(select) {

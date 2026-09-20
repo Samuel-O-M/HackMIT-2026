@@ -32,7 +32,7 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 require('../brain/config'); // loads the repo-root .env
 
-const VOICE = 'aura-asteria-en'; // keep in sync with VOICE_MODEL in public/app.js
+const VOICE = 'aura-2-helena-en'; // keep in sync with VOICE_MODEL in public/app.js
 const OUT = path.join(__dirname, '..', 'public', 'fillers');
 
 // Only the small noises a listener makes — nothing that sounds like a phrase
