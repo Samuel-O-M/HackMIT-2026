@@ -10,19 +10,16 @@
 
 Part of **[ReconMed](../../README.md)** — pre-visit concomitant medication
 reconciliation for clinical trial sites. This is the agent that holds the
-conversation and reasons about the participant's medication record between
-turns.
+conversation and reasons about the participant's medication record between turns.
 
 ```
                          HEALTH KNOWLEDGE DB  (read only)
                                   |
                                   v
- User audio -> STT -> Conversational Agent (Talker) -> TTS -> User
-                       |        ^
-                       |        |  latest planner state
-                       |        |
-                       |   tools: health_search() · patient_read() · patient_update()
-                       v
+ User audio -> STT -> Talker -> TTS -> User
+                       |    ^
+                       |    |  latest planner state
+                       v    |
                   Thinker / Planner   (async, between turns)
                        |-- extract important facts
                        |-- determine missing information
@@ -54,19 +51,21 @@ turns.
 
 - `handleTurn()` runs **only the Talker** and returns immediately. It surfaces
   `planning: true` but never waits.
-- `schedulePlan()` runs the **Planer** asynchronously. Bursts collapse: one run
+- `schedulePlan()` runs the **Planner** asynchronously. Bursts collapse: one run
   at a time, with a dirty flag triggering a single re-run.
 - The Talker always reads the **latest available** planner state, and may call
   tools directly for anything immediately needed.
 
 ## Agents
 
-| Agent | File | Prompt | Effort | Tools |
+| Agent | File | Prompt | Effort | Calls |
 |-------|------|--------|--------|-------|
-| **Talker** | `agents/talker.js` | `prompts/talker.md` | `none` (tools require it) | health_search, patient_read, patient_update |
-| **Planner** | `agents/thinker.js` | `prompts/thinker.md` | medium | read-only (two reasoning passes) |
+| **Talker** | `agents/talker.js` | `prompts/talker.md` | `none` (tools require it) | every tool below |
+| **Planner** | `agents/thinker.js` | `prompts/thinker.md` | medium | read-only retrieval; writes and `end_call` as `to_save` |
 
-The Talker returns **only** the words to say out loud.
+The Talker returns **only** the words to say out loud. Speech handling (sentence
+split, dedupe, TTS) lives in the voice layer — see
+[`../README.md#how-the-agent-speaks`](../README.md#how-the-agent-speaks).
 
 ### Why the planner is two-phase
 Chat Completions rejects `reasoning_effort` together with function tools
@@ -86,22 +85,30 @@ This keeps full reasoning **and** grounded retrieval, without tools.
   "missing": ["..."],
   "next_questions": ["..."],
   "retrieval": ["..."],
-  "to_save": [{ "op": "add_medication_change", "payload": { ... } }],
+  "to_save": [{ "op": "add_medication_change", "payload": { "...": "..." } }],
   "flags":   [{ "type": "prohibited", "detail": "...", "protocol_section": "6.5" }],
   "summary": "..."
 }
 ```
 
 Persisted per session in `planner_state`, so a future instance resumes.
+`to_save` supports the named write ops plus `end_call`, which asks the Talker to
+give a goodbye and hang up.
 
 ## Tools (`tools/`)
 
 | Tool | Access | Notes |
 |------|--------|-------|
-| `health_search(query)` | **read-only** | Drug/brand/class lookup via the shared `medical_data` (RxNorm + RxClass), plus plain-language guidance. The *only* source of medical facts. |
-| `check_prohibited(rxcui)` | read | Does a resolved drug trip this participant's protocol rules? Membership only; dose/timing limits are still the agent's to compare. |
-| `patient_read(scope, limit?)` | read | scoped slices only: profile, enrollment, medications, protocol_rules, planner_state, transcript, advice |
-| `patient_update(op, payload)` | controlled write | named ops only: `add_medication_change`, `add_advice`, `set_planner_state` |
+| `health_search(query)` | read-only | drug/brand/class lookup via the shared `medical_data` (RxNorm + RxClass), plus plain-language guidance. The *only* source of medical facts. |
+| `check_prohibited(rxcui)` | read | does a resolved drug trip this participant's protocol rules? Membership only; dose/timing limits are still the agent's to compare. |
+| `drug_safety(name)` | read | the drug's FDA label: documented side effects. Never name a symptom it did not return. |
+| `check_behaviour(code)` | read | this protocol's rule for alcohol, nicotine, grapefruit, contraception, … (`required` is breached by absence). |
+| `verify_identity(dob, name?)` | read + session | name + DOB against the record; returns only verified/not-verified and attempts left. |
+| `verify_caregiver(name?, relationship?)` | read + session | may this second person be spoken to? A stated relationship is not authorisation. |
+| `patient_read(scope, limit?)` | read | scoped slices only: profile, enrollment, medications, protocol_rules, behaviour_rules, adherence, authorised_contacts, planner_state, transcript, advice |
+| `patient_update(op, payload)` | controlled write | named ops only (see `to_save` above) |
+| `set_call_outcome(outcome, …)` | write | how the call ended; required before every call finishes |
+| `end_call()` | signal | ask the Talker to close and hang up |
 
 No arbitrary SQL is exposed to the agents, and reads never return a full record.
 
@@ -131,9 +138,8 @@ node cli.js 0412                 # interactive; shows talker reply + planner sta
 node cli.js 0412 "hello"         # one turn
 ```
 
-Server API (`voice/server.js`): `GET /api/patients`, `POST /api/brain/session`,
-`POST /api/brain/turn` → `{say, state, planning}`, `GET /api/brain/state?sessionId=`
-→ `{state, planner}`.
+Server API (`voice/server.js`): see the endpoint table in
+[`../README.md#endpoints`](../README.md#endpoints).
 
 ## Config
 

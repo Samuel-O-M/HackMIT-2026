@@ -472,68 +472,12 @@
   // raw PCM arrives (see synthesize / playStream) — so the next sentence is already
   // being generated while the current one is still playing, and the reply sounds
   // continuous even though a single Aura-2 sentence takes a moment to generate.
-  const VOICE_MODEL = 'aura-2-helena-en'; // keep in sync with scripts/build-fillers.js
+  const VOICE_MODEL = 'aura-2-helena-en';
 
-  // A little human texture, and no more: the agent sometimes says "Mm-hm" or
-  // "Okay" the instant the participant stops (a pre-recorded clip, so no delay).
-  // Clips come from scripts/build-fillers.js.
-  const OPENER_CHANCE = 0;          // blind backchannels are off: "mm-hm" then a gap of silence sounds worse than the gap
-  const OPENER_CHANCE_AFTER = 0;
   // No artificial pause between sentences: the queue plays each sentence back to
   // back as soon as its audio is ready, so the reply sounds continuous.
   const BREATH_MS = [0, 0];
   const SENTENCE_END = /[.!?…]["')\]]?\s*$/;
-  const RECENT_FILLERS = 4;         // never repeat a clip heard in the last few
-  const WAIT_SOUNDS = ['Okay.', 'Uh-huh.']; // covers a lookup: "okay..." is a person about to go and check
-
-  const bank = { ack: [] }; // { id, text, url }
-  const recentFillers = [];
-  let bankLoading = null;
-
-  /** Fetch every clip into memory once, so playing one is instant. */
-  function loadFillerBank() {
-    if (bankLoading) return bankLoading;
-    bankLoading = (async () => {
-      try {
-        const res = await fetch('/fillers/manifest.json');
-        if (!res.ok) throw new Error(`manifest HTTP ${res.status}`);
-        const { fillers } = await res.json();
-        await Promise.all(fillers.map(async (f) => {
-          const clip = await fetch(`/fillers/${f.file}`);
-          if (!clip.ok) return;
-          (bank[f.kind] ??= []).push({ id: f.id, text: f.text, kind: f.kind, url: URL.createObjectURL(await clip.blob()) });
-        }));
-        log('fillers.loaded', { ack: bank.ack.length });
-      } catch (err) {
-        log('fillers.error', { error: String(err.message || err) });
-        bankLoading = null; // try again next call
-      }
-    })();
-    return bankLoading;
-  }
-
-  /**
-   * A random clip of this kind that we have not just used, as a fresh Audio.
-   * `only` limits it to those phrases; `avoid` skips a phrase (so a wait never
-   * repeats the opener's sound). Null if none.
-   */
-  function pickFiller(kind, { only, avoid } = {}) {
-    let all = bank[kind] || [];
-    if (only) all = all.filter((f) => only.includes(f.text));
-    if (avoid) all = all.filter((f) => f.text !== avoid);
-    const fresh = all.filter((f) => !recentFillers.includes(f.id));
-    const pool = fresh.length ? fresh : all;
-    if (!pool.length) return null;
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-    recentFillers.push(pick.id);
-    if (recentFillers.length > RECENT_FILLERS) recentFillers.shift();
-    const audio = new Audio(pick.url);
-    audio.preload = 'auto';
-    audio.dataset.cached = '1'; // shared blob URL: never revoke
-    audio.dataset.fillerId = pick.id;
-    audio.dataset.fillerKind = pick.kind;
-    return audio;
-  }
 
   // Reply audio is streamed as raw PCM and scheduled on the call's AudioContext
   // as it arrives, so playback starts on the first bytes instead of after the
@@ -683,13 +627,6 @@
       /** A chunk of the real reply: synthesise now, play in order. */
       say(text) {
         push({ kind: 'say', text, audio: synthesize(text) });
-      },
-      /** A pre-recorded backchannel clip, played in order with no synthesis wait. Returns its text, or null. */
-      filler(kind, opts) {
-        const audio = pickFiller(kind, opts);
-        if (!audio) return null;
-        push({ kind: 'filler', audio: Promise.resolve(audio) });
-        return bank[kind].find((f) => f.id === audio.dataset.fillerId)?.text ?? null;
       },
       async finish() {
         closed = true;
