@@ -391,7 +391,7 @@
       }
       // The grounding/brain/log panes are developer-only. The conversation
       // above must refresh in patient mode too, otherwise the agent's reply is
-      // never rendered and agentSpeak() is never triggered (silent call).
+      // never shown (and the transcript looks silent).
       if (devPanel.hidden) return;
       const sig = JSON.stringify({
         p: data.patient ?? null, t: data.lastTurn?.talker?.toolCalls ?? null,
@@ -420,57 +420,269 @@
   }
 
   // ------------------------------------------------------------- TTS
-  async function agentSpeak(text) {
-    const res = await fetch('/api/tts?model=aura-2-helena-en', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
-    if (!res.ok) throw new Error('TTS failed');
-    const blob = await res.blob();
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio = null;
+  const VOICE_MODEL = 'aura-2-helena-en'; // keep in sync with scripts/build-fillers.js
+
+  // A little human texture, and no more: the agent sometimes says "Mm-hm" or
+  // "Okay" the instant the participant stops (a pre-recorded clip, so no delay),
+  // and pauses briefly between sentences. Anything longer ("let me check...")
+  // sounded scripted. Clips come from scripts/build-fillers.js.
+  const OPENER_CHANCE = 0.45;       // chance of a quick backchannel on a turn...
+  const OPENER_CHANCE_AFTER = 0.15; // ...and right after having done one
+  const BREATH_MS = [130, 300];     // pause between sentences
+  const RECENT_FILLERS = 4;         // never repeat a clip heard in the last few
+  const WAIT_SOUNDS = ['Okay.', 'Uh-huh.']; // covers a lookup: "okay..." is a person about to go and check
+
+  const bank = { ack: [] }; // { id, text, url }
+  const recentFillers = [];
+  let bankLoading = null;
+
+  /** Fetch every clip into memory once, so playing one is instant. */
+  function loadFillerBank() {
+    if (bankLoading) return bankLoading;
+    bankLoading = (async () => {
+      try {
+        const res = await fetch('/fillers/manifest.json');
+        if (!res.ok) throw new Error(`manifest HTTP ${res.status}`);
+        const { fillers } = await res.json();
+        await Promise.all(fillers.map(async (f) => {
+          const clip = await fetch(`/fillers/${f.file}`);
+          if (!clip.ok) return;
+          (bank[f.kind] ??= []).push({ id: f.id, text: f.text, kind: f.kind, url: URL.createObjectURL(await clip.blob()) });
+        }));
+        log('fillers.loaded', { ack: bank.ack.length });
+      } catch (err) {
+        log('fillers.error', { error: String(err.message || err) });
+        bankLoading = null; // try again next call
+      }
+    })();
+    return bankLoading;
+  }
+
+  /**
+   * A random clip of this kind that we have not just used, as a fresh Audio.
+   * `only` limits it to those phrases; `avoid` skips a phrase (so a wait never
+   * repeats the opener's sound). Null if none.
+   */
+  function pickFiller(kind, { only, avoid } = {}) {
+    let all = bank[kind] || [];
+    if (only) all = all.filter((f) => only.includes(f.text));
+    if (avoid) all = all.filter((f) => f.text !== avoid);
+    const fresh = all.filter((f) => !recentFillers.includes(f.id));
+    const pool = fresh.length ? fresh : all;
+    if (!pool.length) return null;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    recentFillers.push(pick.id);
+    if (recentFillers.length > RECENT_FILLERS) recentFillers.shift();
+    const audio = new Audio(pick.url);
+    audio.preload = 'auto';
+    audio.dataset.cached = '1'; // shared blob URL: never revoke
+    audio.dataset.fillerId = pick.id;
+    audio.dataset.fillerKind = pick.kind;
+    return audio;
+  }
+
+  /** Start synthesising one chunk of the real reply. Resolves to a ready Audio, or null if TTS failed. */
+  async function synthesize(text) {
+    try {
+      const res = await fetch(`/api/tts?model=${VOICE_MODEL}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error(`TTS failed (${res.status})`);
+      const audio = new Audio(URL.createObjectURL(await res.blob()));
+      audio.preload = 'auto';
+      return audio;
+    } catch (err) {
+      log('tts.error', { error: String(err.message || err) });
+      return null;
     }
+  }
+
+  function playAudio(audio) {
     return new Promise((resolve) => {
-      const audio = new Audio(URL.createObjectURL(blob));
       currentAudio = audio;
-      agentSpeaking = true;
-      setState('speaking');
       const done = () => {
-        agentSpeaking = false;
-        currentAudio = null;
-        if (call) setState(muted ? 'muted' : 'listening');
+        if (!audio.dataset.cached) URL.revokeObjectURL(audio.src);
+        if (currentAudio === audio) currentAudio = null;
         resolve();
       };
       audio.onended = done;
       audio.onerror = done;
       audio.play().catch(done);
-      log('tts.played', { chars: text.length });
     });
   }
 
+  /**
+   * The agent's speech for one turn: an ordered queue of reply chunks (and,
+   * at the front, an optional backchannel clip).
+   *
+   *  - Reply chunks are synthesised the moment they are added, in parallel, and
+   *    played back to back with a small breath between sentences.
+   *  - The mic stays muted from the first sound to finish(), gaps included.
+   */
+  function createSpeech(onSound) {
+    const items = [];
+    let closed = false;
+    let wake = () => {};
+    let started = false;
+    let lastEndAt = 0;
+
+    const waitForItem = () => new Promise((resolve) => { wake = resolve; });
+    const push = (item) => {
+      items.push(item);
+      wake();
+    };
+
+    async function play(audio, kind) {
+      if (!started) {
+        started = true;
+        agentSpeaking = true;
+        setState('speaking');
+      }
+      onSound?.(kind, audio.dataset.fillerId);
+      await playAudio(audio);
+      lastEndAt = Date.now();
+    }
+
+    const loop = (async () => {
+      for (;;) {
+        const item = items.shift();
+        if (!item) {
+          if (closed) return;
+          await waitForItem();
+          continue;
+        }
+        const audio = await item.audio;
+        if (!audio) continue;
+        if (item.kind === 'say' && lastEndAt) {
+          const breath = BREATH_MS[0] + Math.random() * (BREATH_MS[1] - BREATH_MS[0]);
+          const remaining = lastEndAt + breath - Date.now();
+          if (remaining > 0) await sleep(remaining);
+        }
+        await play(audio, item.kind);
+      }
+    })();
+
+    return {
+      /** A chunk of the real reply: synthesise now, play in order. */
+      say(text) {
+        push({ kind: 'say', audio: synthesize(text) });
+      },
+      /** A pre-recorded backchannel clip, played in order with no synthesis wait. Returns its text, or null. */
+      filler(kind, opts) {
+        const audio = pickFiller(kind, opts);
+        if (!audio) return null;
+        push({ kind: 'filler', audio: Promise.resolve(audio) });
+        return bank[kind].find((f) => f.id === audio.dataset.fillerId)?.text ?? null;
+      },
+      async finish() {
+        closed = true;
+        wake();
+        await loop;
+        agentSpeaking = false;
+      },
+    };
+  }
+
   // ------------------------------------------------------------- turns
-  async function doTurn(text) {
+  /** Read a newline-delimited JSON stream, calling onEvent for each object. */
+  async function readNdjson(res, onEvent) {
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let pending = '';
+    const handle = (line) => {
+      if (line.trim()) onEvent(JSON.parse(line));
+    };
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      pending += decoder.decode(value, { stream: true });
+      const lines = pending.split('\n');
+      pending = lines.pop();
+      lines.forEach(handle);
+    }
+    if (pending) handle(pending);
+  }
+
+  let turnsDone = 0;
+  let lastHadOpener = false;
+
+  // True from the moment the call connects until the agent has finished its
+  // opening line, so a quick "hello?" from the participant is not queued as an
+  // answer to a greeting that has not happened yet.
+  let greeting = false;
+
+  /** `opening`: the agent speaks first — there is no participant utterance. */
+  async function doTurn(text, { opening = false } = {}) {
     while (agentSpeaking) await sleep(100);
-    setState('thinking');
-    log('turn.sent', { text });
+    setState(opening ? 'connecting' : 'thinking');
+    if (opening) greeting = true;
+    const sentAt = Date.now();
+    // When they actually stopped talking (typed messages have no such moment).
+    const speechEndAt = sentAt - lastVoiceAt < 10000 ? lastVoiceAt : sentAt;
+    log(opening ? 'turn.opening' : 'turn.sent', opening ? {} : { text });
+
+    let firstSound = false;
+    let firstWords = false;
+    const speech = createSpeech((kind, id) => {
+      const sinceEnd = Date.now() - speechEndAt;
+      if (!firstSound) {
+        firstSound = true;
+        log('turn.timing', { firstSound: kind, clip: id || null, speechEndToFirstSoundMs: sinceEnd });
+      }
+      if (kind === 'say' && !firstWords) {
+        firstWords = true;
+        log('turn.timing', { firstWords: true, speechEndToFirstWordsMs: sinceEnd, sendToFirstWordsMs: Date.now() - sentAt });
+      }
+    });
+
+
+    // A person sometimes acknowledges before answering — not every time, and
+    // not the first turn (that is the greeting). Instant: pre-recorded.
+    const chance = lastHadOpener ? OPENER_CHANCE_AFTER : OPENER_CHANCE;
+    const opener = turnsDone > 0 && Math.random() < chance;
+    const openerText = opener ? speech.filler('ack') : null;
+    lastHadOpener = opener;
+    turnsDone++;
+
     try {
-      const r = await fetchJson('/api/brain/turn', {
+      const res = await fetch('/api/brain/turn/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, subjectId, text }),
+        body: JSON.stringify({ sessionId, subjectId, text, opening }),
       });
-      log('turn.replied', { say: r.say, tools: r.toolCalls, latencyMs: r.latencyMs });
-      await refresh();
-      const lastAgent = [...conversation].reverse().find((t) => t.speaker === 'agent');
-      if (lastAgent?.transcript) await agentSpeak(lastAgent.transcript);
-      refreshUntilIdle(4, 1300);
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || `HTTP ${res.status}`);
+      }
+      await readNdjson(res, (e) => {
+        if (e.type === 'say') {
+          speech.say(e.text); // speak it now; the rest is still being written
+          log('turn.say', { text: e.text });
+        } else if (e.type === 'wait') {
+          // The agent is about to look something up before saying anything.
+          const said = speech.filler('ack', { only: WAIT_SOUNDS, avoid: openerText });
+          log('turn.wait', { sound: said });
+        } else if (e.type === 'done') {
+          log('turn.replied', { say: e.say, tools: e.toolCalls, firstChunkMs: e.firstChunkMs, latencyMs: e.latencyMs });
+          refresh(); // the full reply is saved now; show it while it is still being spoken
+        } else if (e.type === 'error') {
+          throw new Error(e.error);
+        }
+      });
     } catch (err) {
       showError('Brain: ' + err.message);
     } finally {
+      await speech.finish();
+      if (opening) {
+        greeting = false;
+        pendingFinals = [];
+        interim = '';
+      }
       setState(call ? (muted ? 'muted' : 'listening') : 'idle');
     }
+    refreshUntilIdle(4, 1300);
   }
 
   function enqueueTurn(text) {
@@ -484,20 +696,30 @@
     if (turnBusy) return;
     turnBusy = true;
     try {
-      while (queue.length) await doTurn(queue.shift());
+      while (queue.length) {
+        const next = queue.shift();
+        if (typeof next === 'string') await doTurn(next);
+        else await doTurn('', next); // { opening: true }
+      }
     } finally {
       turnBusy = false;
     }
   }
 
   // Reply only after a sustained silence that WE measure — not on Deepgram's
-  // speech_final, which fires at short pauses.
-  const SILENCE_MS = 1500;
+  // speech_final, which fires at short pauses. Short after a finished sentence,
+  // longer when the words just trail off (the speaker is probably still
+  // thinking: "I take... um...").
+  const SILENCE_MS = 700;
+  const SILENCE_TRAILING_MS = 1200;
+  const FINISHED = /[.?!]["')\]]?\s*$/;
   const noteVoice = () => { lastVoiceAt = Date.now(); };
 
   function maybeFlush() {
     if (!call || agentSpeaking || muted || !pendingFinals.length) return;
-    if (Date.now() - lastVoiceAt >= SILENCE_MS) flushFinals();
+    const last = pendingFinals[pendingFinals.length - 1];
+    const needed = FINISHED.test(last) ? SILENCE_MS : SILENCE_TRAILING_MS;
+    if (Date.now() - lastVoiceAt >= needed) flushFinals();
   }
 
   function flushFinals() {
@@ -509,13 +731,16 @@
   }
 
   function handleStt(msg) {
+    if (greeting) return; // the agent is about to speak first; nothing said yet counts
     if (msg.type === 'Results') {
       const t = msg.channel?.alternatives?.[0]?.transcript || '';
       if (!t) return;
       if (msg.is_final) {
         pendingFinals.push(t);
         interim = '';
-        noteVoice();
+        // Not noteVoice(): a final only arrives after the endpointing pause, so
+        // the speaker has already been quiet that long. Restarting the clock
+        // here made the wait endpointing + silence instead of just silence.
         log('stt.final', { text: t });
       } else {
         interim = t;
@@ -578,6 +803,9 @@
       $('#sessionPill').textContent = `session ${sessionId.slice(0, 8)}… · ${subjectId}`;
       $('#sessionPill').className = 'pill ok';
       log('session.start', { sessionId, subjectId });
+      loadFillerBank();
+      turnsDone = 0;
+      lastHadOpener = false;
 
       conversation = [];
       interim = '';
@@ -601,8 +829,11 @@
       params.set('punctuate', 'true');
       params.set('interim_results', 'true');
       params.set('vad_events', 'true');
-      params.set('endpointing', '800');
-      params.set('utterance_end_ms', '1500');
+      // endpointing only decides when a final transcript is emitted; when we
+      // reply is decided by SILENCE_MS above. Deepgram's minimum
+      // utterance_end_ms is 1000.
+      params.set('endpointing', '400');
+      params.set('utterance_end_ms', '1000');
 
       const proto = location.protocol === 'https:' ? 'wss' : 'ws';
       const ws = new WebSocket(`${proto}://${location.host}/ws/listen?${params}`);
@@ -673,6 +904,10 @@
       if (pollTimer) clearInterval(pollTimer);
       pollTimer = setInterval(refresh, 1600);
       await refresh();
+
+      // The agent places the call, so it speaks first.
+      queue.push({ opening: true });
+      pump();
     } catch (err) {
       showError(err.message?.includes('Permission') || /denied|notallowed/i.test(String(err))
         ? 'The microphone was not allowed. Check the browser permission and try again.'

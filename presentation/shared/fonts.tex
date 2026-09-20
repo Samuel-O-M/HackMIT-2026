@@ -1,0 +1,10 @@
+% One neutral grotesque for the whole deck.
+%
+% The product sets itself in the system UI face (Inter on the build machine).
+% Inter is not installed here, so Open Sans stands in — the closest neutral
+% humanist sans that is available, and one that carries the tabular figures the
+% medication data wants. Swap the family name if Inter is installed later.
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+\setsansfont{Open Sans}
+\renewcommand{\familydefault}{\sfdefault}

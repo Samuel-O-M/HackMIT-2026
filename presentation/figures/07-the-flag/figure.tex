@@ -1,0 +1,90 @@
+% Slide 07 — the one loud thing.
+% The whole design rests on this: everything else on the screen stays quiet so
+% that a single prohibited finding is unmistakable. One red row in a field of
+% grey, annotated with where the finding came from — drug, class, protocol.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+% a ghost of every other row: grey, quiet, unremarkable
+\tikzset{
+  ghostrow/.pic={
+    \fill[line,   rounded corners=0.6pt] (0,-1.7)  rectangle (11,1.7);
+    \fill[line,   rounded corners=0.5pt] (14,0.4)  rectangle (56,1.6);
+    \fill[line,   rounded corners=0.5pt] (14,-1.5) rectangle (34,-0.3);
+    \fill[line,   rounded corners=0.5pt] (66,0.4)  rectangle (80,1.6);
+  }
+}
+
+% ---------- the review screen -------------------------------------------
+\fill[surf, rounded corners=2.5pt] (8,10) rectangle (102,80);
+
+% the one row that fires
+\begin{scope}
+  \clip[rounded corners=2.5pt] (8,10) rectangle (102,80);
+  \fill[alarmwash] (8,50.5) rectangle (102,60);
+\end{scope}
+
+% row separators
+\draw[line]      (8,60)   -- (102,60);
+\draw[alarmdim]  (8,60)   -- (102,60);
+\draw[alarmdim]  (8,50.5) -- (102,50.5);
+\draw[line]      (8,41)   -- (102,41);
+\draw[line]      (8,31.5) -- (102,31.5);
+\draw[line]      (8,22)   -- (102,22);
+
+% screen outline, on top of the fills
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (8,10) rectangle (102,80);
+
+% header
+\node[anchor=west, inner sep=0pt] at (14,73)
+  {\fontsize{8.5}{10}\selectfont\sffamily\bfseries\color{ink} Review queue};
+\node[anchor=east, inner sep=0pt] at (96,73)
+  {\fontsize{8}{9}\selectfont\sffamily\color{inkiii} 6 proposed changes};
+\draw[line] (8,69.5) -- (102,69.5);
+
+% quiet rows
+\pic at (14,64.75) {ghostrow};
+\pic at (14,45.75) {ghostrow};
+\pic at (14,36.25) {ghostrow};
+\pic at (14,26.75) {ghostrow};
+\pic at (14,17.25) {ghostrow};
+
+% the loud row
+\fill[alarm, rounded corners=0.6pt] (9.5,52.7) rectangle (11.1,57.8);
+\node[tag, fill=alarm, text=white, anchor=west] at (14,55.25) {Prohibited};
+\node[anchor=west, font=\fontsize{10.5}{11}\selectfont\sffamily\bfseries\color{ink}]
+  at (32,56.7) {Prednisone};
+\node[anchor=west, font=\fontsize{7.5}{9}\selectfont\sffamily\color{inkii}]
+  at (32,53.1) {20 mg daily \textperiodcentered\ oral};
+\node[anchor=east, font=\fontsize{7.5}{9}\selectfont\sffamily\bfseries\color{alarmink}]
+  at (96,55.25) {Protocol \S6.5};
+
+% ---------- annotations: where the finding came from --------------------
+\draw[hairii] (102,55.25) -- (110,55.25);
+\draw[hairii] (110,26) -- (110,68);
+\fill[alarm] (102,55.25) circle (0.75);
+
+\foreach \y in {68,48,30}{
+  \draw[hairii] (110,\y) -- (113,\y);
+  \fill[alarm] (110,\y) circle (0.55);
+}
+
+% drug
+\node[lab,  anchor=west] at (113,68)   {matched drug};
+\node[valb, anchor=west] at (113,64.3) {prednisone};
+
+% class
+\node[lab,  anchor=west] at (113,48)   {matched class};
+\node[val,  anchor=west] at (113,44.3) {systemic corticosteroid};
+\node[code, anchor=west] at (113,41.5) {ATC H02};
+
+% protocol
+\node[lab,  anchor=west] at (113,30)   {protocol section};
+\node[val,  anchor=west] at (113,26.3) {\S6.5};
+\node[code, anchor=west] at (113,23.6) {excluded above 10 mg/day};
+
+\end{tikzpicture}
+\end{document}

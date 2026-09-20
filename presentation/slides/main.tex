@@ -1,0 +1,60 @@
+% conmed — the deck.
+%
+% Design intent: each slide is a single external figure built in its own folder
+% and compiled to a backgroundless PDF. Beamer contributes almost nothing but
+% the ground colour and the sequence — all layout lives in the figures, so what
+% you compile in a figure folder is exactly what appears on the slide.
+%
+% Build from presentation/:  make deck
+\documentclass[aspectratio=169]{beamer}
+\input{shared/base}
+
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\setbeamersize{text margin left=0mm,text margin right=0mm}
+\setbeamercolor{background canvas}{bg=ground}
+\setbeamercolor{normal text}{fg=ink}
+\usefonttheme{professionalfonts}
+
+% one full-bleed figure per slide
+\newcommand{\slidefig}[1]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+      \node[inner sep=0pt,anchor=center] at (current page.center)
+        {\includegraphics[width=\paperwidth,height=\paperheight]{#1}};
+    \end{tikzpicture}
+  \end{frame}}
+
+\begin{document}
+
+% Slides are placed full-bleed, in order — one external figure per slide.
+\slidefig{figures/01-title/figure.pdf}        % 01 title
+\slidefig{figures/02-problem/figure.pdf}      % 02 the list is stale
+\slidefig{figures/03-cost/figure.pdf}         % 03 found late
+\slidefig{figures/04-shift/figure.pdf}        % 04 ask days before
+\slidefig{figures/04b-time/figure.pdf}        % 04b hours back
+\slidefig{figures/05-architecture/figure.pdf} % 05 the pipeline
+\slidefig{figures/05b-voice-agent/figure.pdf} % 05b the realtime agent
+\slidefig{figures/06-hallucination/figure.pdf}% 06 the model is not the truth
+\slidefig{figures/06-grounding/figure.pdf}    % 06b the guardrail + chain
+\slidefig{figures/07-the-flag/figure.pdf}     % 07 the one loud thing
+\slidefig{figures/08-review/figure.pdf}       % 08 the diff
+\slidefig{figures/09-record/figure.pdf}       % 09 the record
+\slidefig{figures/10-readiness/figure.pdf}    % 10 it runs offline
+\slidefig{figures/11-demo/figure.pdf}         % 11 demo
+\slidefig{figures/12-impact/figure.pdf}       % 12 impact and close
+
+% close
+\begin{frame}[plain]
+  \centering
+  \vfill
+  {\conmedmark[16mm]}\\[7mm]
+  {\fontsize{34}{38}\selectfont\bfseries\textcolor{ink}{conmed}}\\[2.5mm]
+  {\fontsize{13}{16}\selectfont\textcolor{inkii}{Automated patient reconciliation}}\\[16mm]
+  {\fontsize{11}{13}\selectfont\textcolor{inkiii}{Thank you \textperiodcentered\ questions}}\\[1.5mm]
+  {\fontsize{10}{12}\selectfont\textcolor{inkiii}{HackMIT 2026 \textperiodcentered\ Regeneron Track}}
+  \vfill
+\end{frame}
+
+\end{document}

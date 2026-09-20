@@ -368,22 +368,8 @@ async function handleBrainSession(req, res) {
   sendJson(res, 200, { sessionId: session.session_id, subjectId, say });
 }
 
-async function handleBrainTurn(req, res) {
-  let payload;
-  try {
-    payload = JSON.parse((await readBody(req)).toString('utf8') || '{}');
-  } catch {
-    sendJson(res, 400, { error: 'Invalid JSON body.' });
-    return;
-  }
-  const { sessionId, subjectId, text } = payload;
-  if (!sessionId || !subjectId) {
-    sendJson(res, 400, { error: 'Missing "sessionId" or "subjectId".' });
-    return;
-  }
-  const result = await brain.handleTurn({ sessionId, subjectId, userText: String(text || '') });
-  // Full record — including every tool call with args and result — goes to the
-  // offline log; the browser only gets the tool names.
+/** The full record — every tool call with args and result — goes to the offline log. */
+function logTurn(sessionId, subjectId, text, result) {
   logger.append(sessionId, 'turn', {
     subjectId,
     userText: String(text || ''),
@@ -391,9 +377,34 @@ async function handleBrainTurn(req, res) {
     toolCalls: result.toolCalls,
     model: result.model,
     latencyMs: result.latencyMs,
+    firstChunkMs: result.firstChunkMs,
     planning: result.planning,
     state: result.state,
   });
+}
+
+async function readTurnPayload(req, res) {
+  let payload;
+  try {
+    payload = JSON.parse((await readBody(req)).toString('utf8') || '{}');
+  } catch {
+    sendJson(res, 400, { error: 'Invalid JSON body.' });
+    return null;
+  }
+  if (!payload.sessionId || !payload.subjectId) {
+    sendJson(res, 400, { error: 'Missing "sessionId" or "subjectId".' });
+    return null;
+  }
+  return payload;
+}
+
+async function handleBrainTurn(req, res) {
+  const payload = await readTurnPayload(req, res);
+  if (!payload) return;
+  const { sessionId, subjectId, text } = payload;
+  const result = await brain.handleTurn({ sessionId, subjectId, userText: String(text || '') });
+  // The browser only gets the tool names.
+  logTurn(sessionId, subjectId, text, result);
   sendJson(res, 200, {
     say: result.say,
     state: result.state,
@@ -403,6 +414,55 @@ async function handleBrainTurn(req, res) {
     latencyMs: result.latencyMs,
     toolCalls: (result.toolCalls || []).map((t) => t.name),
   });
+}
+
+/**
+ * Streaming turn: newline-delimited JSON. `{type:'say', text}` for each short
+ * chunk of speech as soon as it is ready, `{type:'wait'}` when the agent is
+ * about to wait on a lookup before it has said anything, then one
+ * `{type:'done', ...}` (or `{type:'error'}`). The browser speaks each chunk while the rest is still
+ * being written.
+ */
+async function handleBrainTurnStream(req, res) {
+  const payload = await readTurnPayload(req, res);
+  if (!payload) return;
+  const { sessionId, subjectId, text } = payload;
+
+  res.writeHead(200, {
+    'Content-Type': 'application/x-ndjson; charset=utf-8',
+    'Cache-Control': 'no-cache, no-transform',
+    'X-Accel-Buffering': 'no',
+  });
+  req.socket?.setNoDelay?.(true);
+  const send = (obj) => {
+    if (!res.writableEnded) res.write(JSON.stringify(obj) + '\n');
+  };
+
+  try {
+    const result = await brain.handleTurn({
+      sessionId,
+      subjectId,
+      userText: String(text || ''),
+      onEvent: send,
+      opening: Boolean(payload.opening),
+    });
+    logTurn(sessionId, subjectId, text, result);
+    send({
+      type: 'done',
+      say: result.say,
+      model: result.model,
+      sessionId: result.sessionId,
+      planning: result.planning,
+      latencyMs: result.latencyMs,
+      firstChunkMs: result.firstChunkMs,
+      toolCalls: (result.toolCalls || []).map((t) => t.name),
+    });
+  } catch (err) {
+    console.error(err);
+    logger.appendError({ path: '/api/brain/turn/stream', error: String(err?.message || err) });
+    send({ type: 'error', error: String(err?.message || err) });
+  }
+  res.end();
 }
 
 async function handleBrainEnd(req, res) {
@@ -506,6 +566,7 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/chat' && req.method === 'POST') return await handleChat(req, res);
     if (pathname === '/api/patients' && req.method === 'GET') return await handlePatients(req, res);
     if (pathname === '/api/brain/session' && req.method === 'POST') return await handleBrainSession(req, res);
+    if (pathname === '/api/brain/turn/stream' && req.method === 'POST') return await handleBrainTurnStream(req, res);
     if (pathname === '/api/brain/turn' && req.method === 'POST') return await handleBrainTurn(req, res);
     if (pathname === '/api/brain/end' && req.method === 'POST') return await handleBrainEnd(req, res);
     if (pathname === '/api/brain/channel' && req.method === 'POST') return await handleChannel(req, res);

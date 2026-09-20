@@ -48,6 +48,47 @@ cd api/cloudflare && ./tunnel.sh      # → https://<random>.trycloudflare.com
 Then tap the phone icon in the top bar for phone mode. See
 [`api/cloudflare/README.md`](../api/cloudflare/README.md).
 
+## The agent places the call
+
+When a call connects, the browser immediately asks for an *opening turn*
+(`POST /api/brain/turn/stream` with `opening: true`), so the agent speaks first
+— who is calling, why, and a request for name + date of birth, exactly as the
+identity rule in `brain/prompts/policy.md` allows and nothing more. No
+participant message is recorded for it, and a repeated opening request is
+ignored. Anything the participant says before the greeting starts is dropped.
+
+## Making the agent sound human
+
+Two small touches, and deliberately no more (longer clips like "let me check"
+sounded scripted):
+
+- **Backchannel.** On some turns (~45%, and rarely twice in a row) the agent
+  says a quick "Mm-hm", "Uh-huh" or "Okay" the instant the participant stops
+  talking. These are pre-recorded clips, so there is no synthesis delay. Never
+  on the greeting.
+- **Lookup waits.** If the model calls a tool (verify identity, look up a drug)
+  before saying anything, one "Okay." or "Uh-huh." plays straight away, so the
+  line is never dead while it works. Once per turn, never the same sound the
+  opener just used.
+- **Breaths.** Replies are spoken sentence by sentence with a 130–300 ms pause
+  between them. The model is also told to use contractions and the occasional
+  "So," / "Ah," lead-in (`brain/prompts/talker.md`).
+
+The clips live in `public/fillers/` (committed, small). Each sound is generated
+three times, since the voice reads it a little differently every time.
+
+```bash
+node scripts/build-fillers.js                 # regenerate; needs ffmpeg for trimming
+node scripts/build-fillers.js --experimental  # bare "hmm"/"um"/"uh" clips to audition
+```
+
+Aura-2 cannot voice a bare "um" / "uh" / "hmm" — every spelling came back as
+silence — so the bank sticks to what it can say ("Uh-huh" works, "uh" does not).
+`--experimental` uses OpenAI TTS for true hesitation sounds into
+`public/fillers/experimental/`; that is a different voice, so listen first. The
+tunables (`OPENER_CHANCE`, `BREATH_MS`) are at the top of the TTS section of
+`public/app.js`.
+
 ## Endpoints
 
 | Route | Purpose |
