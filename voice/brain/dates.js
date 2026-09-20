@@ -87,6 +87,10 @@ function normalizeDob(raw) {
   const i4 = tokens.findIndex((t) => /^(1[89]\d{2}|20\d{2})$/.test(t));
   const i19 = tokens.indexOf('nineteen');
   const i20 = tokens.indexOf('twenty');
+  // "two thousand and five" — the 2000s are said differently from the 1900s.
+  // Nobody says "twenty oh five" for a date of birth, so without this a
+  // participant born after 1999 could not spell their own year out loud.
+  const iThousand = tokens.indexOf('thousand');
   if (i4 !== -1) {
     yStart = i4;
     yEnd = i4;
@@ -98,12 +102,20 @@ function normalizeDob(raw) {
     yStart = i20;
     yEnd = i20;
     while (yEnd + 1 < tokens.length && NUM_WORDS[tokens[yEnd + 1]] != null) yEnd++;
+  } else if (iThousand !== -1 && NUM_WORDS[tokens[iThousand - 1]] != null) {
+    yStart = iThousand - 1;
+    yEnd = iThousand;
+    // "and" is filler here: "two thousand AND five".
+    while (yEnd + 1 < tokens.length && (tokens[yEnd + 1] === 'and' || NUM_WORDS[tokens[yEnd + 1]] != null)) yEnd++;
   }
 
   let year = null;
   if (yStart >= 0) {
     if (i4 === yStart) {
       year = +tokens[yStart];
+    } else if (tokens[yStart + 1] === 'thousand') {
+      const rest = tokens.slice(yStart + 2, yEnd + 1).filter((t) => t !== 'and');
+      year = (NUM_WORDS[tokens[yStart]] || 0) * 1000 + (wordsToNumber(rest) || 0);
     } else {
       const rest = tokens.slice(yStart + 1, yEnd + 1);
       year = (tokens[yStart] === 'nineteen' ? 1900 : 2000) + (wordsToNumber(rest) || 0);
@@ -144,14 +156,18 @@ function normalizeDob(raw) {
 function findDateSpans(text, isoTarget) {
   if (!text || !isoTarget) return [];
   const MONTH_RE = '(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*';
+  // Spoken years come in two shapes: "nineteen fifty four" and "two thousand
+  // and five". Matching only the first meant a participant born after 1999
+  // could say their date of birth aloud and have it published unredacted.
+  const YEAR_WORDS = '(?:nineteen|twenty|two\\s+thousand)';
   const patterns = [
     new RegExp(`\\b\\d{4}-\\d{1,2}-\\d{1,2}\\b`, 'gi'),
     new RegExp(`\\b\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}\\b`, 'gi'),
     new RegExp(`\\b${MONTH_RE}\\.?\\s+\\d{1,2}(?:st|nd|rd|th)?,?\\s+\\d{2,4}\\b`, 'gi'),
     new RegExp(`\\b(?:the\\s+)?\\d{1,2}(?:st|nd|rd|th)?\\s+(?:of\\s+)?${MONTH_RE}\\.?,?\\s+\\d{2,4}\\b`, 'gi'),
     // Spoken in words: "the fifteenth of march nineteen fifty four".
-    new RegExp(`\\b(?:the\\s+)?[a-z-]+\\s+(?:of\\s+)?${MONTH_RE}\\.?,?\\s+(?:nineteen|twenty)[a-z\\s-]{0,24}\\b`, 'gi'),
-    new RegExp(`\\b${MONTH_RE}\\.?\\s+[a-z-]+,?\\s+(?:nineteen|twenty)[a-z\\s-]{0,24}\\b`, 'gi'),
+    new RegExp(`\\b(?:the\\s+)?[a-z-]+\\s+(?:of\\s+)?${MONTH_RE}\\.?,?\\s+${YEAR_WORDS}[a-z\\s-]{0,24}\\b`, 'gi'),
+    new RegExp(`\\b${MONTH_RE}\\.?\\s+[a-z-]+,?\\s+${YEAR_WORDS}[a-z\\s-]{0,24}\\b`, 'gi'),
     // Day as a word, year as digits: "the ninth of September 1948". People mix
     // the two forms freely, and this one reached a published transcript.
     new RegExp(`\\b(?:the\\s+)?[a-z-]+\\s+of\\s+${MONTH_RE}\\.?,?\\s+\\d{2,4}\\b`, 'gi'),

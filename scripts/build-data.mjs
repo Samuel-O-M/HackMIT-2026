@@ -467,6 +467,31 @@ for (const trial of trials) {
 
 write('participants/sessions.json', sessions);
 write('participants/transcripts.json', transcripts);
+/**
+ * S-437 — the participant reserved for calling live.
+ *
+ * Everyone else on the roster has their call already recorded, which is what
+ * makes the review screens worth looking at but leaves nobody to actually
+ * ring. This one is deliberately left un-called: a visit today, no session,
+ * so the visit list offers "Start call" rather than "Review".
+ *
+ * Nothing marks it as special in the UI, and nothing should. It is an
+ * ordinary enrolled participant that simply has not been called yet, which is
+ * a state the real system has plenty of.
+ */
+visits.push({
+  sessionId: null,
+  subjectId: 'S-437',
+  studyId: 'R2810-ONC-1540',
+  nctId: 'NCT02760498',
+  visitName: 'Cycle 4 Day 1',
+  visitAt: { dayOffset: 0, time: '15:30' },
+  reconStatus: 'not_started',
+  changeCount: 0,
+  prohibitedCount: 0,
+  unresolvedCount: 0,
+});
+
 write('participants/visits.json', visits);
 write('participants/audit.json', audit);
 

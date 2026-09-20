@@ -40,12 +40,27 @@ const iEnrol = db.prepare('INSERT INTO enrollments (subject_id,study_id,enrolled
 const iContact = db.prepare(
   'INSERT INTO authorised_contacts (subject_id,given_name,family_name,relationship,role,authorised,consent_on_file) VALUES (?,?,?,?,?,?,?)'
 );
+/**
+ * Identities that are fixed rather than derived.
+ *
+ * Every other participant's name and date of birth come out of a formula, so
+ * they change if the roster order changes. This one has to stay put: someone
+ * is going to answer the phone and say it out loud, and the identity check
+ * compares what they say against this row.
+ */
+const FIXED_IDENTITY = {
+  'S-437': { given: 'Samuel', family: 'Mateo', dob: '2005-01-01' },
+};
+
 const contacts = {};
 roster.forEach((p, i) => {
   const n = Number(p.subjectId.replace(/\D/g, '')) || i;
-  const given = GIVEN[n % GIVEN.length];
-  const family = FAMILY[(n * 7) % FAMILY.length];
-  const dob = `19${40 + (n % 45)}-${String(1 + (n % 12)).padStart(2, '0')}-${String(1 + (n % 27)).padStart(2, '0')}`;
+  const fixed = FIXED_IDENTITY[p.subjectId];
+  const given = fixed ? fixed.given : GIVEN[n % GIVEN.length];
+  const family = fixed ? fixed.family : FAMILY[(n * 7) % FAMILY.length];
+  const dob = fixed
+    ? fixed.dob
+    : `19${40 + (n % 45)}-${String(1 + (n % 12)).padStart(2, '0')}-${String(1 + (n % 27)).padStart(2, '0')}`;
     // 555-0100 through 555-0199 is the only range NANP reserves as fictitious.
   // The old formula ran to 555-0899, which strays into numbers that may belong
   // to real people — and this system is now one env var away from dialling.
@@ -80,6 +95,32 @@ for (const s of sessions) {
     if (!e) continue;   // an 'add' has nothing on file yet
     iMed.run(s.subjectId, s.studyId, e.reportedText, e.rxcui, e.canonicalName, e.indication, e.dose,
       e.route, e.frequency, e.startDate, e.startDatePrecision, e.stopDate, e.stopDatePrecision, e.ongoing ? 1 : 0);
+    meds++;
+  }
+}
+
+/**
+ * A medication log for the participant who has not been called yet.
+ *
+ * Everyone else's log is derived from the "current" side of their recorded
+ * call. S-437 has no recorded call — that is the point of them — so without
+ * this the agent would ring, verify identity, and have nothing to read back.
+ *
+ * RxCUIs verified against RxNav.
+ */
+const UNCALLED_LOG = {
+  'S-437': [
+    ['omeprazole', '7646', 'omeprazole', 'Acid reflux', '20 mg', 'Oral', 'Once daily', '2025-02-11'],
+    ['ibuprofen', '5640', 'ibuprofen', 'Headaches', '400 mg', 'Oral', 'As needed', '2025-06-03'],
+    ['cetirizine', '20610', 'cetirizine', 'Hay fever', '10 mg', 'Oral', 'Once daily', '2024-04-20'],
+  ],
+};
+for (const [subjectId, rows] of Object.entries(UNCALLED_LOG)) {
+  const who = roster.find((x) => x.subjectId === subjectId);
+  if (!who) continue;
+  for (const [reported, rxcui, canonical, indication, dose, route, freq, start] of rows) {
+    iMed.run(subjectId, who.studyId, reported, rxcui, canonical, indication, dose, route, freq,
+      start, 'day', null, 'unknown', 1);
     meds++;
   }
 }

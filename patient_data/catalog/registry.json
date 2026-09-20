@@ -1,195 +1,75 @@
 [
- {
-  "studyId": "R2810-ONC-1540",
-  "nctId": "NCT02760498",
-  "briefTitle": "Study of REGN2810 in Patients With Advanced Cutaneous Squamous Cell Carcinoma",
-  "officialTitle": "A Phase 2 Study of REGN2810, a Fully Human Monoclonal Antibody to Programmed Death-1 (PD-1), in Patients With Advanced Cutaneous Squamous Cell Carcinoma",
-  "phases": [
-   "PHASE2"
-  ],
-  "status": "COMPLETED",
-  "enrollment": 432,
-  "conditions": [
-   "Advanced Cutaneous Squamous Cell Carcinoma"
-  ],
-  "interventions": [
-   "cemiplimab"
-  ],
-  "localFile": "R2810-ONC-1540_Protocol_Amendment9.pdf",
-  "conmedSection": "5.7.2",
-  "conmedHeading": "Prohibited Medications and Concomitant Treatments",
-  "sizeBytes": 3300775
- },
- {
-  "studyId": "R2810-ONC-1620",
-  "nctId": "NCT03132636",
-  "briefTitle": "PD-1 in Patients With Advanced Basal Cell Carcinoma Who Experienced Progression of Disease on Hedgehog Pathway Inhibitor Therapy, or Were Intolerant of Prior Hedgehog Pathway Inhibitor Therapy",
-  "officialTitle": "A Phase 2 Study of REGN2810, a Fully Human Monoclonal Antibody to Programmed Death-1, in Patients With Advanced Basal Cell Carcinoma Who Experienced Progression of Disease on Hedgehog Pathway Inhibitor Therapy, or Were Intolerant of Prior Hedgehog Pathway Inhibitor Therapy",
-  "phases": [
-   "PHASE2"
-  ],
-  "status": "COMPLETED",
-  "enrollment": 138,
-  "conditions": [
-   "Carcinoma, Basal Cell"
-  ],
-  "interventions": [
-   "cemiplimab"
-  ],
-  "localFile": "R2810-ONC-1620_Protocol.pdf",
-  "conmedSection": "7.7.1",
-  "conmedHeading": "Prohibited Medications and Procedures",
-  "sizeBytes": 1062215
- },
- {
-  "studyId": "R2810-ONC-1624",
-  "nctId": "NCT03088540",
-  "briefTitle": "Study of REGN 2810 Compared to Platinum-Based Chemotherapies in Participants With Metastatic Non-Small Cell Lung Cancer (NSCLC)",
-  "officialTitle": "A Global, Randomised, Phase 3, Open-label Study of REGN2810 (ANTI-PD 1 Antibody) Versus Platinum Based Chemotherapy in First Line Treatment of Patients With Advanced or Metastatic PD L1+Non-small Cell Lung Cancer",
-  "phases": [
-   "PHASE3"
-  ],
-  "status": "COMPLETED",
-  "enrollment": 712,
-  "conditions": [
-   "Carcinoma\uff0cNon-Small-Cell Lung",
-   "Lung Carcinomas, Non-Small-Cell",
-   "Non-small-cell Lung Carcinoma",
-   "Nonsmall Cell Lung Cancer"
-  ],
-  "interventions": [
-   "Pemetrexed",
-   "Paclitaxel",
-   "Gemcitabine",
-   "Cisplatin",
-   "Carboplatin",
-   "cemiplimab"
-  ],
-  "localFile": "R2810-ONC-1624_Protocol.pdf",
-  "conmedSection": "7.7.1",
-  "conmedHeading": "Prohibited Medications",
-  "sizeBytes": 1718380
- },
- {
-  "studyId": "R2810-ONC-1676",
-  "nctId": "NCT03257267",
-  "briefTitle": "Study of Cemiplimab in Adults With Cervical Cancer",
-  "officialTitle": "An Open-Label, Randomized, Phase 3 Clinical Trial of REGN2810 Versus Investigator's Choice of Chemotherapy in Recurrent or Metastatic Cervical Carcinoma",
-  "phases": [
-   "PHASE3"
-  ],
-  "status": "COMPLETED",
-  "enrollment": 608,
-  "conditions": [
-   "Squamous Cell Carcinoma (SCC)",
-   "Recurrent or Metastatic, Platinum-refractory Cervical Cancer"
-  ],
-  "interventions": [
-   "Cemiplimab",
-   "Investigator Choice (IC) Chemotherapy"
-  ],
-  "localFile": "R2810-ONC-1676_Protocol.pdf",
-  "conmedSection": "8.10.1",
-  "conmedHeading": "Prohibited Medications and Procedures",
-  "sizeBytes": 1417388
- },
- {
-  "studyId": "R2810-ONC-1690",
-  "nctId": "NCT03690869",
-  "briefTitle": "REGN2810 in Pediatric Patients With Relapsed, Refractory Solid, or Central Nervous System (CNS) Tumors and Safety and Efficacy of REGN2810 in Combination With Radiotherapy in Pediatric Patients With Newly Diagnosed or Recurrent Glioma",
-  "officialTitle": "A Safety and Pharmacokinetic Study of Single Agent REGN2810 in Pediatric Patients With Relapsed or Refractory Solid or Central Nervous System (CNS) Tumors and a Safety and Efficacy Trial of REGN2810 in Combination With Radiotherapy in Pediatric Patients With Newly Diagnosed Diffuse Intrinsic Pontine Glioma, Newly Diagnosed High-Grade Glioma, or Recurrent High-Grade Glioma",
-  "phases": [
-   "PHASE1",
-   "PHASE2"
-  ],
-  "status": "TERMINATED",
-  "enrollment": 57,
-  "conditions": [
-   "Relapsed Solid Tumor",
-   "Refractory Solid Tumor",
-   "Relapsed Central Nervous System Tumor",
-   "Refractory Central Nervous System Tumor",
-   "Diffuse Intrinsic Pontine Glioma",
-   "High Grade Glioma"
-  ],
-  "interventions": [
-   "cemiplimab (monotherapy)",
-   "cemiplimab (maintenance)",
-   "Conventional or hypofractionated",
-   "Re-irradiation"
-  ],
-  "localFile": "R2810-ONC-1690_Protocol.pdf",
-  "conmedSection": "6.3",
-  "conmedHeading": "Prohibited Therapies",
-  "sizeBytes": 3152571
- },
- {
-  "studyId": "R2810-ONC-16111",
-  "nctId": "NCT03515629",
-  "briefTitle": "REGN2810 (Anti-PD-1 Antibody), Platinum-based Doublet Chemotherapy, and Ipilimumab (Anti-CTLA-4 Antibody) Versus Pembrolizumab Monotherapy in Patients With Lung Cancer",
-  "officialTitle": "A Randomized, Phase 3, Open-Label Study of Combinations of REGN2810 (Anti-PD-1 Antibody), Platinum-based Doublet Chemotherapy, and Ipilimumab (Anti-CTLA-4 Antibody) Versus Pembrolizumab Monotherapy in First-Line Treatment of Patients With Advanced or Metastatic Non-Small Cell Lung Cancer With Tumors Expressing PD-L1 \u226550%",
-  "phases": [
-   "PHASE3"
-  ],
-  "status": "TERMINATED",
-  "enrollment": 5,
-  "conditions": [
-   "Non-small Cell Lung Cancer"
-  ],
-  "interventions": [
-   "REGN2810/ipi",
-   "REGN2810/chemo/ipi",
-   "Pembrolizumab"
-  ],
-  "localFile": "R2810-ONC-16111_Protocol.pdf",
-  "conmedSection": "7.7.1",
-  "conmedHeading": "Prohibited Medications and Procedures",
-  "sizeBytes": 4771894
- },
- {
-  "studyId": "R2810-ONC-16113",
-  "nctId": "NCT03409614",
-  "briefTitle": "Combinations of Cemiplimab (Anti-PD-1 Antibody) and Platinum-based Doublet Chemotherapy in Patients With Lung Cancer",
-  "officialTitle": "A Two-Part Randomized, Phase 3 Study of Combinations of Cemiplimab (Anti-PD-1 Antibody) and Platinum-based Doublet Chemotherapy in First-line Treatment of Patients With Advanced or Metastatic Non-Small Cell Lung Cancer",
-  "phases": [
-   "PHASE3"
-  ],
-  "status": "COMPLETED",
-  "enrollment": 789,
-  "conditions": [
-   "Non-small Cell Lung Cancer"
-  ],
-  "interventions": [
-   "REGN2810",
-   "REGN2810/chemo/ipi",
-   "Chemotherapy",
-   "Placebo"
-  ],
-  "localFile": "R2810-ONC-16113_Protocol.pdf",
-  "conmedSection": "7.7.1",
-  "conmedHeading": "Prohibited Medications and Procedures",
-  "sizeBytes": 1750915
- },
- {
-  "studyId": "R2810-ONC-ISA-1981",
-  "nctId": "NCT04646005",
-  "briefTitle": "Cemiplimab and ISA101b Vaccine in Adult Participants With Recurrent/Metastatic Human Papillomavirus (HPV)16 Cervical Cancer Who Have Experienced Disease Progression After First Line Chemotherapy",
-  "officialTitle": "A Phase 2 Study of Cemiplimab, an Anti-PD-1 Monoclonal Antibody, and ISA101b Vaccine in Patients With Recurrent/Metastatic HPV16 Cervical Cancer Who Have Experienced Disease Progression After First Line Chemotherapy",
-  "phases": [
-   "PHASE2"
-  ],
-  "status": "COMPLETED",
-  "enrollment": 113,
-  "conditions": [
-   "Cervical Cancer"
-  ],
-  "interventions": [
-   "Cemiplimab",
-   "ISA101b"
-  ],
-  "localFile": "R2810-ONC-ISA-1981_Protocol.pdf",
-  "conmedSection": "8.7.1",
-  "conmedHeading": "Prohibited Medications",
-  "sizeBytes": 1065608
- }
+  {
+    "studyId": "R2810-ONC-1540",
+    "nctId": "NCT02760498",
+    "briefTitle": "Study of REGN2810 in Patients With Advanced Cutaneous Squamous Cell Carcinoma",
+    "officialTitle": "A Phase 2 Study of REGN2810, a Fully Human Monoclonal Antibody to Programmed Death-1 (PD-1), in Patients With Advanced Cutaneous Squamous Cell Carcinoma",
+    "phases": [
+      "PHASE2"
+    ],
+    "status": "COMPLETED",
+    "enrollment": 432,
+    "conditions": [
+      "Advanced Cutaneous Squamous Cell Carcinoma"
+    ],
+    "interventions": [
+      "cemiplimab"
+    ],
+    "localFile": "R2810-ONC-1540_Protocol_Amendment9.pdf",
+    "conmedSection": "5.7.2",
+    "conmedHeading": "Prohibited Medications and Concomitant Treatments",
+    "sizeBytes": 3300775
+  },
+  {
+    "studyId": "R2810-ONC-1624",
+    "nctId": "NCT03088540",
+    "briefTitle": "Study of REGN 2810 Compared to Platinum-Based Chemotherapies in Participants With Metastatic Non-Small Cell Lung Cancer (NSCLC)",
+    "officialTitle": "A Global, Randomised, Phase 3, Open-label Study of REGN2810 (ANTI-PD 1 Antibody) Versus Platinum Based Chemotherapy in First Line Treatment of Patients With Advanced or Metastatic PD L1+Non-small Cell Lung Cancer",
+    "phases": [
+      "PHASE3"
+    ],
+    "status": "COMPLETED",
+    "enrollment": 712,
+    "conditions": [
+      "Carcinoma\uff0cNon-Small-Cell Lung",
+      "Lung Carcinomas, Non-Small-Cell",
+      "Non-small-cell Lung Carcinoma",
+      "Nonsmall Cell Lung Cancer"
+    ],
+    "interventions": [
+      "Pemetrexed",
+      "Paclitaxel",
+      "Gemcitabine",
+      "Cisplatin",
+      "Carboplatin",
+      "cemiplimab"
+    ],
+    "localFile": "R2810-ONC-1624_Protocol.pdf",
+    "conmedSection": "7.7.1",
+    "conmedHeading": "Prohibited Medications",
+    "sizeBytes": 1718380
+  },
+  {
+    "studyId": "R2810-ONC-1676",
+    "nctId": "NCT03257267",
+    "briefTitle": "Study of Cemiplimab in Adults With Cervical Cancer",
+    "officialTitle": "An Open-Label, Randomized, Phase 3 Clinical Trial of REGN2810 Versus Investigator's Choice of Chemotherapy in Recurrent or Metastatic Cervical Carcinoma",
+    "phases": [
+      "PHASE3"
+    ],
+    "status": "COMPLETED",
+    "enrollment": 608,
+    "conditions": [
+      "Squamous Cell Carcinoma (SCC)",
+      "Recurrent or Metastatic, Platinum-refractory Cervical Cancer"
+    ],
+    "interventions": [
+      "Cemiplimab",
+      "Investigator Choice (IC) Chemotherapy"
+    ],
+    "localFile": "R2810-ONC-1676_Protocol.pdf",
+    "conmedSection": "8.10.1",
+    "conmedHeading": "Prohibited Medications and Procedures",
+    "sizeBytes": 1417388
+  }
 ]
