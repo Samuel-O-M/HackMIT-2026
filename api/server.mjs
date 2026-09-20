@@ -95,7 +95,11 @@ createServer(async (req, res) => {
     }
 
     const rosterPath = join(ROOT, 'patient_data', 'participants', 'participants.json');
-    const partDir = join(ROOT, 'patient_data', 'participants');
+    // Calls the voice agent publishes are runtime output, not fixtures: they go
+    // to a gitignored folder so the tracked seed files stay clean and a pull on
+    // the host never conflicts with them.
+    const partDir = join(ROOT, 'patient_data', 'published');
+    mkdirSync(partDir, { recursive: true });
     const loadJson = (f, fallback) => {
       try { return JSON.parse(readFileSync(join(partDir, f), 'utf8')); } catch { return fallback; }
     };

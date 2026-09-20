@@ -1,7 +1,16 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # Trials
 
-`trials.json` holds the trials themselves and `protocols.json` their protocol
-documents and prohibited rules. The documents sit in a folder per trial.
+> `trials.json` holds the trials themselves and `protocols.json` their protocol
+> documents and prohibited rules. The documents sit in a folder per trial.
+
+Part of **[ReconMed](../../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites. See also the
+[`patient_data/` overview](../README.md).
 
 One folder per trial, named by its protocol number. Everything a site needs to
 run medication reconciliation for that trial lives in its folder:
@@ -11,6 +20,15 @@ run medication reconciliation for that trial lives in its folder:
 | **Clinical Study Protocol** | Defines the prohibited medications. The list lives in the protocol's concomitant medications section, and it is the only authoritative source for it. Without this the agent can record what a participant reports but cannot tell you whether any of it is prohibited. |
 | **Baseline medication log** | The concomitant medications already on file for enrolled participants. This is the "in the medication log" side of the reconciliation diff — without it there is nothing to reconcile against, only a list of what was said. |
 | **Visit schedule** | Which participants are due and when, so calls can be placed ahead of each visit. |
+
+<details>
+  <summary>Table of contents</summary>
+  <ol>
+    <li><a href="#what-is-here">What is here</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+  </ol>
+</details>
 
 ## What is here
 
@@ -39,3 +57,22 @@ calls — is synthetic.
 
 The app serves this directory at `/protocol-docs` in development
 (see `frontend/vite.config.ts`); in production the backend serves it.
+
+## License
+
+Distributed under the MIT License. See [`../../LICENSE`](../../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors

@@ -1,12 +1,36 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # ReconMed — presentation
 
-The Regeneron track deck for **ReconMed · Automated patient reconciliation**.
+> The Regeneron track deck for **ReconMed · Automated patient reconciliation**.
+
+Part of **[ReconMed](../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites. This folder is the pitch, not the
+product.
 
 Each slide is a single image, built in its own folder as a standalone LaTeX
 figure and compiled to a **backgroundless PDF**. The deck (`slides/main.tex`) is
 rendered in LaTeX too, and simply places those figures full-bleed. Beamer adds
 nothing but the ground colour and the order — all layout lives in the figure, so
 what you compile in a figure folder is exactly what appears on the slide.
+
+The compiled deck is checked in at [`slides/main.pdf`](./slides/main.pdf).
+
+<details>
+  <summary>Table of contents</summary>
+  <ol>
+    <li><a href="#build">Build</a></li>
+    <li><a href="#layout">Layout</a></li>
+    <li><a href="#the-rules-these-slides-follow">The rules these slides follow</a></li>
+    <li><a href="#adding-or-editing-a-slide">Adding or editing a slide</a></li>
+    <li><a href="#brand">Brand</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+  </ol>
+</details>
 
 ## Build
 
@@ -39,7 +63,8 @@ presentation/
 │                        (brain, database, file, clock, shield, stethoscope),
 │                        and the QR code
 ├── figures/
-│   └── 01-title/ … 12-impact/, 04b-time/, 05b-voice-agent/, 06-hallucination/
+│   └── 01-title/ … 13-sources/   (incl. 02b-scale, 04b-time,
+│        04c-doctor-vs-agent, 04d-evidence, 05b-voice-agent, 06-hallucination)
 │       ├── figure.tex   the slide, as a standalone TikZ picture
 │       ├── figure.pdf   compiled, transparent, 160×90 mm (16:9)
 │       └── notes.md     the one idea + the spoken line
@@ -85,3 +110,26 @@ strokes stay true at every size.
 *Note:* the event wordmarks (HackMIT, Regeneron) are set as plain type here.
 Drop official logo files into `shared/marks/` and reference them the same way if
 they are wanted on the title slide.
+
+The research that fed the narrative lives in
+[`chat_research.txt`](./chat_research.txt) and
+[`sponsor_challenges.txt`](./sponsor_challenges.txt).
+
+## License
+
+Distributed under the MIT License. See [`../LICENSE`](../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors

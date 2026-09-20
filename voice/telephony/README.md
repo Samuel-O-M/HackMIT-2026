@@ -1,6 +1,15 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # Telephony
 
-Placing a call, with two interchangeable providers behind one interface.
+> Placing a call, with two interchangeable providers behind one interface.
+
+Part of **[ReconMed](../../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites. This is how the agent reaches the
+participant.
 
 | provider | what it does | cost |
 |---|---|---|
@@ -54,3 +63,28 @@ Not done for the demo — it costs money — but the path is written:
 8 kHz mu-law; the browser path sends 16-bit PCM, so it needs a codec shim in
 both directions. It is left explicitly undone rather than guessed at, because
 untested audio transcoding would look finished without being finished.
+
+## Known issues
+
+- `/ws/twilio` (mu-law ↔ PCM codec) is the only missing piece for real calls.
+- A `twilio` run costs real money and rings a real telephone; keep
+  `TELEPHONY_ALLOW_REAL_NUMBERS` unset unless you mean it.
+
+## License
+
+Distributed under the MIT License. See [`../../LICENSE`](../../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors

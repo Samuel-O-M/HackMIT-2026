@@ -1,6 +1,15 @@
-# Database
+<a id="readme-top"></a>
 
-A SQLite database built from the JSON under `patient_data/`.
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
+# Trial records — `conmed.db`
+
+> A SQLite database built from the JSON under `patient_data/`.
+
+Part of **[ReconMed](../../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites. See also the
+[`databases/` overview](../README.md).
 
 ```
 node patient_data/db/seed.mjs        # rebuild db/conmed.db from data/
@@ -9,6 +18,18 @@ sqlite3 patient_data/db/conmed.db    # open it
 
 `patient_data/` is the source of truth. `conmed.db` is a derived artifact — safe to
 delete and rebuild at any time, and it is not what the frontend reads.
+
+<details>
+  <summary>Table of contents</summary>
+  <ol>
+    <li><a href="#why-it-exists">Why it exists</a></li>
+    <li><a href="#shape">Shape</a></li>
+    <li><a href="#two-domain-rules-are-enforced-here-not-just-in-the-ui">Two domain rules</a></li>
+    <li><a href="#dates">Dates</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+  </ol>
+</details>
 
 ## Why it exists
 
@@ -63,3 +84,22 @@ the signature means. `audit_events.reason` carries the "why" that 11.10(e) wants
 `patient_data/` stores scheduling times as an offset from today so the demo never looks
 stale; the seed resolves them to ISO instants. Rebuild the database to move the
 schedule to the current day. Clinical dates are stored as written.
+
+## License
+
+Distributed under the MIT License. See [`../../LICENSE`](../../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors

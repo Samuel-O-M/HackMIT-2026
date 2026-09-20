@@ -916,13 +916,22 @@ function handleLiveProxy(client, searchParams) {
   const OPEN = 1;
   const CONNECTING = 0;
 
+  // Deepgram closes a socket that has received no audio for ~10 s. The handset
+  // sends none while the agent is speaking, so a long reply used to drop the
+  // connection mid-call. KeepAlive is a control frame and costs nothing.
+  let keepAlive = null;
   dg.on('open', () => {
     while (pending.length) dg.send(pending.shift());
+    keepAlive = setInterval(() => {
+      if (dg.readyState === OPEN) dg.send(JSON.stringify({ type: 'KeepAlive' }));
+    }, 5000);
   });
   dg.on('message', (data, isBinary) => {
     if (client.readyState === OPEN) client.send(data, { binary: isBinary });
   });
   dg.on('close', (code, reason) => {
+    clearInterval(keepAlive);
+    console.log(`[stt] deepgram closed: ${code} ${reason ? reason.toString() : ''}`);
     try { client.close(code, reason ? reason.toString() : undefined); } catch {}
   });
   dg.on('error', (err) => {
@@ -933,8 +942,8 @@ function handleLiveProxy(client, searchParams) {
     if (dg.readyState === OPEN) dg.send(data, { binary: isBinary });
     else if (dg.readyState === CONNECTING) pending.push(data);
   });
-  client.on('close', () => { try { dg.close(); } catch {} });
-  client.on('error', () => { try { dg.close(); } catch {} });
+  client.on('close', () => { clearInterval(keepAlive); try { dg.close(); } catch {} });
+  client.on('error', () => { clearInterval(keepAlive); try { dg.close(); } catch {} });
 }
 
 if (WS) {

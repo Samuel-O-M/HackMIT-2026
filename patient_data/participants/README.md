@@ -1,7 +1,16 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # Participants
 
-Synthetic participants, their scheduled visits, and the calls the voice agent
-made to them. No real participant data is here.
+> Synthetic participants, their scheduled visits, and the calls the voice agent
+> made to them. No real participant data is here.
+
+Part of **[ReconMed](../../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites. See also the
+[`patient_data/` overview](../README.md).
 
 | File | What it holds |
 |---|---|
@@ -16,3 +25,26 @@ and the UI never renders a name.
 
 Every session in `sessions.json` has a transcript, and every change id a
 transcript yields exists in that session.
+
+Calls made after the build are not written here. The api service saves them to
+`patient_data/published/` (gitignored) and the app loads them at runtime, so
+these files stay as committed.
+
+## License
+
+Distributed under the MIT License. See [`../../LICENSE`](../../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors

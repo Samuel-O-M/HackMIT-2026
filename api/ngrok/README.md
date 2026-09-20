@@ -1,8 +1,16 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # ngrok — phone access for the voice UI
 
-Exposes the voice server (`voice/server.js`, port **8787**) on an HTTPS URL so a
-phone can open the call screen, and optionally the coordinator dashboard
-(`frontend/`, port **5173**).
+> Exposes the voice server (`voice/server.js`, port **8787**) on an HTTPS URL so
+> a phone can open the call screen, and optionally the coordinator dashboard
+> (`frontend/`, port **5173**).
+
+Part of **[ReconMed](../../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites.
 
 HTTPS matters: `getUserMedia` (the microphone) only works in a secure context,
 so `http://<your-LAN-IP>:8787` will not work on a phone.
@@ -10,7 +18,20 @@ so `http://<your-LAN-IP>:8787` will not work on a phone.
 > Why ngrok and not Cloudflare Tunnel? This network blocks outbound port 7844,
 > which cloudflared's edge requires (both QUIC and HTTP/2), so no Cloudflare
 > tunnel can connect from here. ngrok's agent uses 443, which is allowed.
-> `api/cloudflare/` is kept for networks where 7844 is open.
+> [`api/cloudflare/`](../cloudflare/README.md) is kept for networks where 7844
+> is open.
+
+<details>
+  <summary>Table of contents</summary>
+  <ol>
+    <li><a href="#one-time-setup">One-time setup</a></li>
+    <li><a href="#run">Run</a></li>
+    <li><a href="#phone-steps">Phone steps</a></li>
+    <li><a href="#notes">Notes</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+  </ol>
+</details>
 
 ## One-time setup
 
@@ -58,3 +79,22 @@ cd ../api/ngrok && ./dashboard.sh        # prints https://<random>.ngrok-free.ap
 - Vite's host check rejects the ngrok Host header unless
   `server.allowedHosts` includes `.ngrok-free.app` (already set in
   `frontend/vite.config.ts`).
+
+## License
+
+Distributed under the MIT License. See [`../../LICENSE`](../../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors
