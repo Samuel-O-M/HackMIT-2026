@@ -30,6 +30,7 @@
   let lastVoiceAt = 0;
   let conversation = [];
   let levelTimer = null;
+  let currentState = 'idle';
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -74,6 +75,7 @@
   function setDevMode(on) {
     devToggle.setAttribute('aria-pressed', String(on));
     devPanel.hidden = !on;
+    $('#devScrim').hidden = !on;
     try { localStorage.setItem('voice.devmode', on ? '1' : '0'); } catch {}
     if (on) {
       loadHealth();
@@ -82,6 +84,7 @@
   }
   devToggle.addEventListener('click', () => setDevMode(devPanel.hidden));
   $('#devClose').addEventListener('click', () => setDevMode(false));
+  $('#devScrim').addEventListener('click', () => setDevMode(false));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !devPanel.hidden) setDevMode(false);
   });
@@ -112,8 +115,10 @@
     muted: 'Muted — the agent cannot hear you',
   };
   function setState(state) {
+    currentState = state;
     $('#callView').dataset.state = state;
     $('#statusText').textContent = STATUS_TEXT[state] || state;
+    updateTyping();
     if (sessionId) {
       fetch('/api/brain/channel', {
         method: 'POST',
@@ -125,6 +130,23 @@
 
   // ------------------------------------------------------------- conversation
   let convSig = null;
+
+  /** Three bouncing dots while the agent is composing a reply. */
+  function updateTyping() {
+    const box = $('#conversation');
+    const existing = box.querySelector('.typing');
+    if (currentState === 'thinking' && !existing) {
+      const t = document.createElement('div');
+      t.className = 'typing';
+      t.setAttribute('aria-label', 'The study team is thinking');
+      for (let i = 0; i < 3; i++) t.appendChild(document.createElement('i'));
+      box.appendChild(t);
+      box.scrollTop = box.scrollHeight;
+    } else if (currentState !== 'thinking' && existing) {
+      existing.remove();
+    }
+  }
+
   function renderConversation() {
     const sig = JSON.stringify(conversation) + '||' + interim;
     if (sig === convSig) return;
@@ -138,29 +160,29 @@
       p.className = 'msg system';
       p.textContent = 'The call has started. Say hello whenever you are ready.';
       box.appendChild(p);
-      return;
+    } else {
+      for (const turn of conversation) {
+        const div = document.createElement('div');
+        div.className = 'msg ' + (turn.speaker === 'patient' ? 'patient' : 'agent');
+        const who = document.createElement('span');
+        who.className = 'who';
+        who.textContent = turn.speaker === 'patient' ? 'You' : 'Study team';
+        div.appendChild(who);
+        div.appendChild(document.createTextNode(turn.transcript));
+        box.appendChild(div);
+      }
+      if (interim) {
+        const div = document.createElement('div');
+        div.className = 'msg patient interim';
+        const who = document.createElement('span');
+        who.className = 'who';
+        who.textContent = 'You';
+        div.appendChild(who);
+        div.appendChild(document.createTextNode(interim));
+        box.appendChild(div);
+      }
     }
-
-    for (const turn of conversation) {
-      const div = document.createElement('div');
-      div.className = 'msg ' + (turn.speaker === 'patient' ? 'patient' : 'agent');
-      const who = document.createElement('span');
-      who.className = 'who';
-      who.textContent = turn.speaker === 'patient' ? 'You' : 'Study team';
-      div.appendChild(who);
-      div.appendChild(document.createTextNode(turn.transcript));
-      box.appendChild(div);
-    }
-    if (interim) {
-      const div = document.createElement('div');
-      div.className = 'msg patient interim';
-      const who = document.createElement('span');
-      who.className = 'who';
-      who.textContent = 'You';
-      div.appendChild(who);
-      div.appendChild(document.createTextNode(interim));
-      box.appendChild(div);
-    }
+    updateTyping();
     box.scrollTop = box.scrollHeight;
   }
 
@@ -428,9 +450,32 @@
   }
 
   // ------------------------------------------------------------- views
+  /** Cross-fade between the greeting and the call, with a short exit. */
   function showView(name) {
-    $('#welcomeView').classList.toggle('hidden', name !== 'welcome');
-    $('#callView').classList.toggle('hidden', name !== 'call');
+    const welcome = $('#welcomeView');
+    const callView = $('#callView');
+
+    if (name === 'call') {
+      if (callView.classList.contains('hidden') === false) return;
+      welcome.classList.add('leaving');
+      window.setTimeout(() => {
+        welcome.classList.add('hidden');
+        welcome.classList.remove('leaving');
+      }, 320);
+      callView.classList.remove('hidden');
+      callView.classList.add('entering');
+      window.setTimeout(() => callView.classList.remove('entering'), 700);
+      return;
+    }
+
+    if (!callView.classList.contains('hidden')) {
+      callView.classList.add('leaving');
+      window.setTimeout(() => {
+        callView.classList.add('hidden');
+        callView.classList.remove('leaving');
+      }, 280);
+    }
+    welcome.classList.remove('hidden');
   }
 
   // ------------------------------------------------------------- call
