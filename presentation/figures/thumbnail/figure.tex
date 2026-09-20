@@ -1,0 +1,24 @@
+% The lockup on its own, for a thumbnail or social card.
+%
+% Not part of the deck — nothing in slides/main.tex includes it. It builds with
+% the other figures so the mark, the type and the ground never drift from what
+% the slides use.
+%
+% The ground is painted here rather than left transparent: a thumbnail is shown
+% on someone else's background, and the wordmark needs its own.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,50);
+\fill[ground] (0,0) rectangle (160,50);
+
+\node[anchor=west, inner sep=0pt] at (16,25) {\reconmedmark[22mm]};
+
+\node[anchor=west, inner sep=0pt] at (44,29)
+  {\fontsize{30}{30}\selectfont\displayfont\bfseries\color{brand} ReconMed};
+\node[anchor=west, inner sep=0pt] at (44.8,17)
+  {\fontsize{11}{13}\selectfont\sffamily\color{inkii} Automated Medicine Reconciliation};
+
+\end{tikzpicture}
+\end{document}
