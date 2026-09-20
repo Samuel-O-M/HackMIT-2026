@@ -7,31 +7,32 @@
 \begin{tikzpicture}[x=1mm,y=1mm]
 \path[use as bounding box] (0,0) rectangle (160,90);
 
-\node[headline] at (16,82) {The agent may not answer from memory};
+\node[headline] at (16,82) {What we do about hallucination};
+\node[subline]  at (16,75.5) {The model is never the source. It may not state a fact it did not look up.};
 
 % ---------- the model ---------------------------------------------------
 \fill[surf, rounded corners=2pt] (12,44) rectangle (46,70);
 \draw[line, line width=0.4pt, rounded corners=2pt] (12,44) rectangle (46,70);
 \node[anchor=center] at (21,64) {\includegraphics[height=7mm]{shared/marks/openai.pdf}};
 \node[anchor=west, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (17,57) {GPT-5.6 Luna};
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (17,52) {may not state a drug};
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (17,48.5) {or a patient fact};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (17,52) {decides what to ask,};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (17,48.5) {never what is true};
 
-% ---------- the two permitted sources -----------------------------------
-\draw[flow] (46,65) -- (58,65);
-\draw[flow] (46,51) -- (58,51);
+% ---------- the three permitted sources ---------------------------------
+\draw[flow] (46,66) -- (58,66);
+\draw[flow] (46,57) -- (58,57);
+\draw[flow] (46,48) -- (58,48);
 
-\fill[surf, rounded corners=2pt] (58,58) rectangle (148,70);
-\draw[line, line width=0.4pt, rounded corners=2pt] (58,58) rectangle (148,70);
-\node[anchor=center] at (65,64) {\includegraphics[height=8mm]{shared/marks/i-database.pdf}};
-\node[anchor=west, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (73,66) {RxNorm \textperiodcentered\ RxClass};
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (73,61) {drug identity and class \textperiodcentered\ NLM};
-
-\fill[surf, rounded corners=2pt] (58,44) rectangle (148,56);
-\draw[line, line width=0.4pt, rounded corners=2pt] (58,44) rectangle (148,56);
-\node[anchor=center] at (65,50) {\includegraphics[height=8mm]{shared/marks/i-database.pdf}};
-\node[anchor=west, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (73,52) {the participant record};
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (73,47) {the only source of patient facts};
+\foreach \y/\name/\what in {%
+  62/{RxNorm \textperiodcentered\ RxClass}/{what a drug is, and which class it belongs to},
+  53/{the drug's FDA label}/{which side effects are actually documented},
+  44/{the participant's record}/{the only source of anything about this person}}{%
+  \fill[surf, rounded corners=2pt] (58,\y) rectangle (148,\y+8);
+  \draw[line, line width=0.4pt, rounded corners=2pt] (58,\y) rectangle (148,\y+8);
+  \node[anchor=center] at (64,\y+4) {\includegraphics[height=5.5mm]{shared/marks/i-database.pdf}};
+  \node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (70,\y+5.4) {\name};
+  \node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (70,\y+2.2) {\what};
+}
 
 % ---------- the chain that results --------------------------------------
 \fill[surf, rounded corners=2pt] (12,22) rectangle (44,34);
@@ -58,10 +59,8 @@
 \draw[flow] (80,28) -- (86,28);
 \draw[flow] (116,28) -- (122,28);
 
-\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkii}] at (12,16)
-  {every hop is a lookup, not a guess};
 \node[anchor=east, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (148,16)
-  {RxNorm / RxClass \textperiodcentered\ NLM};
+  {NLM \textperiodcentered\ openFDA};
 
 \end{tikzpicture}
 \end{document}
