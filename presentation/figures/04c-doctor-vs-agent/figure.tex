@@ -1,6 +1,9 @@
 % Slide 04c — before, and after.
 % Left: the manual process, plain and slow — read the record, call and remember
-% it, then type it into a computer hours later. Icons say what each step is;
+% it, then type it into a computer hours later — which is not how it is done,
+% and contradicted slide 2's account of the same thing. Reconciliation happens
+% at the visit, in the room, from the participant's recall, straight into the
+% record. Icons say what each step is;
 % the clocks sit on the transitions between steps, so the time draining away is
 % what you see. Right: the same plain setting, with the ReconMed logo doing the
 % branding — the record loaded before the call and updating as it happens.
@@ -33,28 +36,26 @@
 \fill[surf, rounded corners=1.5pt] (14,49) rectangle (74,58);
 \draw[lineii, line width=0.4pt, rounded corners=1.5pt] (14,49) rectangle (74,58);
 \node[anchor=center] at (19,53.5) {\includegraphics[height=5.5mm]{shared/marks/i-file-text.pdf}};
-\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{inkii}] at (24,55) {Read the record};
-\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (24,51) {protocol and history};
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{inkii}] at (24,55) {The participant arrives};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (24,51) {nothing collected until now};
 
 \draw[-{Stealth[length=1.4mm,width=1.1mm]}, lineii, dashed, line width=0.5pt] (60,49) -- (60,43);
-\clockface{60}{46}{2.6}{15}{180}
-\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{inkiii}] at (64.5,46) {30 min};
 
 \fill[surf, rounded corners=1.5pt] (14,34) rectangle (74,43);
 \draw[lineii, line width=0.4pt, rounded corners=1.5pt] (14,34) rectangle (74,43);
-\node[anchor=center] at (19,38.5) {\includegraphics[height=5.5mm]{shared/marks/i-phone-call.pdf}};
-\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{inkii}] at (24,40) {Call, and remember it};
-\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (24,36) {nothing is written down};
+\node[anchor=center] at (19,38.5) {\includegraphics[height=5.5mm]{shared/marks/i-stethoscope.pdf}};
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{inkii}] at (24,40) {Go through the list together};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (24,36) {in the room, from their memory};
 
 \draw[-{Stealth[length=1.4mm,width=1.1mm]}, lineii, dashed, line width=0.5pt] (60,34) -- (60,28);
 \clockface{60}{31}{2.6}{22}{270}
-\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{inkiii}] at (64.5,31) {45 min};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\bfseries\color{inkiii}] at (64.5,31) {30\textendash60 min};
 
 \fill[surf, rounded corners=1.5pt] (14,19) rectangle (74,28);
 \draw[lineii, line width=0.4pt, rounded corners=1.5pt] (14,19) rectangle (74,28);
 \node[anchor=center] at (19,23.5) {\includegraphics[height=5.5mm]{shared/marks/i-monitor.pdf}};
-\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{inkii}] at (24,25) {Type it into the computer};
-\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (24,21) {hours later, from memory};
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{inkii}] at (24,25) {Enter it into the record};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (24,21) {whatever was recalled, is the record};
 
 % ==================== AFTER — the logo, and live ========================
 \draw[lineii, dashed, line width=0.5pt] (80,16) -- (80,72);
@@ -87,10 +88,13 @@
 \node[anchor=west, font=\fontsize{5.6}{7}\selectfont\sffamily\color{ink}] at (135.5,36.25) {Stop};
 
 \clockface{92}{27}{3}{2}{18}
-\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (97,28.5) {3 min to review};
-\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (97,24.8) {not to write up};
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (97,28.5) {review, not interview};
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (97,24.8) {the work is already done};
 
-\node[anchor=west, font=\fontsize{9}{10}\selectfont\displayfont\bfseries\color{brand}] at (86,19) {4 h 30 back, every round};
+\node[anchor=west, font=\fontsize{7.6}{9.6}\selectfont\sffamily\bfseries\color{brand}, align=left, text width=62mm] at (86,17) {Asked days earlier, while there is\\ still time to check a bottle.};
+
+\node[anchor=west, font=\fontsize{5.2}{6.2}\selectfont\sffamily\color{inkiv}] at (14,8)
+  {Reconciliation duration: AHRQ, \textit{Patient Safety and Quality}, per admission.};
 
 \end{tikzpicture}
 \end{document}

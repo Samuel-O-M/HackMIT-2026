@@ -1,6 +1,11 @@
 % Slide 04 — the shift.
 % The same visit, with the conversation moved three days upstream: the
 % coordinator no longer does the reconciliation, only the review.
+%
+% The bottom half used to be empty, which left the diagram asserting that
+% moving work upstream is better without saying what it buys. The three
+% captions name what happens in each block, and the closing line names the
+% thing only distance can give you: time to go and look at the actual box.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
@@ -41,6 +46,19 @@
 \node[anchor=north, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (52,31.5) {3 days before};
 \draw[lineii, dashed, line width=0.4pt] (146,32) -- (146,70);
 \node[anchor=north east, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (146,31.5) {the visit};
+
+% ---- what each block is -------------------------------------------------
+\foreach \x/\w/\title/\body in {%
+  14/40/{the agent calls}/{identity, the log read back, side effects, and the protocol's own rules},
+  58/40/{nothing is written}/{proposals are staged; the medication log is untouched until a person signs},
+  102/44/{the coordinator reviews}/{a draft with its reasoning and every lookup attached}} {
+  \node[anchor=north west, font=\fontsize{6.8}{8.2}\selectfont\sffamily\bfseries\color{ink}] at (\x,24) {\title};
+  \node[anchor=north west, font=\fontsize{6}{7.4}\selectfont\sffamily\color{inkii}, align=left, text width=\w mm] at (\x,19.5) {\body};
+}
+
+\draw[line, line width=0.5pt] (14,9) -- (146,9);
+\node[anchor=north west, font=\fontsize{7.2}{8.8}\selectfont\sffamily\bfseries\color{brand}] at (14,7)
+  {Three days is long enough to ask someone to go and read the label.};
 
 \end{tikzpicture}
 \end{document}
