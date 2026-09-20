@@ -1,5 +1,7 @@
 import type {
   AdherenceExtent,
+  CallEnding,
+  CallOutcome,
   AdherenceReason,
   AdherenceReport,
   BehaviourReport,
@@ -129,4 +131,60 @@ export function instrumentPhrase(report: BehaviourReport): string | null {
     return `AUDIT-C ${report.instrumentScore} of 12`;
   }
   return `${report.instrument} ${report.instrumentScore}`;
+}
+
+const OUTCOME_LABELS: Record<CallOutcome, string> = {
+  in_progress: 'Call in progress',
+  completed: 'Call completed',
+  partial: 'Call ended early',
+  reschedule_requested: 'Callback requested',
+  no_answer: 'No answer',
+  declined: 'Participant declined',
+  unable_to_verify: 'Identity not verified',
+  participant_unavailable: 'Participant unavailable',
+  abandoned: 'Call dropped',
+  agent_error: 'Call failed',
+};
+
+export function outcomeLabel(outcome: CallOutcome): string {
+  return OUTCOME_LABELS[outcome] ?? 'Call ended';
+}
+
+/**
+ * What the coordinator should do next, in one line.
+ *
+ * The outcome names what happened; this names the action. A screen that
+ * reports "no answer" and stops has told the coordinator something without
+ * telling them anything.
+ */
+export function outcomeAction(ending: CallEnding): string | null {
+  switch (ending.outcome) {
+    case 'reschedule_requested':
+      return ending.callbackText
+        ? `They asked to be called back: “${ending.callbackText}”`
+        : 'They asked to be called back but did not say when.';
+    case 'no_answer':
+      return ending.attempt >= 3
+        ? `No answer on ${ending.attempt} attempts — check the number on file before trying again.`
+        : 'Nobody answered. Try again before the visit.';
+    case 'declined':
+      return 'They did not want to take part in the call. Reconcile at the visit instead.';
+    case 'unable_to_verify':
+      return 'Identity did not check out. Nothing was discussed — contact them through the site.';
+    case 'participant_unavailable':
+      return 'They could not take the call and did not offer another time.';
+    case 'abandoned':
+      return 'The line dropped part-way. Anything below was captured before that.';
+    case 'agent_error':
+      return 'The call failed for technical reasons. Nothing here is reliable.';
+    case 'partial':
+      return 'The call ended before the full sweep. What is below was captured; the rest was not asked.';
+    default:
+      return null;
+  }
+}
+
+/** Whether an empty result can honestly be read as "nothing has changed". */
+export function emptyMeansNothingChanged(ending?: CallEnding): boolean {
+  return ending?.outcome === 'completed';
 }

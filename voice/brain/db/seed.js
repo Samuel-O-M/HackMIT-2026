@@ -204,6 +204,27 @@ function seedPatient() {
       status     TEXT DEFAULT 'open',
       identity_status   TEXT DEFAULT 'unverified',
       identity_attempts INTEGER DEFAULT 0,
+      -- How the call ended, and therefore what an empty result MEANS.
+      --
+      -- Without this, a call where the participant hung up after giving their
+      -- name is indistinguishable from one that walked the whole sweep and
+      -- found nothing changed. Both produce no staged rows. One is a clean
+      -- confirmatory result; the other needs calling back. A coordinator
+      -- cannot tell them apart, and 'no changes' is the more dangerous
+      -- reading, because it looks like an answer.
+      --
+      -- completed | partial | reschedule_requested | no_answer | declined |
+      -- unable_to_verify | participant_unavailable | abandoned | agent_error
+      outcome           TEXT DEFAULT 'in_progress',
+      outcome_detail    TEXT,
+      -- When they asked to be called back, in their words. Not parsed into a
+      -- timestamp unless they gave one — the same precision rule the dates
+      -- follow, for the same reason.
+      callback_text     TEXT,
+      callback_after    TEXT,
+      -- Which attempt this is for this participant. Repeated failures to
+      -- reach someone become a protocol deviation, so the count is data.
+      attempt           INTEGER DEFAULT 1,
       -- Who was actually on the call. A spouse or adult child is often the one
       -- who knows what is in the pill organiser, and a coordinator reading the
       -- record later needs to know whose account this was.

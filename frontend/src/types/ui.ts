@@ -216,7 +216,7 @@ export interface ScheduledVisit {
   visitName: string;
   visitAt: string;
   /** 'not_started' covers subjects whose call has not been placed yet. */
-  reconStatus: 'not_started' | 'in_progress' | 'awaiting_review' | 'completed';
+  reconStatus: 'not_started' | 'in_progress' | 'awaiting_review' | 'completed' | 'no_contact';
   changeCount: number;
   prohibitedCount: number;
   unresolvedCount: number;

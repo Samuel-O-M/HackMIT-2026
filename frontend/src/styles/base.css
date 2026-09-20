@@ -621,6 +621,9 @@ input, select, textarea {
 .pill[data-s='in_progress']::before { background: var(--modify); }
 .pill[data-s='completed']::before { background: var(--add); }
 .pill[data-s='not_started']::before { background: var(--ink-4); }
+/* Not reached: a gap in the record, not a failure state to shout about. */
+.pill[data-s='no_contact'] { color: var(--ink-2); }
+.pill[data-s='no_contact']::before { background: var(--reject); }
 
 /* ---------- session list ---------- */
 
@@ -1541,4 +1544,70 @@ input, select, textarea {
     align-items: stretch;
     gap: var(--s2);
   }
+}
+
+/* How the call ended, when that changes what a blank screen means. */
+.ending {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s4);
+  margin: var(--s4) 0 0;
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--line-3);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.ending[data-tone='attention'] {
+  border-color: var(--alarm-line);
+  border-left-color: var(--alarm);
+  background: var(--alarm-wash);
+}
+
+.ending-main { min-width: 0; }
+
+.ending-title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ending[data-tone='attention'] .ending-title { color: var(--alarm-ink); }
+
+.ending-attempt {
+  padding: 1px 6px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.ending-action {
+  margin: 4px 0 0;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+
+.ending[data-tone='attention'] .ending-action { color: var(--alarm-ink-2); }
+
+.ending-detail {
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+/* A question nobody answered is not a finding, so it does not read as one. */
+.findings-name-muted { font-weight: 500; color: var(--ink-3); }
+
+@media (max-width: 640px) {
+  .ending { flex-direction: column; align-items: stretch; }
 }

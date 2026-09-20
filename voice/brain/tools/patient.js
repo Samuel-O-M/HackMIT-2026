@@ -339,6 +339,58 @@ function update({ subjectId, sessionId, op, payload = {} }) {
 // ---------------------------------------------------------------------------
 
 
+const OUTCOMES = [
+  'completed',
+  'partial',
+  'reschedule_requested',
+  'no_answer',
+  'declined',
+  'unable_to_verify',
+  'participant_unavailable',
+  'abandoned',
+  'agent_error',
+];
+
+/**
+ * Record how the call ended.
+ *
+ * The agent's own reading of the call, because nothing downstream can recover
+ * it. An empty result with no outcome is ambiguous in the worst direction: it
+ * looks like "nothing has changed", which is a clinical finding, when it may
+ * mean "we never got to ask".
+ *
+ * `callback_after` is only set when the participant gave something that
+ * resolves to a real time. "Tomorrow morning" stays in `callback_text` as
+ * their words — the same rule the medication dates follow, and for the same
+ * reason: an invented precise time is worse than an honest vague one.
+ */
+function setCallOutcome({ sessionId, outcome, detail, callback_text, callback_after }) {
+  if (!sessionId) throw new Error('set_call_outcome requires a session.');
+  const p = patient();
+  const value = OUTCOMES.includes(outcome) ? outcome : 'partial';
+
+  // A reschedule without a callback note is still a reschedule, but the
+  // coordinator has nothing to act on, so say so rather than losing it.
+  const text = callback_text || null;
+  let after = callback_after || null;
+  if (after && Number.isNaN(Date.parse(after))) after = null;
+
+  p.execute(
+    `UPDATE call_sessions
+        SET outcome = ?, outcome_detail = ?, callback_text = ?, callback_after = ?
+      WHERE session_id = ?`,
+    value, detail || null, text, after, sessionId
+  );
+  return {
+    ok: true,
+    outcome: value,
+    callback: text,
+    note: value === 'reschedule_requested' && !text
+      ? 'Recorded, but no callback time was captured — ask when would suit them.'
+      : undefined,
+  };
+}
+
 /**
  * Does this behaviour trip the participant's protocol?
  *
@@ -466,6 +518,6 @@ function safeParse(s) {
 }
 
 module.exports = {
-  read, update, verifyIdentity, checkBehaviour, verifyCaregiver,
+  read, update, verifyIdentity, checkBehaviour, verifyCaregiver, setCallOutcome, OUTCOMES,
   normalizeDob, READ_SCOPES, WRITE_OPS,
 };

@@ -138,7 +138,21 @@ write('trials/trials.json', preserve('trials/trials.json', trials, 'studyId'));
 
 // Stable input, not the script's own output — so a rebuild is idempotent.
 const SNAPSHOT = read('catalog/handwritten.json');
-const HAND = SNAPSHOT.sessions;
+// The hand-written calls are the curated demo, and every one of them was
+// conducted end to end. They predate the `ending` field, so they carry no
+// outcome — which would make a completed call with no changes render as
+// "no changes were captured" rather than the accurate "nothing changed".
+const HAND = SNAPSHOT.sessions.map((s) => ({
+  ...s,
+  ending: s.ending ?? {
+    outcome: 'completed',
+    detail: null,
+    callbackText: null,
+    callbackAfter: null,
+    attempt: 1,
+    notAsked: [],
+  },
+}));
 const HAND_T = SNAPSHOT.transcripts;
 
 // Two RxCUIs in the hand-written sessions were wrong; RxNav verification caught
@@ -371,27 +385,83 @@ for (const trial of trials) {
       caregiverAuthStatus: caregiver ? 'authorised' : 'none',
     };
 
-    sessions.push({ sessionId, subjectId, studyId: trial.studyId, nctId: trial.nctId, startedAt: started, endedAt: ended, status: promoted ? 'completed' : 'awaiting_review', changes, adherence, symptoms, behaviours, callParticipants });
+    // How the call ended. Most complete; a few do not, because that is what
+    // calling forty people actually looks like and a demo where every call
+    // succeeds hides the case the screen most needs to handle.
+    const roll = r();
+    let outcome = 'completed';
+    let callbackText = null;
+    let notAsked = [];
+    if (!promoted && roll < 0.08) {
+      outcome = 'reschedule_requested';
+      callbackText = pick(r, ['tomorrow morning', 'after four, when I am home from work', 'Monday, any time']);
+      // They asked to stop, so the rest of the sweep never happened.
+      notAsked = ['contraception'];
+    } else if (!promoted && roll < 0.13) {
+      outcome = 'partial';
+      notAsked = ['contraception'];
+    } else if (!promoted && roll < 0.16) {
+      outcome = 'no_answer';
+    }
 
-    // A transcript that matches the changes it produced.
-    const turns = [{ atMs: 0, speaker: 'agent', text: `Good morning. This is the study team calling ahead of your ${visitName} visit. Do you have a few minutes to go through your medications?` }, { atMs: 5600, speaker: 'participant', text: 'Yes, that is fine.' }];
+    const noContact = outcome === 'no_answer';
+    const ending = {
+      outcome,
+      detail: null,
+      callbackText,
+      callbackAfter: null,
+      attempt: outcome === 'no_answer' ? 1 + Math.floor(r() * 3) : 1,
+      notAsked,
+    };
+
+    // A call nobody answered has nothing in it. Publishing findings against
+    // one would be inventing a conversation that did not happen.
+    const ended_changes = noContact ? [] : changes;
+    const ended_adherence = noContact ? [] : adherence;
+    const ended_symptoms = noContact ? [] : symptoms;
+    const ended_behaviours = noContact ? [] : behaviours.filter((b) => !notAsked.includes(b.behaviourCode));
+
+    sessions.push({
+      sessionId, subjectId, studyId: trial.studyId, nctId: trial.nctId,
+      startedAt: started, endedAt: ended,
+      status: promoted ? 'completed' : noContact ? 'no_contact' : 'awaiting_review',
+      changes: ended_changes,
+      adherence: ended_adherence,
+      symptoms: ended_symptoms,
+      behaviours: ended_behaviours,
+      callParticipants, ending,
+    });
+
+    // A transcript that matches the call that produced it.
+    //
+    // A call nobody answered has no conversation. Generating one anyway gave
+    // SES-2026-619 seven turns of dialogue under the heading "No answer" —
+    // the transcript builder ran downstream of the outcome and never saw it.
+    const turns = noContact ? [] : [{ atMs: 0, speaker: 'agent', text: `Good morning. This is the study team calling ahead of your ${visitName} visit. Do you have a few minutes to go through your medications?` }, { atMs: 5600, speaker: 'participant', text: 'Yes, that is fine.' }];
     let t = 9000;
-    for (const c of changes) {
+    // `ended_changes`, not `changes`: an unanswered call has no changes and
+    // must get no dialogue. Iterating the pre-outcome list refilled the array
+    // the line above had deliberately left empty, and produced a seven-turn
+    // conversation under the heading "No answer".
+    for (const c of ended_changes) {
       const name = c.proposed.canonicalName ?? 'that one';
       turns.push({ atMs: t, speaker: 'agent', text: c.changeType === 'add' ? 'Has anything new started since we last spoke, including anything another doctor prescribed?' : `I have ${name.toLowerCase()} on file${c.current?.dose ? `, ${c.current.dose}` : ''}. Is that still right?` });
       t += 6200;
       turns.push({ atMs: t, speaker: 'participant', text: c.proposed.reportedText, yields: [c.changeId] });
       t += 6800;
     }
-    turns.push({ atMs: t, speaker: 'agent', text: 'That is everything I needed. Thank you for your time.' });
-    transcripts[sessionId] = turns;
+    // The sign-off belongs to a call that was actually had.
+    if (!noContact) {
+      turns.push({ atMs: t, speaker: 'agent', text: 'That is everything I needed. Thank you for your time.' });
+    }
+    if (turns.length) transcripts[sessionId] = turns;
 
     audit[sessionId] = [
       { eventId: `EV-${sessionSeq}1`, at: started, actor: 'Voice agent', action: 'call_started', changeId: null, detail: `Outbound call placed to subject ${subjectId}`, reason: null },
       { eventId: `EV-${sessionSeq}2`, at: ended, actor: 'Voice agent', action: 'call_ended', changeId: null, detail: `${changes.length} proposed change${changes.length === 1 ? '' : 's'} staged for review`, reason: null },
     ];
 
-    visits.push({ sessionId, subjectId, studyId: trial.studyId, nctId: trial.nctId, visitName, visitAt: { dayOffset, time }, reconStatus: promoted ? 'completed' : 'awaiting_review', changeCount: changes.length, prohibitedCount: changes.filter((c) => c.prohibitedHit).length, unresolvedCount: changes.filter((c) => c.proposed.rxcui === null).length });
+    visits.push({ sessionId, subjectId, studyId: trial.studyId, nctId: trial.nctId, visitName, visitAt: { dayOffset, time }, reconStatus: promoted ? 'completed' : noContact ? 'no_contact' : 'awaiting_review', changeCount: ended_changes.length, prohibitedCount: ended_changes.filter((c) => c.prohibitedHit).length, unresolvedCount: ended_changes.filter((c) => c.proposed.rxcui === null).length });
   }
 }
 

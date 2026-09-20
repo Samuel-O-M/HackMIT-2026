@@ -21,6 +21,7 @@ const SESSION_STATE: Record<ReconciliationSession['status'], string> = {
   in_progress: 'Call in progress',
   awaiting_review: 'Awaiting review',
   completed: 'Promoted to log',
+  no_contact: 'Needs another call',
 };
 
 function NavLink({

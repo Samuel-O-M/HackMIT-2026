@@ -202,6 +202,48 @@ const drugSafetySchema = {
   },
 };
 
+const setCallOutcomeSchema = {
+  type: 'function',
+  function: {
+    name: 'set_call_outcome',
+    description:
+      'Record how the call ended. Call this before the call finishes, ALWAYS — including ' +
+      'when everything went fine. Without it an empty call is read as "nothing has ' +
+      'changed", which is a clinical finding, when it may mean the questions were never ' +
+      'asked. If the participant asks to be called back, use reschedule_requested and put ' +
+      'their own words in callback_text.',
+    parameters: {
+      type: 'object',
+      properties: {
+        outcome: {
+          type: 'string',
+          enum: [
+            'completed', 'partial', 'reschedule_requested', 'no_answer', 'declined',
+            'unable_to_verify', 'participant_unavailable', 'abandoned', 'agent_error',
+          ],
+          description:
+            'completed = the whole sweep was walked. partial = it started but ended ' +
+            'early. reschedule_requested = they asked to be called back. declined = they ' +
+            'did not want to take part. participant_unavailable = they could not do it ' +
+            'and offered no other time.',
+        },
+        detail: { type: 'string', description: 'One line, in their words where possible.' },
+        callback_text: {
+          type: 'string',
+          description: 'When they asked to be called back, exactly as they said it.',
+        },
+        callback_after: {
+          type: 'string',
+          description:
+            'ISO timestamp ONLY if they gave a real one. Never convert "tomorrow ' +
+            'morning" into a time — leave this out and keep their words.',
+        },
+      },
+      required: ['outcome'],
+    },
+  },
+};
+
 const verifyIdentitySchema = {
   type: 'function',
   function: {
@@ -242,6 +284,10 @@ const ALL = {
     schema: drugSafetySchema,
     run: (args) => require('../../../api/medical_data/openfda').drugSafety(args.name),
   },
+  set_call_outcome: {
+    schema: setCallOutcomeSchema,
+    run: (args, ctx) => patientData.setCallOutcome({ ...args, sessionId: ctx.sessionId }),
+  },
   check_behaviour: {
     schema: checkBehaviourSchema,
     run: (args, ctx) => patientData.checkBehaviour({ ...args, subjectId: ctx.subjectId }),
@@ -257,6 +303,7 @@ function schemasFor(which) {
     return [
       ALL.health_search.schema, ALL.check_prohibited.schema, ALL.patient_read.schema,
       ALL.verify_identity.schema, ALL.check_behaviour.schema, ALL.drug_safety.schema,
+      ALL.set_call_outcome.schema,
     ];
   }
   return [
@@ -268,6 +315,7 @@ function schemasFor(which) {
     ALL.check_behaviour.schema,
     ALL.verify_caregiver.schema,
     ALL.drug_safety.schema,
+    ALL.set_call_outcome.schema,
   ];
 }
 

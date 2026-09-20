@@ -21,7 +21,7 @@
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "7 proposed changes staged for review · 2 prohibited findings",
+      "detail": "7 proposed changes staged for review \u00b7 2 prohibited findings",
       "reason": null
     }
   ],
@@ -47,7 +47,7 @@
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "No changes — participant reports no concomitant medications",
+      "detail": "No changes \u2014 participant reports no concomitant medications",
       "reason": null
     }
   ],
@@ -73,7 +73,7 @@
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "3 proposed changes staged for review · 1 prohibited finding",
+      "detail": "3 proposed changes staged for review \u00b7 1 prohibited finding",
       "reason": null
     }
   ],
@@ -137,7 +137,7 @@
       "actor": "ayushim",
       "action": "change_accepted",
       "changeId": "CH-091",
-      "detail": "Acyclovir · frequency Twice daily → Three times daily",
+      "detail": "Acyclovir \u00b7 frequency Twice daily \u2192 Three times daily",
       "reason": "Participant clarified at review"
     },
     {
@@ -149,7 +149,7 @@
       "actor": "ayushim",
       "action": "promoted",
       "changeId": null,
-      "detail": "1 change promoted to the medication log · signed by Ayushi Mehrotra at 2026-09-17T17:41:00.000Z",
+      "detail": "1 change promoted to the medication log \u00b7 signed by Ayushi Mehrotra at 2026-09-17T17:41:00.000Z",
       "reason": "I have reviewed these changes against the source and approve their entry into the medication log."
     }
   ],
@@ -183,60 +183,8 @@
     {
       "eventId": "EV-6021",
       "at": {
-        "dayOffset": 0,
-        "time": "09:20"
-      },
-      "actor": "Voice agent",
-      "action": "call_started",
-      "changeId": null,
-      "detail": "Outbound call placed to subject S-404",
-      "reason": null
-    },
-    {
-      "eventId": "EV-6022",
-      "at": {
-        "dayOffset": 0,
-        "time": "09:52"
-      },
-      "actor": "Voice agent",
-      "action": "call_ended",
-      "changeId": null,
-      "detail": "1 proposed change staged for review",
-      "reason": null
-    }
-  ],
-  "SES-2026-603": [
-    {
-      "eventId": "EV-6031",
-      "at": {
         "dayOffset": -3,
-        "time": "08:05"
-      },
-      "actor": "Voice agent",
-      "action": "call_started",
-      "changeId": null,
-      "detail": "Outbound call placed to subject S-406",
-      "reason": null
-    },
-    {
-      "eventId": "EV-6032",
-      "at": {
-        "dayOffset": -3,
-        "time": "08:48"
-      },
-      "actor": "Voice agent",
-      "action": "call_ended",
-      "changeId": null,
-      "detail": "3 proposed changes staged for review",
-      "reason": null
-    }
-  ],
-  "SES-2026-604": [
-    {
-      "eventId": "EV-6041",
-      "at": {
-        "dayOffset": 5,
-        "time": "12:05"
+        "time": "11:20"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -245,10 +193,10 @@
       "reason": null
     },
     {
-      "eventId": "EV-6042",
+      "eventId": "EV-6022",
       "at": {
-        "dayOffset": 5,
-        "time": "12:52"
+        "dayOffset": -3,
+        "time": "11:57"
       },
       "actor": "Voice agent",
       "action": "call_ended",
@@ -257,12 +205,38 @@
       "reason": null
     }
   ],
-  "SES-2026-605": [
+  "SES-2026-603": [
     {
-      "eventId": "EV-6051",
+      "eventId": "EV-6031",
       "at": {
-        "dayOffset": -3,
-        "time": "09:20"
+        "dayOffset": 5,
+        "time": "13:20"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-408",
+      "reason": null
+    },
+    {
+      "eventId": "EV-6032",
+      "at": {
+        "dayOffset": 5,
+        "time": "13:48"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "2 proposed changes staged for review",
+      "reason": null
+    }
+  ],
+  "SES-2026-604": [
+    {
+      "eventId": "EV-6041",
+      "at": {
+        "dayOffset": 0,
+        "time": "10:40"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -271,24 +245,24 @@
       "reason": null
     },
     {
-      "eventId": "EV-6052",
+      "eventId": "EV-6042",
       "at": {
-        "dayOffset": -3,
-        "time": "09:57"
+        "dayOffset": 0,
+        "time": "10:48"
       },
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "2 proposed changes staged for review",
+      "detail": "1 proposed change staged for review",
       "reason": null
     }
   ],
-  "SES-2026-606": [
+  "SES-2026-605": [
     {
-      "eventId": "EV-6061",
+      "eventId": "EV-6051",
       "at": {
-        "dayOffset": -2,
-        "time": "10:20"
+        "dayOffset": 3,
+        "time": "11:05"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -297,62 +271,10 @@
       "reason": null
     },
     {
-      "eventId": "EV-6062",
-      "at": {
-        "dayOffset": -2,
-        "time": "10:48"
-      },
-      "actor": "Voice agent",
-      "action": "call_ended",
-      "changeId": null,
-      "detail": "2 proposed changes staged for review",
-      "reason": null
-    }
-  ],
-  "SES-2026-607": [
-    {
-      "eventId": "EV-6071",
+      "eventId": "EV-6052",
       "at": {
         "dayOffset": 3,
-        "time": "09:20"
-      },
-      "actor": "Voice agent",
-      "action": "call_started",
-      "changeId": null,
-      "detail": "Outbound call placed to subject S-411",
-      "reason": null
-    },
-    {
-      "eventId": "EV-6072",
-      "at": {
-        "dayOffset": 3,
-        "time": "09:48"
-      },
-      "actor": "Voice agent",
-      "action": "call_ended",
-      "changeId": null,
-      "detail": "5 proposed changes staged for review",
-      "reason": null
-    }
-  ],
-  "SES-2026-608": [
-    {
-      "eventId": "EV-6081",
-      "at": {
-        "dayOffset": 4,
-        "time": "12:20"
-      },
-      "actor": "Voice agent",
-      "action": "call_started",
-      "changeId": null,
-      "detail": "Outbound call placed to subject S-412",
-      "reason": null
-    },
-    {
-      "eventId": "EV-6082",
-      "at": {
-        "dayOffset": 4,
-        "time": "12:48"
+        "time": "11:57"
       },
       "actor": "Voice agent",
       "action": "call_ended",
@@ -361,12 +283,90 @@
       "reason": null
     }
   ],
+  "SES-2026-606": [
+    {
+      "eventId": "EV-6061",
+      "at": {
+        "dayOffset": 2,
+        "time": "09:05"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-411",
+      "reason": null
+    },
+    {
+      "eventId": "EV-6062",
+      "at": {
+        "dayOffset": 2,
+        "time": "09:52"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "3 proposed changes staged for review",
+      "reason": null
+    }
+  ],
+  "SES-2026-607": [
+    {
+      "eventId": "EV-6071",
+      "at": {
+        "dayOffset": 5,
+        "time": "11:20"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-412",
+      "reason": null
+    },
+    {
+      "eventId": "EV-6072",
+      "at": {
+        "dayOffset": 5,
+        "time": "11:52"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "3 proposed changes staged for review",
+      "reason": null
+    }
+  ],
+  "SES-2026-608": [
+    {
+      "eventId": "EV-6081",
+      "at": {
+        "dayOffset": 2,
+        "time": "13:20"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-413",
+      "reason": null
+    },
+    {
+      "eventId": "EV-6082",
+      "at": {
+        "dayOffset": 2,
+        "time": "13:57"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "1 proposed change staged for review",
+      "reason": null
+    }
+  ],
   "SES-2026-609": [
     {
       "eventId": "EV-6091",
       "at": {
         "dayOffset": 3,
-        "time": "12:05"
+        "time": "08:05"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -378,12 +378,12 @@
       "eventId": "EV-6092",
       "at": {
         "dayOffset": 3,
-        "time": "12:52"
+        "time": "08:52"
       },
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "3 proposed changes staged for review",
+      "detail": "1 proposed change staged for review",
       "reason": null
     }
   ],
@@ -391,25 +391,25 @@
     {
       "eventId": "EV-6101",
       "at": {
-        "dayOffset": 2,
-        "time": "13:20"
+        "dayOffset": -2,
+        "time": "08:40"
       },
       "actor": "Voice agent",
       "action": "call_started",
       "changeId": null,
-      "detail": "Outbound call placed to subject S-417",
+      "detail": "Outbound call placed to subject S-416",
       "reason": null
     },
     {
       "eventId": "EV-6102",
       "at": {
-        "dayOffset": 2,
-        "time": "13:57"
+        "dayOffset": -2,
+        "time": "08:48"
       },
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "3 proposed changes staged for review",
+      "detail": "4 proposed changes staged for review",
       "reason": null
     }
   ],
@@ -417,8 +417,8 @@
     {
       "eventId": "EV-6111",
       "at": {
-        "dayOffset": 5,
-        "time": "08:20"
+        "dayOffset": 3,
+        "time": "09:20"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -429,8 +429,34 @@
     {
       "eventId": "EV-6112",
       "at": {
-        "dayOffset": 5,
-        "time": "08:48"
+        "dayOffset": 3,
+        "time": "09:52"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "5 proposed changes staged for review",
+      "reason": null
+    }
+  ],
+  "SES-2026-612": [
+    {
+      "eventId": "EV-6121",
+      "at": {
+        "dayOffset": 3,
+        "time": "12:20"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-419",
+      "reason": null
+    },
+    {
+      "eventId": "EV-6122",
+      "at": {
+        "dayOffset": 3,
+        "time": "12:48"
       },
       "actor": "Voice agent",
       "action": "call_ended",
@@ -439,12 +465,12 @@
       "reason": null
     }
   ],
-  "SES-2026-612": [
+  "SES-2026-613": [
     {
-      "eventId": "EV-6121",
+      "eventId": "EV-6131",
       "at": {
-        "dayOffset": 0,
-        "time": "08:40"
+        "dayOffset": 4,
+        "time": "08:20"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -453,35 +479,9 @@
       "reason": null
     },
     {
-      "eventId": "EV-6122",
-      "at": {
-        "dayOffset": 0,
-        "time": "08:52"
-      },
-      "actor": "Voice agent",
-      "action": "call_ended",
-      "changeId": null,
-      "detail": "4 proposed changes staged for review",
-      "reason": null
-    }
-  ],
-  "SES-2026-613": [
-    {
-      "eventId": "EV-6131",
-      "at": {
-        "dayOffset": -1,
-        "time": "08:20"
-      },
-      "actor": "Voice agent",
-      "action": "call_started",
-      "changeId": null,
-      "detail": "Outbound call placed to subject S-422",
-      "reason": null
-    },
-    {
       "eventId": "EV-6132",
       "at": {
-        "dayOffset": -1,
+        "dayOffset": 4,
         "time": "08:52"
       },
       "actor": "Voice agent",
@@ -501,7 +501,7 @@
       "actor": "Voice agent",
       "action": "call_started",
       "changeId": null,
-      "detail": "Outbound call placed to subject S-424",
+      "detail": "Outbound call placed to subject S-422",
       "reason": null
     },
     {
@@ -521,7 +521,33 @@
     {
       "eventId": "EV-6151",
       "at": {
-        "dayOffset": -2,
+        "dayOffset": 3,
+        "time": "08:20"
+      },
+      "actor": "Voice agent",
+      "action": "call_started",
+      "changeId": null,
+      "detail": "Outbound call placed to subject S-424",
+      "reason": null
+    },
+    {
+      "eventId": "EV-6152",
+      "at": {
+        "dayOffset": 3,
+        "time": "08:57"
+      },
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "2 proposed changes staged for review",
+      "reason": null
+    }
+  ],
+  "SES-2026-616": [
+    {
+      "eventId": "EV-6161",
+      "at": {
+        "dayOffset": 4,
         "time": "10:40"
       },
       "actor": "Voice agent",
@@ -531,41 +557,15 @@
       "reason": null
     },
     {
-      "eventId": "EV-6152",
-      "at": {
-        "dayOffset": -2,
-        "time": "10:52"
-      },
-      "actor": "Voice agent",
-      "action": "call_ended",
-      "changeId": null,
-      "detail": "3 proposed changes staged for review",
-      "reason": null
-    }
-  ],
-  "SES-2026-616": [
-    {
-      "eventId": "EV-6161",
-      "at": {
-        "dayOffset": -1,
-        "time": "12:20"
-      },
-      "actor": "Voice agent",
-      "action": "call_started",
-      "changeId": null,
-      "detail": "Outbound call placed to subject S-426",
-      "reason": null
-    },
-    {
       "eventId": "EV-6162",
       "at": {
-        "dayOffset": -1,
-        "time": "12:52"
+        "dayOffset": 4,
+        "time": "10:57"
       },
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "3 proposed changes staged for review",
+      "detail": "2 proposed changes staged for review",
       "reason": null
     }
   ],
@@ -573,8 +573,8 @@
     {
       "eventId": "EV-6171",
       "at": {
-        "dayOffset": 1,
-        "time": "11:20"
+        "dayOffset": -1,
+        "time": "09:40"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -585,13 +585,13 @@
     {
       "eventId": "EV-6172",
       "at": {
-        "dayOffset": 1,
-        "time": "11:48"
+        "dayOffset": -1,
+        "time": "09:48"
       },
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "2 proposed changes staged for review",
+      "detail": "3 proposed changes staged for review",
       "reason": null
     }
   ],
@@ -599,8 +599,8 @@
     {
       "eventId": "EV-6181",
       "at": {
-        "dayOffset": 3,
-        "time": "08:05"
+        "dayOffset": 4,
+        "time": "09:40"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -611,8 +611,8 @@
     {
       "eventId": "EV-6182",
       "at": {
-        "dayOffset": 3,
-        "time": "08:48"
+        "dayOffset": 4,
+        "time": "09:57"
       },
       "actor": "Voice agent",
       "action": "call_ended",
@@ -631,7 +631,7 @@
       "actor": "Voice agent",
       "action": "call_started",
       "changeId": null,
-      "detail": "Outbound call placed to subject S-430",
+      "detail": "Outbound call placed to subject S-429",
       "reason": null
     },
     {
@@ -651,25 +651,25 @@
     {
       "eventId": "EV-6201",
       "at": {
-        "dayOffset": 1,
-        "time": "10:40"
+        "dayOffset": -2,
+        "time": "08:05"
       },
       "actor": "Voice agent",
       "action": "call_started",
       "changeId": null,
-      "detail": "Outbound call placed to subject S-431",
+      "detail": "Outbound call placed to subject S-430",
       "reason": null
     },
     {
       "eventId": "EV-6202",
       "at": {
-        "dayOffset": 1,
-        "time": "10:57"
+        "dayOffset": -2,
+        "time": "08:52"
       },
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "2 proposed changes staged for review",
+      "detail": "3 proposed changes staged for review",
       "reason": null
     }
   ],
@@ -677,8 +677,8 @@
     {
       "eventId": "EV-6211",
       "at": {
-        "dayOffset": -2,
-        "time": "09:05"
+        "dayOffset": 5,
+        "time": "09:40"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -689,13 +689,13 @@
     {
       "eventId": "EV-6212",
       "at": {
-        "dayOffset": -2,
-        "time": "09:48"
+        "dayOffset": 5,
+        "time": "09:52"
       },
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "2 proposed changes staged for review",
+      "detail": "3 proposed changes staged for review",
       "reason": null
     }
   ],
@@ -703,8 +703,8 @@
     {
       "eventId": "EV-6221",
       "at": {
-        "dayOffset": 3,
-        "time": "10:20"
+        "dayOffset": 4,
+        "time": "08:40"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -715,13 +715,13 @@
     {
       "eventId": "EV-6222",
       "at": {
-        "dayOffset": 3,
-        "time": "10:48"
+        "dayOffset": 4,
+        "time": "08:52"
       },
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "2 proposed changes staged for review",
+      "detail": "3 proposed changes staged for review",
       "reason": null
     }
   ],
@@ -729,8 +729,8 @@
     {
       "eventId": "EV-6231",
       "at": {
-        "dayOffset": 4,
-        "time": "10:20"
+        "dayOffset": 0,
+        "time": "13:40"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -741,13 +741,13 @@
     {
       "eventId": "EV-6232",
       "at": {
-        "dayOffset": 4,
-        "time": "10:57"
+        "dayOffset": 0,
+        "time": "13:57"
       },
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "4 proposed changes staged for review",
+      "detail": "3 proposed changes staged for review",
       "reason": null
     }
   ],
@@ -755,8 +755,8 @@
     {
       "eventId": "EV-6241",
       "at": {
-        "dayOffset": 4,
-        "time": "09:40"
+        "dayOffset": 5,
+        "time": "08:20"
       },
       "actor": "Voice agent",
       "action": "call_started",
@@ -767,24 +767,13 @@
     {
       "eventId": "EV-6242",
       "at": {
-        "dayOffset": 4,
-        "time": "09:57"
+        "dayOffset": 5,
+        "time": "08:57"
       },
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
       "detail": "3 proposed changes staged for review",
-      "reason": null
-    }
-  ],
-  "5e8a0c90-0ba1-4606-8291-1b53677ba14f": [
-    {
-      "eventId": "EV-5e8a0c-ID",
-      "at": "2026-09-20T03:24:06.302Z",
-      "actor": "Voice agent",
-      "action": "call_ended",
-      "changeId": null,
-      "detail": "Identity not_attempted after 0 attempt(s) — nothing staged for review",
       "reason": null
     }
   ]

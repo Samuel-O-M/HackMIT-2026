@@ -17,6 +17,7 @@ const ACTION: Record<ScheduledVisit['reconStatus'], string> = {
   in_progress: 'Open call',
   awaiting_review: 'Review',
   completed: 'View history',
+  no_contact: 'Call again',
 };
 
 export function SessionList({ studyId, study, onStartCall, reloadKey }: Props) {
@@ -48,6 +49,10 @@ export function SessionList({ studyId, study, onStartCall, reloadKey }: Props) {
 
   function act(visit: ScheduledVisit) {
     if (visit.reconStatus === 'not_started') return onStartCall(visit);
+    // A call that did not reach anyone wants calling again, not reviewing —
+    // which is what its button says, so it is what its button does. The
+    // reason it failed is on the review screen, one click further in.
+    if (visit.reconStatus === 'no_contact') return onStartCall(visit);
     if (!visit.sessionId) return;
     if (visit.reconStatus === 'in_progress') return navigate({ name: 'live', sessionId: visit.sessionId });
     if (visit.reconStatus === 'completed') return navigate({ name: 'audit', sessionId: visit.sessionId });

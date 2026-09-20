@@ -174,6 +174,53 @@ async function publishSession(sessionId) {
     }
   }
 
+  // How the call ended, and what that makes of an empty result.
+  const outcome = call.outcome && call.outcome !== 'in_progress'
+    ? call.outcome
+    // The agent never said. Infer only what is safe to infer: a call with no
+    // turns was never had. Anything else stays 'partial' — honest about not
+    // knowing, rather than claiming 'completed' on the agent's behalf.
+    : turns.length === 0 ? 'no_answer' : 'partial';
+
+  // Which attempt this was. Repeated failures to reach someone become a
+  // protocol deviation, so the count is data, not trivia.
+  const attempt = (p.get(
+    `SELECT COUNT(*) AS n FROM call_sessions
+      WHERE subject_id = ? AND started_at <= ?`,
+    call.subject_id, call.started_at
+  )?.n) || 1;
+
+  /**
+   * Questions the call never reached.
+   *
+   * A protocol rule with no staged row was not answered "no" — it was not
+   * asked. Publishing only what was said would let a coordinator read silence
+   * as a clean sweep, which is the same mistake as the empty-changes one.
+   */
+  const asked = new Set(behaviours.map((b) => b.behaviour_code));
+  const notAsked = behaviourRules
+    .map((r) => r.behaviour_code)
+    .filter((code) => !asked.has(code));
+
+  const ending = {
+    outcome,
+    detail: call.outcome_detail || null,
+    callbackText: call.callback_text || null,
+    callbackAfter: call.callback_after || null,
+    attempt,
+    notAsked,
+  };
+
+  // Did this call produce anything a coordinator can act on?
+  const hasContent =
+    staged.length > 0 || adherence.length > 0 || behaviours.length > 0 || symptoms.length > 0;
+
+  const REVIEWABLE = new Set(['completed', 'partial']);
+  const status =
+    identity.outcome !== 'verified' ? 'no_contact'
+      : REVIEWABLE.has(outcome) || hasContent ? 'awaiting_review'
+      : 'no_contact';
+
   const payload = {
     session: {
       sessionId,
@@ -183,13 +230,14 @@ async function publishSession(sessionId) {
       endedAt: call.ended_at || new Date().toISOString(),
       // A call whose identity never checked out is not reviewable clinical
       // data. It is published so the attempt is on record, and held back.
-      status: identity.outcome === 'verified' ? 'awaiting_review' : 'in_progress',
+      status,
       changes: identity.outcome === 'verified' ? staged.map(toProposedChange) : [],
       adherence: identity.outcome === 'verified' ? adherence.map(toAdherence) : [],
       behaviours: identity.outcome === 'verified' ? behaviours.map(toBehaviour) : [],
       symptoms: identity.outcome === 'verified' ? symptoms.map(toSymptom) : [],
       // Whose account this is. A coordinator reading a medication list needs to
       // know it came from the participant's spouse rather than the participant.
+      ending,
       callParticipants: {
         caregiverPresent: call.caregiver_present === 1,
         caregiverRelationship: call.caregiver_relationship || null,
@@ -224,7 +272,7 @@ async function publishSession(sessionId) {
       `[bridge] published ${sessionId} · ${payload.session.changes.length} change(s) · ` +
       `${payload.session.adherence.length} adherence · ${payload.session.behaviours.length} behaviour(s) · ` +
       `${payload.session.symptoms.length} symptom(s) · ` +
-      `identity ${identity.outcome}` +
+      `outcome ${outcome} · attempt ${attempt} · identity ${identity.outcome}` +
       (payload.session.callParticipants.caregiverPresent ? ` · caregiver ${payload.session.callParticipants.caregiverAuthStatus}` : '')
     );
     return {
@@ -234,6 +282,8 @@ async function publishSession(sessionId) {
       behaviours: payload.session.behaviours.length,
       symptoms: payload.session.symptoms.length,
       identity: identity.outcome,
+      outcome,
+      status,
     };
   } catch (err) {
     console.error('[bridge] could not publish', sessionId, String(err.message || err));

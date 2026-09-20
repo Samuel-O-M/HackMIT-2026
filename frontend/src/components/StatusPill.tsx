@@ -5,6 +5,7 @@ const LABEL: Record<ScheduledVisit['reconStatus'], string> = {
   in_progress: 'Call in progress',
   awaiting_review: 'Awaiting review',
   completed: 'Promoted to log',
+  no_contact: 'Needs another call',
 };
 
 export function StatusPill({ status }: { status: ScheduledVisit['reconStatus'] }) {

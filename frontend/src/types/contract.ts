@@ -157,7 +157,51 @@ export interface CallParticipants {
   caregiverAuthStatus: CaregiverAuthStatus;
 }
 
-export type SessionStatus = 'in_progress' | 'awaiting_review' | 'completed';
+/**
+ * 'no_contact' is the fourth state and the one that was missing.
+ *
+ * A call that produced nothing reviewable — no answer, a participant who asked
+ * to be called back, an identity that did not check out — is not in progress,
+ * is not awaiting review, and is certainly not completed. Without somewhere to
+ * put it, it landed in 'awaiting_review' next to calls that had actually been
+ * conducted, and the screen said "nothing changed since the last visit" over
+ * a call that never happened.
+ */
+export type SessionStatus = 'in_progress' | 'awaiting_review' | 'completed' | 'no_contact';
+
+/**
+ * How a call ended, in the agent's own reading of it.
+ *
+ * Distinct from `status`, which is about the coordinator's queue. Two calls
+ * can both be 'no_contact' and need entirely different follow-up: one wants a
+ * callback at a stated time, one wants the site to check the number.
+ */
+export type CallOutcome =
+  | 'in_progress'
+  | 'completed'
+  | 'partial'
+  | 'reschedule_requested'
+  | 'no_answer'
+  | 'declined'
+  | 'unable_to_verify'
+  | 'participant_unavailable'
+  | 'abandoned'
+  | 'agent_error';
+
+export interface CallEnding {
+  outcome: CallOutcome;
+  detail: string | null;
+  /** Their own words. Never a parsed timestamp unless they gave one. */
+  callbackText: string | null;
+  callbackAfter: string | null;
+  /** Which attempt this was to reach this participant. */
+  attempt: number;
+  /**
+   * Sections the call never got to. Silence is not a negative finding, and
+   * an unasked question must not render as "none reported".
+   */
+  notAsked: string[];
+}
 
 export interface ReconciliationSession {
   sessionId: string;
@@ -173,4 +217,5 @@ export interface ReconciliationSession {
   behaviours?: BehaviourReport[];
   symptoms?: SymptomReport[];
   callParticipants?: CallParticipants;
+  ending?: CallEnding;
 }

@@ -14,6 +14,9 @@ import { AdherencePanel } from '../components/AdherencePanel';
 import { BehaviourPanel } from '../components/BehaviourPanel';
 import { SymptomPanel } from '../components/SymptomPanel';
 import { CaregiverNote } from '../components/CaregiverNote';
+import { CallEndingNote } from '../components/CallEndingNote';
+import { emptyMeansNothingChanged } from '../lib/callFindings';
+import { placeCall } from '../api/telephony';
 import {
   DeviationDialog,
   QueryDialog,
@@ -183,6 +186,22 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
           </div>
         </header>
 
+        <CallEndingNote
+          ending={session.ending}
+          onCallAgain={() => {
+            placeCall(session.subjectId, coordinator.username)
+              .then((c) =>
+                onToast(
+                  c.status === 'failed'
+                    ? c.reason ?? `Could not reach ${session.subjectId}.`
+                    : `Ringing ${session.subjectId} again.`,
+                  c.status === 'failed' ? 'warn' : 'ok',
+                ),
+              )
+              .catch(() => onToast('Could not reach the voice server.', 'warn'));
+          }}
+        />
+
         <CaregiverNote participants={session.callParticipants} />
 
         <ProhibitedAlert
@@ -196,9 +215,20 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
 
         {session.changes.length === 0 ? (
           <div className="empty">
-            <h2>Nothing changed since the last visit</h2>
+            {/* Only a completed call can support "nothing changed". On any
+                other ending the blank list means the questions were never
+                asked, and saying otherwise states a clinical finding the call
+                did not produce. */}
+            <h2>
+              {emptyMeansNothingChanged(session.ending)
+                ? 'Nothing changed since the last visit'
+                : 'No medication changes were captured'}
+            </h2>
             <p>
-              {session.endedAt ? formatDateTime(session.endedAt) : 'Call ended'} · nothing to promote.
+              {session.endedAt ? formatDateTime(session.endedAt) : 'Call ended'} ·{' '}
+              {emptyMeansNothingChanged(session.ending)
+                ? 'the full review was completed and nothing needs promoting.'
+                : 'this call did not complete the medication review.'}
             </p>
             <button
               className="btn"
@@ -245,7 +275,10 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
             the screen was built around. */}
         <SymptomPanel reports={session.symptoms ?? []} />
         <AdherencePanel reports={session.adherence ?? []} />
-        <BehaviourPanel reports={session.behaviours ?? []} />
+        <BehaviourPanel
+          reports={session.behaviours ?? []}
+          notAsked={session.ending?.notAsked ?? []}
+        />
       </div>
 
       {session.changes.length > 0 && (

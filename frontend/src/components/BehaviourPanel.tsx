@@ -9,6 +9,8 @@ import {
 
 interface Props {
   reports: BehaviourReport[];
+  /** Protocol rules this call never reached. Silence is not a negative. */
+  notAsked?: string[];
 }
 
 /**
@@ -21,8 +23,8 @@ interface Props {
  * including the questions that came back clean, because "we asked and they
  * said no" is the answer a monitor will want and an empty row cannot give.
  */
-export function BehaviourPanel({ reports }: Props) {
-  if (reports.length === 0) return null;
+export function BehaviourPanel({ reports, notAsked = [] }: Props) {
+  if (reports.length === 0 && notAsked.length === 0) return null;
 
   const declined = reports.filter((r) => r.status === 'declined_to_answer').length;
 
@@ -31,7 +33,11 @@ export function BehaviourPanel({ reports }: Props) {
       <header className="findings-head">
         <h2 id="behaviour-title">Protocol requirements</h2>
         <span className="dim">
-          {declined > 0 ? `${declined} declined to answer` : `${reports.length} asked`}
+          {notAsked.length > 0
+            ? `${notAsked.length} not asked`
+            : declined > 0
+              ? `${declined} declined to answer`
+              : `${reports.length} asked`}
         </span>
       </header>
 
@@ -72,6 +78,18 @@ export function BehaviourPanel({ reports }: Props) {
             </li>
           );
         })}
+
+        {/* Rules the call never reached. Rendered rather than omitted: an
+            absent row reads as "nothing to report", and these are the ones
+            where nobody knows. */}
+        {notAsked.map((code) => (
+          <li className="findings-item" data-tone="note" key={`not-asked-${code}`}>
+            <div className="findings-main">
+              <div className="findings-name findings-name-muted">{behaviourLabel(code)}</div>
+              <div className="findings-meta">Not asked — the call ended before this</div>
+            </div>
+          </li>
+        ))}
       </ul>
     </section>
   );
