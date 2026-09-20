@@ -72,7 +72,7 @@ function read({ subjectId, sessionId, scope, limit }) {
       if (!sessionId) return [];
       return p
         .query(
-          'SELECT speaker, transcript FROM utterances WHERE session_id = ? ORDER BY seq DESC LIMIT ?',
+          'SELECT speaker, transcript, source FROM utterances WHERE session_id = ? ORDER BY seq DESC LIMIT ?',
           sessionId,
           max
         )

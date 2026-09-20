@@ -613,7 +613,7 @@
   let greeting = false;
 
   /** `opening`: the agent speaks first — there is no participant utterance. */
-  async function doTurn(text, { opening = false } = {}) {
+  async function doTurn(text, { opening = false, stt = false } = {}) {
     while (agentSpeaking) await sleep(100);
     setState(opening ? 'connecting' : 'thinking');
     if (opening) greeting = true;
@@ -649,7 +649,7 @@
       const res = await fetch('/api/brain/turn/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, subjectId, text, opening }),
+        body: JSON.stringify({ sessionId, subjectId, text, opening, source: stt ? 'stt' : 'text' }),
       });
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));
@@ -684,10 +684,10 @@
     refreshUntilIdle(4, 1300);
   }
 
-  function enqueueTurn(text) {
+  function enqueueTurn(text, { stt = false } = {}) {
     const t = (text || '').trim();
     if (!t) return;
-    queue.push(t);
+    queue.push({ text: t, stt });
     pump();
   }
 
@@ -698,7 +698,7 @@
       while (queue.length) {
         const next = queue.shift();
         if (typeof next === 'string') await doTurn(next);
-        else await doTurn('', next); // { opening: true }
+        else await doTurn(next.text || '', next); // { opening } or { text, stt }
       }
     } finally {
       turnBusy = false;
@@ -726,7 +726,7 @@
     const text = pendingFinals.join(' ').trim();
     pendingFinals = [];
     interim = '';
-    if (text) enqueueTurn(text);
+    if (text) enqueueTurn(text, { stt: true });
   }
 
   function handleStt(msg) {

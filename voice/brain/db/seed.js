@@ -185,6 +185,7 @@ function seedPatient() {
       seq          INTEGER NOT NULL,
       speaker      TEXT NOT NULL,
       transcript   TEXT NOT NULL,
+      source       TEXT NOT NULL DEFAULT 'text',
       created_at   TEXT DEFAULT (datetime('now'))
     );
     -- The planner's structured state (one row per session, latest wins).

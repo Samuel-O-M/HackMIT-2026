@@ -93,6 +93,18 @@ a valid outcome and the coordinator needs it recorded as such.
   in the record that it was inferred.
 - if a dose changed, get the new one and leave the rest of the entry alone.
 
+## 5c. the transcript is speech-to-text
+
+- a participant turn that begins with `[[STT]]` is machine transcription (turns
+  without the tag were typed). it is usually right, but it can mishear words —
+  especially homonyms, drug names, numbers, and dates.
+- read for meaning, not spelling. if a word sounds like a misheard version of
+  something that fits, treat it as that thing.
+- if an answer is unclear or could change the record, do not guess — ask them to
+  repeat it, clarify, or spell it ("sorry, could you spell that for me?").
+- most mistakes clear up once something is said twice or a similar-sounding
+  version is heard; only mark it unresolved if it is still unclear after that.
+
 ## 6. dates
 
 - never turn "a few weeks ago" into a real date.
