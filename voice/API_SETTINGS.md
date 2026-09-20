@@ -243,27 +243,35 @@ image generation, moderation.
 
 # What this UI wires up
 
+The UI is a single call screen (`voice/public/`: `index.html`, `styles.css`,
+`app.js`). Fixed in code there: STT model `nova-3` (streaming via `/ws/listen`,
+interim results + VAD, endpointing 800 ms, silence-to-reply 1500 ms) and the
+TTS voice `aura-2-helena-en`.
+
 | Setting | Where |
 |---------|-------|
-| STT model / language / smart_format / punctuate / diarize / numerals / redact | **[UI]** STT settings card (batch **and** live) |
-| `interim_results`, `vad_events`, `endpointing` | **[UI]** live STT card |
-| TTS voice / encoding / container | **[UI]** Text→Speech card |
-| OpenAI model + reasoning effort | **[UI]** Chat card (test area) |
+| Participant picker → `/api/patients` | **[UI]** call screen |
+| Streaming STT (nova-3, linear16, interims + VAD) | **[UI]** `/ws/listen` |
+| TTS voice | **[UI]** `app.js` (`aura-2-helena-en`) |
+| Mic mute / start / end call | **[UI]** call controls |
+| Transcript (you + agent, incl. interims) | **[UI]** conversation pane |
+| Grounding (patient record + tool lookups) | **[UI]** right pane, from `/api/brain/debug` |
+| Brain/planner state + channel | **[UI]** right pane, from `/api/brain/debug` |
+| Offline session log | browser event log + `GET /api/brain/log` → `voice/logs/<sessionId>.jsonl` |
+| Talker patient-record preload | `voice/brain/agents/talker.js` (reloaded every turn) |
 | Thinker/Planner + Talker model & effort | chosen in code: `voice/brain/config.js` |
-| Live STT | proxied via `/ws/listen` (key never leaves the server) |
-
-Not wired up (documented for reference): Flux STT (`/v2/listen`), Flux TTS
-(`/v2/speak`), Voice Agent, Audio/Text Intelligence, temporary tokens (blocked by
-key permissions).
 
 ## Try these quick experiments
-1. **Batch vs live**: record on the batch card, then read the same sentence on
-   the live card — compare interim vs final output and latency.
-2. **`nova-3-medical`** vs `nova-3` on a sentence full of drug names.
-3. **`redact=ssn`** on "my social security number is…".
-4. **Diarize** a two-person clip and inspect `words[].speaker`.
-5. **TTS**: same text across voices; `linear16`+`wav` vs default `mp3`.
-6. **Chat**: same prompt at `reasoning_effort` low → max; watch quality/latency.
+1. **Diarize / redact / medical model** — these are server allow-listed params;
+   try them with `curl` on `POST /api/transcribe` (e.g. `?redact=ssn` on
+   "my social security number is…").
+2. **`nova-3-medical`** vs `nova-3` on a sentence full of drug names (set
+   `DEEPGRAM_STT_MODEL` or pass `?model=`).
+3. **TTS voices** — swap the voice in `app.js` and compare.
+4. **Grounding** — during a call, mention a drug; watch the right pane show the
+   `health_search` result and any `check_prohibited` hit.
+5. **Offline log** — run a call, then `GET /api/brain/log?sessionId=…` and
+   inspect every turn including full tool-call results.
 
 ## References
 - Deepgram: https://developers.deepgram.com/reference/speech-to-text/listen-streaming

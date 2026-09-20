@@ -2,14 +2,21 @@
 
 A local harness for the whole voice pipeline:
 
-**mic → Deepgram STT → (Test chat · or · Brain: Thinker → Talker) → Deepgram TTS → speakers**
+**mic → Deepgram STT → Brain (Talker + Thinker/Planner, grounded on the patient & drug databases) → Deepgram TTS → speakers**
 
-The UI has **two tabs**:
+The UI is a **single call screen**:
 
-- **🧪 Test area** — exercise the APIs directly: batch STT, **live streaming
-  STT**, transcribe-a-URL, plain OpenAI chat, TTS, and STT/TTS settings.
-- **🧠 Product — Thinker → Talker** — the real product: pick a participant,
-  start a session, and talk to the two-agent brain (`brain/`).
+- **The call** — pick a participant, start the call, and talk. Your words and
+  the agent's words appear as bubbles; mute the mic or end the call at any time.
+- **Grounding** — the participant's record (profile, study, current
+  medications) that is preloaded into the agent every turn, plus what it
+  looked up (`health_search`, `check_prohibited`) on the last turn.
+- **Brain & planner** — goal, known/missing, next questions, flags, planner
+  status and channel state.
+- **Session log** — every event is kept offline for debugging: the browser
+  keeps its own event log (downloadable), and the server appends a JSONL log
+  per session to `voice/logs/<sessionId>.jsonl` (also served at
+  `GET /api/brain/log?sessionId=…`). Logs are gitignored.
 
 See [`API_SETTINGS.md`](./API_SETTINGS.md) for every Deepgram + OpenAI setting,
 and [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the design.
@@ -37,6 +44,9 @@ Open **http://localhost:8787**. Mic access works on `localhost` (or HTTPS).
 | `GET  /api/patients` | participants from the patient DB |
 | `POST /api/brain/session` | `{subjectId}` → `{sessionId}` |
 | `POST /api/brain/turn` | `{sessionId, subjectId, text}` → `{say, thinking}` |
+| `POST /api/brain/channel` | `{sessionId, state}` — call channel state |
+| `GET  /api/brain/debug` | `?sessionId=` → full brain/planner debug snapshot |
+| `GET  /api/brain/log` | `?sessionId=` → the session's offline JSONL log |
 
 STT/TTS allow-listed settings can be passed as query params
 (e.g. `?model=nova-2-medical&diarize=true`, `?model=aura-2-helena-en&encoding=linear16&container=wav`).
@@ -53,8 +63,7 @@ STT/TTS allow-listed settings can be passed as query params
 | `PORT` | `8787` | server port |
 
 Model + reasoning-effort choices for the brain live in code
-(`brain/config.js`), not `.env`. The plain-chat model in the Test tab is set in
-`voice/server.js` (and can be overridden per-request by the UI pickers).
+(`brain/config.js`), not `.env`.
 
 ## Documents
 

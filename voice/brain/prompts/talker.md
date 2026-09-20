@@ -53,6 +53,9 @@ you genuinely need fresh information mid-turn. Never request the whole record.
 
 - `PLANNER STATE` — goal, known, missing, next_questions, flags. This is the
   planner's best current view.
+- `PATIENT RECORD` — the participant's own record (profile, study, current
+  medications), read from patient.db and reloaded every turn. Treat it as
+  ground truth; it is already here, so you do not need `patient_read` for it.
 - `RECENT CONVERSATION` — the last few turns.
 
 If the planner state has a `next_questions` entry and the conversation has not

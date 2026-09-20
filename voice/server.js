@@ -16,6 +16,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const brain = require('./brain/brain');
+const logger = require('./logger');
 
 let WS = null;
 try {
@@ -350,6 +351,10 @@ async function handleBrainSession(req, res) {
     return;
   }
   const session = brain.startSession(subjectId);
+  logger.append(session.session_id, 'session.start', {
+    subjectId,
+    studyId: session.study_id ?? null,
+  });
   sendJson(res, 200, { sessionId: session.session_id, subjectId });
 }
 
@@ -367,6 +372,18 @@ async function handleBrainTurn(req, res) {
     return;
   }
   const result = await brain.handleTurn({ sessionId, subjectId, userText: String(text || '') });
+  // Full record — including every tool call with args and result — goes to the
+  // offline log; the browser only gets the tool names.
+  logger.append(sessionId, 'turn', {
+    subjectId,
+    userText: String(text || ''),
+    say: result.say,
+    toolCalls: result.toolCalls,
+    model: result.model,
+    latencyMs: result.latencyMs,
+    planning: result.planning,
+    state: result.state,
+  });
   sendJson(res, 200, {
     say: result.say,
     state: result.state,
@@ -392,6 +409,7 @@ async function handleBrainEnd(req, res) {
     return;
   }
   brain.endSession(sessionId);
+  logger.append(sessionId, 'session.end', {});
   sendJson(res, 200, { ok: true, sessionId });
 }
 
@@ -409,6 +427,26 @@ async function handleChannel(req, res) {
     return;
   }
   sendJson(res, 200, brain.setChannel(sessionId, state));
+  logger.append(sessionId, 'channel', { state: String(state || '') });
+}
+
+/** Download a session's offline log (voice/logs/<sessionId>.jsonl). */
+async function handleBrainLog(req, res) {
+  const { searchParams } = new URL(req.url, 'http://localhost');
+  const sessionId = searchParams.get('sessionId');
+  if (!sessionId) {
+    sendJson(res, 400, { error: 'Missing "sessionId".' });
+    return;
+  }
+  const log = logger.readLog(sessionId);
+  const name = logger.fileFor?.(sessionId) ? sessionId : 'session';
+  const body = log || '';
+  res.writeHead(200, {
+    'Content-Type': 'text/plain; charset=utf-8',
+    'Content-Length': Buffer.byteLength(body),
+    'Content-Disposition': `attachment; filename="${name}.jsonl"`,
+  });
+  res.end(body);
 }
 
 async function handleBrainDebug(req, res) {
@@ -450,6 +488,7 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/brain/channel' && req.method === 'POST') return await handleChannel(req, res);
     if (pathname === '/api/brain/state' && req.method === 'GET') return await handleBrainState(req, res);
     if (pathname === '/api/brain/debug' && req.method === 'GET') return await handleBrainDebug(req, res);
+    if (pathname === '/api/brain/log' && req.method === 'GET') return await handleBrainLog(req, res);
 
     if (pathname.startsWith('/api/')) {
       sendJson(res, 404, { error: 'Unknown API route.' });
@@ -458,6 +497,10 @@ const server = http.createServer(async (req, res) => {
     serveStatic(req, res);
   } catch (err) {
     console.error(err);
+    logger.appendError({
+      path: (() => { try { return new URL(req.url, 'http://localhost').pathname; } catch { return '?'; } })(),
+      error: String(err?.message || err),
+    });
     if (!res.headersSent) sendJson(res, 500, { error: String(err?.message || err) });
     else res.end();
   }

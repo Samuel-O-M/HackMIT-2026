@@ -93,7 +93,7 @@ nothing, the model must record it as missing rather than guess. See
 | Patient / clinical | `db/patient.db` | **read + controlled write** |
 
 Generated, not committed. Reset with `node db/seed.js`.
-Drug and class facts are not in these files: they come from `../../medical_data`
+Drug and class facts are not in these files: they come from `../../api/medical_data`
 (real RxNorm / RxClass, cached locally; see its README).
 
 ## Run

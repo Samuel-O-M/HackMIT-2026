@@ -1,277 +1,168 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Voice Agent</title>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <header>
-      <h1>Voice Agent</h1>
-      <div id="status" class="pills" aria-live="polite">
-        <span class="pill" data-key="deepgram">Deepgram: …</span>
-        <span class="pill" data-key="openai">OpenAI: …</span>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinical Call</title>
+  <script>
+    // Set the theme before first paint so the page never flashes the wrong one.
+    (function () {
+      try {
+        var saved = localStorage.getItem('voice.theme');
+        var dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles.css?v=4" />
+</head>
+<body>
+
+  <!-- Ambient colour behind the glass. Transform-only animation, no blur filter. -->
+  <div class="bg" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+    <span class="blob b4"></span>
+  </div>
+
+  <div class="app" id="app">
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M9.5 8.5v7M14.5 8.5v7M6 10v4M18 10v4" />
+          </svg>
+        </span>
+        <span class="brand-name">Clinical Call</span>
+        <span class="brand-site">Site 042</span>
+      </div>
+      <div class="top-actions">
+        <button id="devToggle" class="icon-btn" aria-label="Developer mode" aria-pressed="false" title="Developer mode">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.9 2.9-2.1-.7-.7-2.1 2.7-3.1z"/>
+          </svg>
+        </button>
+        <button id="themeToggle" class="icon-btn" aria-label="Switch theme" title="Switch theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2.5v2M12 19.5v2M4.3 4.3l1.4 1.4M18.3 18.3l1.4 1.4M2.5 12h2M19.5 12h2M4.3 19.7l1.4-1.4M18.3 5.7l1.4-1.4"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/>
+          </svg>
+        </button>
       </div>
     </header>
 
-    <nav class="tabs" role="tablist">
-      <button class="tab active" data-tab="test" role="tab">🧪 Test area</button>
-      <button class="tab" data-tab="product" role="tab">🧠 Product — Thinker → Talker</button>
-      <button class="tab" data-tab="live" role="tab">🔬 Live brain — 3 views</button>
-    </nav>
-
-    <main>
-      <p id="error" class="error" hidden></p>
-
-      <!-- ============================ TEST AREA ============================ -->
-      <section id="tab-test" class="tab-panel active">
-        <div class="grid">
-          <div class="card">
-            <h2>1 · Speech → Text <small>(batch, Deepgram)</small></h2>
-            <div class="row">
-              <button id="recordBtn" class="primary">● Record</button>
-              <span id="recordState" class="muted">idle</span>
-            </div>
-            <label class="field">
-              <span>Transcript</span>
-              <textarea id="transcript" rows="4" placeholder="Your speech will appear here…"></textarea>
-            </label>
-            <details>
-              <summary>Raw Deepgram response</summary>
-              <pre id="sttRaw" class="raw"></pre>
-            </details>
-          </div>
-
-          <div class="card">
-            <h2>2 · Live streaming STT <small>(WebSocket)</small></h2>
-            <div class="row">
-              <button id="liveBtn" class="primary">▶ Start live</button>
-              <span id="liveState" class="muted">idle</span>
-            </div>
-            <div id="liveInterim" class="live-interim">…</div>
-            <details open>
-              <summary>Final transcript</summary>
-              <textarea id="liveFinal" rows="4" readonly></textarea>
-            </details>
-            <details>
-              <summary>Event log</summary>
-              <pre id="liveLog" class="raw"></pre>
-            </details>
-          </div>
-
-          <div class="card">
-            <h2>3 · Transcribe a URL <small>(Deepgram)</small></h2>
-            <label class="field">
-              <span>Audio URL</span>
-              <input id="urlInput" type="text" placeholder="https://dpgr.am/spacewalk.wav" />
-            </label>
-            <div class="row">
-              <button id="urlBtn">Transcribe URL</button>
-            </div>
-            <pre id="urlRaw" class="raw"></pre>
-          </div>
-
-          <div class="card">
-            <h2>4 · Chat <small>(OpenAI)</small></h2>
-            <div class="row wrap">
-              <label class="inline">model
-                <select id="chatModel">
-                  <option value="gpt-5.6-luna">gpt-5.6-luna</option>
-                  <option value="gpt-5.6-terra">gpt-5.6-terra</option>
-                  <option value="gpt-5.6-sol">gpt-5.6-sol</option>
-                </select>
-              </label>
-              <label class="inline">reasoning
-                <select id="chatEffort">
-                  <option>none</option><option>low</option><option selected>medium</option>
-                  <option>high</option><option>xhigh</option><option>max</option>
-                </select>
-              </label>
-            </div>
-            <div id="messages" class="messages"></div>
-            <div class="row">
-              <input id="chatInput" type="text" placeholder="Type a message…" />
-              <button id="sendBtn">Send</button>
-              <button id="useTranscriptBtn" class="ghost">Use transcript</button>
-            </div>
-            <label class="check">
-              <input id="autoSpeak" type="checkbox" checked />
-              <span>Auto-speak replies</span>
-            </label>
-          </div>
-
-          <div class="card">
-            <h2>5 · Text → Speech <small>(Deepgram)</small></h2>
-            <label class="field">
-              <span>Text to speak</span>
-              <textarea id="ttsText" rows="2" placeholder="Type something to hear…"></textarea>
-            </label>
-            <div class="row wrap">
-              <label class="inline">voice
-                <select id="ttsVoice"></select>
-              </label>
-              <label class="inline">encoding
-                <select id="ttsEncoding">
-                  <option value="">default (mp3)</option>
-                  <option value="linear16">linear16</option>
-                  <option value="mulaw">mulaw</option>
-                  <option value="alaw">alaw</option>
-                  <option value="flac">flac</option>
-                  <option value="opus">opus</option>
-                </select>
-              </label>
-              <label class="inline">container
-                <select id="ttsContainer">
-                  <option value="">default</option>
-                  <option value="wav">wav</option>
-                  <option value="ogg">ogg</option>
-                </select>
-              </label>
-            </div>
-            <div class="row">
-              <button id="speakBtn">🔊 Speak</button>
-              <button id="stopAudioBtn" class="ghost">Stop audio</button>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>6 · STT settings <small>(applied to batch + live)</small></h2>
-            <div class="row wrap">
-              <label class="inline">model
-                <select id="sttModel">
-                  <option>nova-3</option>
-                  <option>nova-3-medical</option>
-                  <option>nova-2</option>
-                  <option>nova-2-medical</option>
-                  <option>nova-2-conversationalai</option>
-                  <option>enhanced</option>
-                  <option>base</option>
-                </select>
-              </label>
-              <label class="inline">language<input id="sttLanguage" type="text" value="en" size="5" /></label>
-              <label class="inline">redact
-                <select id="sttRedact">
-                  <option value="">off</option><option>pci</option><option>numbers</option>
-                  <option>aggressive_numbers</option><option>ssn</option>
-                </select>
-              </label>
-            </div>
-            <div class="row wrap">
-              <label class="check"><input id="sttSmart" type="checkbox" checked /><span>smart_format</span></label>
-              <label class="check"><input id="sttPunct" type="checkbox" checked /><span>punctuate</span></label>
-              <label class="check"><input id="sttDiarize" type="checkbox" /><span>diarize</span></label>
-              <label class="check"><input id="sttNumerals" type="checkbox" /><span>numerals</span></label>
-              <label class="check"><input id="liveInterimChk" type="checkbox" checked /><span>interim_results</span></label>
-              <label class="check"><input id="liveVad" type="checkbox" checked /><span>vad_events</span></label>
-              <label class="inline">endpointing<input id="liveEndpointing" type="number" value="300" size="5" /></label>
-            </div>
+    <main class="stage">
+      <!-- ===================== welcome ===================== -->
+      <section class="welcome" id="welcomeView">
+        <h1 class="welcome-title">Good to hear<br/>from you.</h1>
+        <div class="welcome-form glass">
+          <label class="who-label" for="patient">Who is on the call?</label>
+          <div class="who-row">
+            <select id="patient" class="who-select"></select>
+            <button id="start" class="cta">
+              <span class="cta-shine" aria-hidden="true"></span>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M6.6 3.2c.7-.4 1.6-.1 2 .6l1 1.8c.4.7.3 1.6-.3 2.1L8 8.7a12.6 12.6 0 0 0 7.3 7.3l1-1.3c.5-.6 1.4-.7 2.1-.3l1.8 1c.7.4 1 1.3.6 2l-.9 1.8c-.5 1-1.7 1.5-2.7 1.1C9.9 17.8 6.2 14.1 3.7 6.8c-.4-1 .1-2.2 1.1-2.7l1.8-.9z"/></svg>
+              <span>Start the call</span>
+            </button>
           </div>
         </div>
       </section>
 
-      <!-- ============================= PRODUCT ============================= -->
-      <section id="tab-product" class="tab-panel">
-        <div class="grid product">
-          <div class="card">
-            <h2>Session</h2>
-            <div class="row wrap">
-              <label class="inline">participant
-                <select id="patientSelect"></select>
-              </label>
-              <button id="newSessionBtn" class="primary">New session</button>
-              <span id="sessionState" class="muted">no session</span>
-            </div>
-            <p class="muted small">
-              Flow: mic → Deepgram STT → <b>Talker</b> (fast, replies now) · <b>Planner</b>
-              (background: reasoning, retrieval, memory) → Deepgram TTS.
-            </p>
-          </div>
-
-          <div class="card">
-            <h2>Conversation</h2>
-            <div id="prodMessages" class="messages tall"></div>
-            <div class="row">
-              <button id="prodRecordBtn" class="primary">● Record</button>
-              <span id="prodRecordState" class="muted">idle</span>
-              <button id="prodUseTranscriptBtn" class="ghost" disabled>Use transcript</button>
-            </div>
-            <label class="field">
-              <span>Last transcript</span>
-              <textarea id="prodTranscript" rows="2" placeholder="spoken words appear here…"></textarea>
-            </label>
-            <div class="row">
-              <input id="prodInput" type="text" placeholder="…or type what the participant says" />
-              <button id="prodSendBtn">Send</button>
-            </div>
-            <label class="check">
-              <input id="prodAutoSpeak" type="checkbox" checked />
-              <span>Auto-speak the Talker's reply, and auto-send after recording</span>
-            </label>
-          </div>
-
-          <div class="card">
-            <h2>Planner state <small>(background; never spoken)</small></h2>
-            <div id="plannerStatus" class="muted small">—</div>
-            <div class="kv"><span>goal</span><div id="thinkGoal" class="muted">—</div></div>
-            <div class="kv"><span>known</span><div id="thinkKnown" class="muted">—</div></div>
-            <div class="kv"><span>missing</span><div id="thinkMissing" class="muted">—</div></div>
-            <div class="kv"><span>next question</span><div id="thinkNext" class="muted">—</div></div>
-            <div class="kv"><span>flags</span><div id="thinkFlags" class="muted">—</div></div>
-            <details open>
-              <summary>Full state JSON</summary>
-              <pre id="thinkRaw" class="raw tall"></pre>
-            </details>
-          </div>
+      <!-- ===================== in call ===================== -->
+      <section class="call hidden" id="callView">
+        <div class="status-line glass" id="status" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="statusText">Connecting…</span>
         </div>
-      </section>
-      <!-- ========================== LIVE BRAIN (3 views) ========================== -->
-      <section id="tab-live" class="tab-panel">
-        <div class="card">
-          <div class="row wrap">
-            <label class="inline">participant <select id="livePatient"></select></label>
-            <button id="liveStartCall" class="primary">📞 Start call</button>
-            <button id="liveEndCall" class="ghost" disabled>📴 End call</button>
-            <span id="liveCallStatus" class="pill">idle</span>
-            <span id="liveSessionState" class="muted">no session</span>
-            <label class="check"><input id="liveAutoSpeak" type="checkbox" checked /><span>auto-speak</span></label>
-            <label class="check"><input id="liveVerbose" type="checkbox" /><span>verbose</span></label>
+
+        <div class="conversation" id="conversation" aria-live="polite" aria-label="Conversation so far"></div>
+
+        <div class="dock glass">
+          <div class="dock-row">
+            <button id="mute" class="pill-btn" disabled>
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+              <span id="muteLabel">Mute</span>
+            </button>
+
+            <button id="end" class="pill-btn danger" disabled>
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M6.6 3.2c.7-.4 1.6-.1 2 .6l1 1.8c.4.7.3 1.6-.3 2.1L8 8.7a12.6 12.6 0 0 0 7.3 7.3l1-1.3c.5-.6 1.4-.7 2.1-.3l1.8 1c.7.4 1 1.3.6 2l-.9 1.8c-.5 1-1.7 1.5-2.7 1.1C9.9 17.8 6.2 14.1 3.7 6.8c-.4-1 .1-2.2 1.1-2.7l1.8-.9z" transform="rotate(135 12 12)"/></svg>
+              End call
+            </button>
+
+            <button id="typeToggle" class="link-btn" aria-expanded="false">Type instead</button>
+            <button id="backToStart" class="link-btn hidden">← Back to start</button>
           </div>
-          <div class="row wrap">
-            <input id="liveInput" type="text" placeholder="…or type what the participant says" />
-            <button id="liveSend">Send</button>
-            <button id="liveRefresh" class="ghost">Refresh</button>
-            <label class="inline">endpointing ms<input id="liveEndpointing" type="number" value="800" size="5" /></label>
-            <label class="inline">silence to reply ms<input id="liveUtteranceEnd" type="number" value="1500" size="5" /></label>
+          <div class="type-row hidden" id="typeRow">
+            <input id="typeInput" class="type-input" placeholder="Type what you'd say, then press Enter" autocomplete="off" />
+            <button id="typeSend" class="cta small">Send</button>
           </div>
         </div>
 
-        <div class="panes">
-          <section class="pane">
-            <h3>1 · Conversation</h3>
-            <p class="muted small">Live call: what the participant says ⇄ what the agent says.</p>
-            <div id="liveConversation" class="messages tall"></div>
-          </section>
-
-          <section class="pane">
-            <h3>2 · Talker — how it decided</h3>
-            <p class="muted small">Latest turn: model, latency, tools called, and the planner state it used.</p>
-            <div id="liveTalker" class="stack"></div>
-          </section>
-
-          <section class="pane">
-            <h3>3 · Brain — everything</h3>
-            <p class="muted small">Planner status + state, retrieval, writes, and patient context.</p>
-            <div id="liveBrain" class="stack"></div>
-          </section>
-        </div>
+        <button id="orb" class="orb" aria-label="Call in progress" disabled>
+          <span class="orb-ring r1" aria-hidden="true"></span>
+          <span class="orb-ring r2" aria-hidden="true"></span>
+          <span class="orb-core" id="orbCore">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/>
+              <path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>
+            </svg>
+          </span>
+        </button>
       </section>
 
+      <div id="error" class="error" hidden role="alert"></div>
     </main>
 
-    <script src="/common.js"></script>
-    <script src="/test.js"></script>
-    <script src="/product.js"></script>
-    <script src="/live.js"></script>
-  </body>
+    <!-- ===================== developer drawer ===================== -->
+    <div class="dev-scrim" id="devScrim" hidden></div>
+    <aside class="dev glass" id="devPanel" aria-label="Developer panel" hidden>
+      <div class="dev-head">
+        <div class="dev-title-row">
+          <div class="dev-pills" id="healthPills">
+            <span class="pill" data-key="deepgram">Deepgram …</span>
+            <span class="pill" data-key="openai">OpenAI …</span>
+            <span class="pill" id="sessionPill">no session</span>
+          </div>
+          <button id="devClose" class="dev-close" aria-label="Close developer panel" title="Close">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="dev-tabs" role="tablist">
+          <button class="dev-tab active" data-tab="grounding" role="tab" aria-selected="true">Grounding</button>
+          <button class="dev-tab" data-tab="brain" role="tab" aria-selected="false">Brain &amp; planner</button>
+          <button class="dev-tab" data-tab="log" role="tab" aria-selected="false">Session log</button>
+        </div>
+      </div>
+
+      <div class="dev-body">
+        <div class="dev-page" data-page="grounding">
+          <div id="grounding"><p class="muted small">Starts with the call.</p></div>
+        </div>
+        <div class="dev-page" data-page="brain" hidden>
+          <div id="brain"><p class="muted small">Starts with the call.</p></div>
+        </div>
+        <div class="dev-page" data-page="log" hidden>
+          <div class="log-actions">
+            <button id="downloadLog" class="mini-btn">Download log</button>
+            <button id="clearLog" class="mini-btn ghost">Clear view</button>
+            <span class="pill" id="logCount">0 events</span>
+          </div>
+          <div id="logList" class="loglist"></div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script src="/app.js"></script>
+</body>
 </html>

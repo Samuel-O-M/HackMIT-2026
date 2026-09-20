@@ -1,11 +1,11 @@
 # medical_data
 
-One place to ask "what is this drug, and what is it part of?". Shared by
-`voice/` (the call agent), `recognize/` (protocol extraction) and, later, the
-API.
+One place to ask "what is this drug, and what is it part of?". Lives in
+`api/medical_data/` (the backend layer) and is shared by `voice/` (the call
+agent) and `recognize/` (protocol extraction).
 
 ```js
-const meds = require('../medical_data');
+const meds = require('../../api/medical_data');
 
 await meds.resolveDrug('Advil');            // -> { rxcui: '5640', name: 'ibuprofen', match: 'exact', ... }
 await meds.classify('5640');                // -> ATC + FDA EPC classes (ATC ancestors included)
