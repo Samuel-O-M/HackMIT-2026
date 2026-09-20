@@ -1,68 +1,73 @@
 % Slide 10 — privacy.
 %
-% Titled to match the grounding slide ("What we do about hallucination"), so
-% the deck answers its two hard questions in the same voice.
+% The swap is the slide: two hosted speech APIs struck out, two open models in
+% their place. Drawn rather than described, because "we run speech locally" is
+% a sentence and a crossed-out vendor is an argument.
 %
-% Three separate claims, and all three are real:
-%   the voice can stay on the machine  (local-ai/, built and round-trip tested)
-%   the record already does            (local stores, no cloud database)
-%   names never enter the record       (redaction at the publish boundary)
+% Only STT and TTS are replaced. The reasoning model is still a hosted call, so
+% the claim is about the participant's recorded voice and is written that way —
+% "their voice never leaves", not "nothing leaves".
 %
-% No filenames anywhere. A store is described by what it holds — "the trial's
-% medication log" — because that is the thing a judge can evaluate, where
-% "conmed.db" is only evidence we have a filesystem.
+% No filenames anywhere: a store is named by what it holds.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
 \hyphenpenalty=10000\exhyphenpenalty=10000
+
+% A vendor chip with a line through it.
+\newcommand{\struck}[3]{% #1 x  #2 y  #3 label
+  \fill[surfii, rounded corners=2pt] (#1,#2) rectangle (#1+34,#2+13);
+  \draw[line, line width=0.4pt, rounded corners=2pt] (#1,#2) rectangle (#1+34,#2+13);
+  \node[anchor=center] at (#1+9,#2+6.5) {\includegraphics[height=3.6mm]{shared/marks/deepgram.pdf}};
+  \node[anchor=west, font=\fontsize{6.4}{7.7}\selectfont\sffamily\color{inkiii}] at (#1+15,#2+6.5) {#3};
+  \draw[alarm, line width=0.9pt] (#1+13.5,#2+6.5) -- (#1+31,#2+6.5);
+}
+
+% The open model that replaced it.
+\newcommand{\localmodel}[4]{% #1 x  #2 y  #3 model  #4 provenance
+  \fill[brand!8!white, rounded corners=2pt] (#1,#2) rectangle (#1+44,#2+13);
+  \draw[brand, line width=0.6pt, rounded corners=2pt] (#1,#2) rectangle (#1+44,#2+13);
+  \node[anchor=west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}] at (#1+4,#2+8.6) {#3};
+  \node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkii}] at (#1+4,#2+4.2) {#4};
+}
+
 \begin{tikzpicture}[x=1mm,y=1mm]
 \path[use as bounding box] (0,0) rectangle (160,90);
 
 \node[headline] at (16,82) {What we do about privacy};
-\node[subline]  at (16,75.5) {A call about someone's medication is as sensitive as data gets. Three places it could leak; three answers.};
+\node[subline]  at (16,75.5) {We took the participant's voice off the internet.};
 
-% ---- 1. the voice -------------------------------------------------------
-\fill[surf, rounded corners=2.5pt] (12,22) rectangle (60,68);
-\draw[brand, line width=0.7pt, rounded corners=2.5pt] (12,22) rectangle (60,68);
-\node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{brand}] at (16,64) {THE VOICE};
-\node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}, align=left, text width=40mm] at (16,59)
-  {Their recorded voice need never reach a vendor};
+% ---- the swap -----------------------------------------------------------
+\node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{inkiii}] at (16,66) {WHAT THEY SAY};
+\struck{16}{52}{speech-to-text}
+\draw[flow] (52,58.5) -- (60,58.5);
+\localmodel{64}{52}{Parakeet 0.6B}{NVIDIA \textperiodcentered\ open weights, on CPU}
 
-\node[anchor=north west, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{ink}] at (16,48) {Speech in and speech out};
-\node[anchor=north west, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{ink}] at (16,44) {run on open models,};
-\node[anchor=north west, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{ink}] at (16,40) {on CPUs.};
-\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=40mm] at (16,31)
-  {No API key, no upload, no account.};
+\node[anchor=west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{inkiii}] at (16,47) {WHAT THE AGENT SAYS};
+\struck{16}{33}{text-to-speech}
+\draw[flow] (52,39.5) -- (60,39.5);
+\localmodel{64}{33}{Qwen3-TTS 0.6B}{Alibaba \textperiodcentered\ open weights, on CPU}
 
-% ---- 2. the record ------------------------------------------------------
-\fill[surf, rounded corners=2.5pt] (64,22) rectangle (112,68);
-\draw[line, line width=0.5pt, rounded corners=2.5pt] (64,22) rectangle (112,68);
-\node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{inkiii}] at (68,64) {THE RECORD};
-\node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}, align=left, text width=40mm] at (68,59)
-  {Every store sits on the site's own machine};
+\node[anchor=north west, font=\fontsize{6.4}{7.8}\selectfont\sffamily\bfseries\color{brand}, align=left, text width=38mm] at (114,58)
+  {Their recorded voice never reaches a vendor.};
+\node[anchor=north west, font=\fontsize{5.8}{7.2}\selectfont\sffamily\color{inkii}, align=left, text width=38mm] at (114,46)
+  {No API key, no upload, no account. The audio is transcribed and spoken on the site's own hardware.};
 
-\foreach \y/\what in {48/{the trial's medication log}, 43.5/{the call in progress}, 39/{the drug reference}, 34.5/{plain-language guidance}}{%
-  \fill[brand] (68,\y+0.6) circle (0.6);
-  \node[anchor=west, font=\fontsize{6}{7.3}\selectfont\sffamily\color{ink}] at (70.5,\y+0.6) {\what};
-}
-\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=40mm] at (68,29)
-  {Or point it at the sponsor's server: one setting, same code.};
+% ---- the other two answers ---------------------------------------------
+\draw[line, line width=0.5pt] (16,26) -- (146,26);
 
-% ---- 3. the identifiers -------------------------------------------------
-\fill[surf, rounded corners=2.5pt] (116,22) rectangle (148,68);
-\draw[line, line width=0.5pt, rounded corners=2.5pt] (116,22) rectangle (148,68);
-\node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{inkiii}] at (119,64) {THE NAMES};
-\node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}, align=left, text width=26mm] at (119,59)
-  {They never enter the record at all};
+\node[anchor=north west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (16,22)
+  {The record stays put too};
+\node[anchor=north west, font=\fontsize{5.8}{7.2}\selectfont\sffamily\color{inkii}, align=left, text width=58mm] at (16,17)
+  {The trial's medication log, the call in progress, the drug reference and the guidance all sit on the site's own machine.};
 
-\node[anchor=north west, font=\fontsize{6}{7.3}\selectfont\sffamily\color{ink}, align=left, text width=27mm] at (119,47)
-  {The call hears both. The record keeps neither.};
-\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=27mm] at (119,37)
-  {Stripped as the call is filed, leaving the subject number.};
+\node[anchor=north west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (86,22)
+  {And the name never enters it};
+\node[anchor=north west, font=\fontsize{5.8}{7.2}\selectfont\sffamily\color{inkii}, align=left, text width=58mm] at (86,17)
+  {The call hears a name and a date of birth to verify identity. Both are stripped as it is filed, leaving the subject number.};
 
-% ---- footing ------------------------------------------------------------
-\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiv}] at (16,15)
-  {The demo runs hosted speech for latency; the local models are built and tested, and switching is a setting rather than a rewrite.};
+\node[anchor=west, font=\fontsize{5.4}{6.5}\selectfont\sffamily\color{inkiv}] at (16,5)
+  {The demo runs the hosted speech path for latency; the local models are built and tested, and the swap is a setting.};
 
 \end{tikzpicture}
 \end{document}
