@@ -15,18 +15,17 @@
   }}
 
 \node[headline] at (16,82) {Turn by turn, and the agent never waits};
-\node[subline]  at (16,76) {Deepgram hears and speaks; GPT-5.6 Luna thinks. The prompts are files you can read.};
 
 % ---- participant --------------------------------------------------------
-\fill[add, rounded corners=2.2pt] (14,57) rectangle (116,69);
+\fill[patient, rounded corners=2.2pt] (14,57) rectangle (116,69);
 \node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,63) {Participant};
 \burst{42}{63}{white}{3,6,4,8,5,7,4,6}
 \burst{74}{63}{white}{4,7,3,8,5,6,4,7}
 \burst{100}{63}{white}{4,7,5,8,4,6}
 
-% ---- conmed agent -------------------------------------------------------
-\fill[modify, rounded corners=2.2pt] (14,41) rectangle (116,53);
-\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,47) {conmed agent};
+% ---- the agent, in brand green -----------------------------------------
+\fill[brand, rounded corners=2.2pt] (14,41) rectangle (116,53);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{white}] at (20,47) {Reconmed agent};
 \burst{58}{47}{white}{5,8,4,7,6,4,8,5}
 \burst{90}{47}{white}{6,4,8,5,7}
 
@@ -52,16 +51,16 @@
 % ---- the async planner reads our prompt files --------------------------
 \fill[surf, rounded corners=2pt] (14,12) rectangle (116,34);
 \draw[line, line width=0.4pt, rounded corners=2pt] (14,12) rectangle (116,34);
-\node[anchor=center] at (22,25) {\includegraphics[height=9mm]{shared/marks/i-brain.pdf}};
-\node[anchor=center, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (22,18.5) {async planner};
-\node[anchor=center, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (22,15) {gpt-5.6-luna};
+\node[anchor=center] at (24,23) {\includegraphics[height=8mm]{shared/marks/i-brain.pdf}};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (31,25.5) {async planner};
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}] at (31,20.5) {gpt-5.6-luna};
 
-\draw[flow] (48,22) -- (30,22);
+\draw[flow] (48,23) -- (34,23);
 \node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (52,30) {prompts it reads};
 
-\foreach \x/\f in {52/policy.md, 74/talker.md, 96/thinker.md}{%
-  \node[anchor=center] at (\x,22) {\includegraphics[height=5mm]{shared/marks/i-file-text.pdf}};
-  \node[anchor=west, font=\fontsize{6}{7}\selectfont\ttfamily\color{inkii}] at (\x+4,22) {\f};
+\foreach \x/\f in {54/policy.md, 74/talker.md, 94/thinker.md}{%
+  \node[anchor=center] at (\x,23) {\includegraphics[height=5mm]{shared/marks/i-file-text.pdf}};
+  \node[anchor=west, font=\fontsize{6}{7}\selectfont\ttfamily\color{inkii}] at (\x+4,23) {\f};
 }
 
 \node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\color{inkii}] at (14,7)

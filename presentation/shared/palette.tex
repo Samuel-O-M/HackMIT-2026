@@ -1,26 +1,40 @@
-% conmed — presentation palette.
-% Mirrors frontend/src/styles/tokens.css so the deck and the product look alike.
-% The product's colour rule carries over unchanged: warm hues (alarm, caution)
-% are reserved for prohibited findings and low confidence — never for change types.
-\definecolor{ground}{HTML}{F3F5F7}
+% Reconmed — presentation palette.
+%
+% A green medical theme, derived from the product's tokens (frontend/src/styles/
+% tokens.css) but with the brand moved to a deep clinical green.
+%
+% The product's colour rule survives the rebrand unchanged: warm hues (alarm,
+% caution) are reserved for prohibited findings and low confidence — never for
+% change types. Change types stay cool and are kept off the brand green so the
+% brand and the "add" state do not blur together.
+\definecolor{ground}{HTML}{EFF4F0}
 \definecolor{surf}{HTML}{FFFFFF}
-\definecolor{surfii}{HTML}{F7F9FB}
-\definecolor{surfiii}{HTML}{ECEFF3}
+\definecolor{surfii}{HTML}{F6FAF7}
+\definecolor{surfiii}{HTML}{E5EDE7}
 
-\definecolor{line}{HTML}{E0E4E9}
-\definecolor{lineii}{HTML}{C9CFD7}
-\definecolor{lineiii}{HTML}{9AA2AD}
+\definecolor{line}{HTML}{DBE5DD}
+\definecolor{lineii}{HTML}{C1D1C4}
+\definecolor{lineiii}{HTML}{92A796}
 
-\definecolor{ink}{HTML}{171B21}
-\definecolor{inkii}{HTML}{4B535E}
-\definecolor{inkiii}{HTML}{6F7883}
-\definecolor{inkiv}{HTML}{98A0AA}
+\definecolor{ink}{HTML}{10231A}
+\definecolor{inkii}{HTML}{3B4F43}
+\definecolor{inkiii}{HTML}{66796D}
+\definecolor{inkiv}{HTML}{92A796}
+
+% the brand green
+\definecolor{brand}{HTML}{14532D}
+\definecolor{brandii}{HTML}{1B6B3A}
+\definecolor{brandwash}{HTML}{E8F2EA}
+
+% the participant side of the call — cool and neutral, so the agent's green
+% is the only brand colour on the slide
+\definecolor{patient}{HTML}{4E6570}
 
 % change types — cool, deliberately unalarming
-\definecolor{add}{HTML}{0F7355}
-\definecolor{stop}{HTML}{6244A6}
-\definecolor{modify}{HTML}{1A5FAD}
-\definecolor{same}{HTML}{767E89}
+\definecolor{add}{HTML}{15803D}
+\definecolor{stop}{HTML}{6A4C93}
+\definecolor{modify}{HTML}{1F5FA8}
+\definecolor{same}{HTML}{6B7C70}
 
 % the one loud thing
 \definecolor{alarm}{HTML}{C2190B}
@@ -31,5 +45,7 @@
 % low confidence — dim gold, never red
 \definecolor{caution}{HTML}{8A6206}
 
-\definecolor{accept}{HTML}{0F7355}
-\definecolor{reject}{HTML}{9C4552}
+\definecolor{accept}{HTML}{15803D}
+% Rejected is a decision, not an alarm: kept neutral so red stays reserved for
+% prohibited findings.
+\definecolor{reject}{HTML}{5F6B72}

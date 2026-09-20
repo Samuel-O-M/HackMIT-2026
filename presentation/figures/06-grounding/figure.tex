@@ -8,15 +8,14 @@
 \path[use as bounding box] (0,0) rectangle (160,90);
 
 \node[headline] at (16,82) {The agent may not answer from memory};
-\node[subline]  at (16,76) {Drug facts come from RxNorm; patient facts come from the record. It is not allowed to guess.};
 
 % ---------- the model ---------------------------------------------------
 \fill[surf, rounded corners=2pt] (12,44) rectangle (46,70);
 \draw[line, line width=0.4pt, rounded corners=2pt] (12,44) rectangle (46,70);
-\node[anchor=center] at (21,62) {\includegraphics[height=9mm]{shared/marks/openai.pdf}};
-\node[anchor=west, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (30,64) {GPT-5.6 Luna};
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (30,59) {may not state};
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (30,55.5) {a drug or patient fact};
+\node[anchor=center] at (21,64) {\includegraphics[height=7mm]{shared/marks/openai.pdf}};
+\node[anchor=west, font=\fontsize{7}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (17,57) {GPT-5.6 Luna};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (17,52) {may not state a drug};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (17,48.5) {or a patient fact};
 
 % ---------- the two permitted sources -----------------------------------
 \draw[flow] (46,65) -- (58,65);

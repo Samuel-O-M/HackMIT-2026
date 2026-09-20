@@ -1,10 +1,11 @@
-% One neutral grotesque for the whole deck.
+% Type for the deck.
 %
-% The product sets itself in the system UI face (Inter on the build machine).
-% Inter is not installed here, so Open Sans stands in — the closest neutral
-% humanist sans that is available, and one that carries the tabular figures the
-% medication data wants. Swap the family name if Inter is installed later.
+% Two families: Montserrat for headings, big numbers and the wordmark — a
+% geometric sans that reads as a health brand — over Open Sans for everything
+% else. Keeping the body on Open Sans matters: the dense technical slides were
+% measured against it, so the small type does not reflow under the rebrand.
 \usepackage{fontspec}
 \defaultfontfeatures{Ligatures=TeX}
 \setsansfont{Open Sans}
+\newfontfamily\displayfont{Montserrat}
 \renewcommand{\familydefault}{\sfdefault}
