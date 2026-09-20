@@ -4,7 +4,10 @@ import type {
   DataQuery,
   ElectronicSignature,
   ProtocolDeviation,
+  Disposition,
+  EnrollInput,
   NewStudyInput,
+  Participant,
   ProtocolDocument,
   ScheduledVisit,
   Study,
@@ -13,8 +16,18 @@ import type {
   SupportingDocumentKind,
 } from '../types/ui';
 import { SESSIONS, VISITS } from '../mocks/sessions';
+import { PARTICIPANTS } from '../mocks/participants';
 import { STUDIES } from '../mocks/studies';
-import { PARSE_STUB, SEED_PROTOCOLS } from '../mocks/protocols';
+import { SEED_PROTOCOLS } from '../mocks/protocols';
+import { extractProtocolDetails } from '../agents/protocolExtractor';
+import {
+  fetchLiveParticipants,
+  fetchLiveTrials,
+  persistParticipant,
+  persistTrial,
+  type AgentExtraction,
+} from '../agents/realExtractor';
+import { toIso } from '../mocks/schedule';
 import { TRANSCRIPTS } from '../mocks/transcripts';
 import { SEED_AUDIT } from '../mocks/audit';
 import { displayName } from '../lib/entry';
@@ -48,6 +61,7 @@ const protocols = new Map<string, ProtocolDocument>(Object.entries(clone(SEED_PR
 const supporting = new Map<string, SupportingDocument[]>();
 /** Mutable: a coordinator can open a new trial at the site. */
 const studies: Study[] = clone(STUDIES);
+const participants: Participant[] = clone(PARTICIPANTS);
 
 let eventSeq = 9000;
 function record(sessionId: string, event: Omit<AuditEvent, 'eventId' | 'at' | 'reason'> & { reason?: string | null }): void {
@@ -95,6 +109,44 @@ function syncVisit(session: ReconciliationSession): void {
   visit.unresolvedCount = session.changes.filter((c) => c.proposed.rxcui === null).length;
 }
 
+/**
+ * Merge anything written to patient_data since the build over the bundled seed.
+ * Runs at most once, and is a no-op when the service is not running.
+ */
+let hydrated: Promise<void> | null = null;
+function hydrate(): Promise<void> {
+  hydrated ??= fetchLiveTrials().then((live) => {
+    if (!live) return;
+    for (const t of live.trials as Study[]) {
+      const i = studies.findIndex((s) => s.studyId === t.studyId);
+      if (i === -1) studies.push(t); else studies[i] = t;
+    }
+    for (const [id, raw] of Object.entries(live.protocols)) {
+      const p = raw as ProtocolDocument & { uploadedAt: string | { dayOffset: number; time: string } };
+      protocols.set(id, { ...p, uploadedAt: toIso(p.uploadedAt) });
+    }
+  });
+  return hydrated;
+}
+
+/** Same idea as hydrate(), for the roster. */
+let rosterHydrated: Promise<void> | null = null;
+function hydrateRoster(): Promise<void> {
+  rosterHydrated ??= fetchLiveParticipants().then((live) => {
+    if (!live) return;
+    for (const raw of live as (Participant & { consentDate: unknown; enrolledDate: unknown })[]) {
+      const p: Participant = {
+        ...raw,
+        consentDate: raw.consentDate ? toIso(raw.consentDate as never) : null,
+        enrolledDate: raw.enrolledDate ? toIso(raw.enrolledDate as never) : null,
+      };
+      const i = participants.findIndex((x) => x.subjectId === p.subjectId);
+      if (i === -1) participants.push(p); else participants[i] = p;
+    }
+  });
+  return rosterHydrated;
+}
+
 function isToday(iso: string): boolean {
   const d = new Date(iso);
   const now = new Date();
@@ -106,7 +158,8 @@ function isToday(iso: string): boolean {
 }
 
 export const mockTransport: Transport = {
-  listStudies() {
+  async listStudies() {
+    await hydrate();
     const summaries: StudySummary[] = studies.map((study) => {
       const mine = visits.filter((v) => v.studyId === study.studyId);
       const protocol = protocols.get(study.studyId) ?? null;
@@ -151,6 +204,53 @@ export const mockTransport: Transport = {
     return new Promise((resolve) => setTimeout(() => resolve(clone(document)), 900));
   },
 
+  async listParticipants(studyId) {
+    await hydrateRoster();
+    return settle(clone(participants.filter((p) => p.studyId === studyId)));
+  },
+
+  enrollParticipant(studyId, input: EnrollInput) {
+    if (participants.some((p) => p.subjectId === input.subjectId)) {
+      return Promise.reject(new Error(`${input.subjectId} is already enrolled at this site.`));
+    }
+    const participant: Participant = {
+      subjectId: input.subjectId,
+      studyId,
+      status: 'enrolled',
+      screeningNumber: input.screeningNumber,
+      consentVersion: input.consentVersion,
+      consentDate: input.consentDate,
+      enrolledDate: new Date().toISOString(),
+      icfFilename: input.icfFilename,
+      discontinuation: null,
+    };
+    participants.push(participant);
+    const study = studies.find((s) => s.studyId === studyId);
+    if (study) study.enrolledAtSite += 1;
+    void persistParticipant(participant).catch(() => {});
+    return settle(clone(participant));
+  },
+
+  discontinueParticipant(studyId, subjectId, disposition) {
+    const participant = participants.find((p) => p.subjectId === subjectId && p.studyId === studyId);
+    if (!participant) return Promise.reject(new Error(`${subjectId} is not on this trial.`));
+
+    // A disposition event, not a deletion. The row and every reconciliation
+    // attached to it stay exactly where they are.
+    participant.status = disposition.reason === 'COMPLETED' ? 'completed'
+      : disposition.reason === 'SCREEN FAILURE' ? 'screen_failed'
+      : 'discontinued';
+    participant.discontinuation = {
+      ...(disposition as Omit<Disposition, 'recordedBy' | 'recordedAt'>),
+      recordedBy: actor(),
+      recordedAt: new Date().toISOString(),
+    };
+    const study = studies.find((s) => s.studyId === studyId);
+    if (study) study.enrolledAtSite = Math.max(0, study.enrolledAtSite - 1);
+    void persistParticipant(participant).catch(() => {});
+    return settle(clone(participant));
+  },
+
   createStudy(input: NewStudyInput) {
     if (studies.some((s) => s.studyId === input.studyId)) {
       return Promise.reject(new Error(`${input.studyId} is already open at this site.`));
@@ -162,38 +262,55 @@ export const mockTransport: Transport = {
       prohibitedHighlights: [],
     };
     studies.push(study);
+    void persistTrial({ trial: study, protocol: null, file: null }).catch(() => {});
     return settle(clone(study));
   },
 
-  getProtocol(studyId) {
+  async getProtocol(studyId) {
+    await hydrate();
     return settle(clone(protocols.get(studyId) ?? null));
   },
 
-  uploadProtocol(studyId, file: File) {
-    // The real parse — finding the concomitant medications section and reading
-    // the prohibited list out of it — happens on the agent branch. This stands
-    // in so the flow is demonstrable, and does not pretend to have read the file.
+  async uploadProtocol(studyId, file: File, parsed?: unknown) {
+    // Run the document through the parser so the rules in force are the ones
+    // actually read from it. `parsed` lets a caller that has already extracted
+    // (the new-trial flow) hand the result over rather than pay for it twice.
+    const extraction = (parsed ?? (await extractProtocolDetails(file))) as AgentExtraction;
     const existing = protocols.get(studyId);
     if (existing) existing.status = 'superseded';
 
+    const section = extraction.conmedSection.value ?? existing?.conmedSection ?? null;
     const document: ProtocolDocument = {
       documentId: `DOC-${studyId}-${Date.now().toString(36).toUpperCase()}`,
       studyId,
       filename: file.name,
-      protocolNumber: studyId,
-      amendment: existing ? 'Amendment (new)' : 'Amendment 1',
+      protocolNumber: extraction.studyId.value ?? studyId,
+      amendment: existing ? 'New amendment' : 'Original protocol',
       effectiveDate: new Date().toISOString().slice(0, 10),
       sizeBytes: file.size,
       pageCount: null,
       uploadedBy: actor(),
       uploadedAt: new Date().toISOString(),
       status: 'active',
-      conmedSection: '6.5',
-      rules: clone(PARSE_STUB),
-      sourceUrl: null,
+      conmedSection: section,
+      rules: extraction.rules.map((r) => ({ ...r, protocolSection: r.protocolSection || section || '—' })),
+      sourceUrl: `/protocol-docs/${studyId}/${file.name}`,
     };
     protocols.set(studyId, document);
-    return new Promise((resolve) => setTimeout(() => resolve(clone(document)), 1400));
+
+    const study = studies.find((s) => s.studyId === studyId);
+    if (study) {
+      // The picker shows the headline classes, so they follow the document too.
+      study.prohibitedHighlights = document.rules.slice(0, 3).map((r) => r.label);
+    }
+    // Best effort: if the service is down the app still works, just in memory.
+    await persistTrial({
+      trial: study ?? { studyId },
+      protocol: document,
+      file: extraction.tmpPath ? { tmpPath: extraction.tmpPath, filename: file.name } : null,
+    }).catch(() => {});
+
+    return clone(document);
   },
 
   getSession(sessionId) {

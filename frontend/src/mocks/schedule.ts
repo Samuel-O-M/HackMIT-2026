@@ -21,7 +21,10 @@ function anchor(): number {
   return midnight.getTime();
 }
 
-export function toIso(value: RelativeTime): string {
+export function toIso(value: RelativeTime | string): string {
+  // A record written by the app itself carries a real instant, not an offset.
+  if (typeof value === 'string') return value;
+  if (!value?.time) return new Date().toISOString();
   const [h, m] = value.time.split(':').map(Number);
   return new Date(anchor() + value.dayOffset * DAY + h * 3_600_000 + m * 60_000).toISOString();
 }

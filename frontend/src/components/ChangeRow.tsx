@@ -78,7 +78,10 @@ export function ChangeRow({
               disabled={locked}
               onClick={onAccept}
             >
-              {accepted ? 'Confirmed' : 'Confirm'}
+              {/* Fixed-width tick slot: the label must not change width, or the
+                  button grows past its grid column and covers the one beside it. */}
+              <i className="tick" aria-hidden="true" data-on={accepted} />
+              Confirm
             </button>
             <button
               className="btn"
@@ -87,11 +90,12 @@ export function ChangeRow({
               disabled={locked}
               onClick={onReject}
             >
-              {change.reviewStatus === 'rejected' ? 'Rejected' : 'Reject'}
+              <i className="tick" aria-hidden="true" data-on={change.reviewStatus === 'rejected'} />
+              Reject
             </button>
           </div>
           <button className="btn" data-kind="query" disabled={locked} onClick={onQuery}>
-            {openQuery ? 'Add another query' : 'Raise query'}
+            {openQuery ? 'Another query' : 'Raise query'}
           </button>
           {change.reviewStatus === 'edited' && <span className="edited-mark">Edited by you</span>}
         </div>

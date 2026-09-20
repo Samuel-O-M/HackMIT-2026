@@ -12,7 +12,7 @@
  * it, every scalar value is also checked against the document text ("in text"):
  * a confident value that does not appear verbatim deserves a second look.
  *
- * Rules are then grounded through ../medical_data: the class each rule names is
+ * Rules are then grounded through ../api/medical_data: the class each rule names is
  * looked up in RxClass and the ids are written onto the rule (`classIds`), so
  * a drug can later be checked against the rule by membership.
  */
@@ -387,6 +387,27 @@ function printReport(
 
 /* -------------------------------------------------------------------------- */
 
+/**
+ * The pipeline, callable. Same steps as the CLI: read the document, ask the
+ * model, then ground each rule's class through medical_data so a drug can be
+ * checked by class membership rather than by name.
+ */
+export async function extractProtocol(
+  file: string,
+  opts: { model?: string; effort?: string } = {},
+): Promise<ProtocolExtraction> {
+  const doc = await readDocument(file);
+  const { raw } = await callModel(doc.forModel, opts.model ?? 'gpt-5.6-luna', opts.effort ?? 'low');
+  const extraction = toExtraction(raw);
+  const grounding = await groundRules(extraction.rules);
+  extraction.rules = extraction.rules.map((rule, i) => {
+    const g = grounding[i];
+    const classIds = g?.matches?.map((m: any) => m.classId).filter(Boolean) ?? [];
+    return classIds.length ? { ...rule, classIds } : rule;
+  });
+  return extraction;
+}
+
 async function main(): Promise<void> {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
@@ -424,7 +445,9 @@ async function main(): Promise<void> {
   );
 }
 
-main().catch((err) => {
-  console.error(red(`\n${err instanceof Error ? err.message : String(err)}`));
-  process.exit(1);
-});
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
+  main().catch((err) => {
+    console.error(red(`\n${err instanceof Error ? err.message : String(err)}`));
+    process.exit(1);
+  });
+}

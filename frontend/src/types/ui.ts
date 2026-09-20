@@ -106,6 +106,65 @@ export interface ProtocolExtraction {
   notes: string | null;
 }
 
+/**
+ * Why a participant left the study. These are the CDISC SDTM DS domain's
+ * standardised terms (DSDECOD), not free text — the sponsor's statistician
+ * counts them, so the wording is fixed. Note it is "withdrawal by subject",
+ * not "withdrawal of consent": those are different events.
+ */
+export type DispositionReason =
+  | 'COMPLETED'
+  | 'ADVERSE EVENT'
+  | 'WITHDRAWAL BY SUBJECT'
+  | 'LOST TO FOLLOW-UP'
+  | 'PHYSICIAN DECISION'
+  | 'PROTOCOL DEVIATION'
+  | 'DEATH'
+  | 'SCREEN FAILURE'
+  | 'OTHER';
+
+export interface Disposition {
+  reason: DispositionReason;
+  /** The verbatim term (DSTERM) when the standard one needs qualifying. */
+  detail: string | null;
+  date: string;
+  recordedBy: string;
+  recordedAt: string;
+  /** Whether data already collected may be kept. Withdrawing consent to
+   *  future collection does not retract what was lawfully collected before. */
+  retainCollectedData: boolean;
+}
+
+/**
+ * A participant at this site.
+ *
+ * The order matters and is not ours to change: consent is signed before any
+ * study procedure, a screening number is assigned, eligibility is checked, and
+ * only then does randomization assign the subject id. A screen failure never
+ * gets one.
+ */
+export interface Participant {
+  subjectId: string;
+  studyId: string;
+  status: 'screening' | 'enrolled' | 'discontinued' | 'screen_failed' | 'completed';
+  screeningNumber: string | null;
+  consentVersion: string | null;
+  consentDate: string | null;
+  enrolledDate: string | null;
+  /** The signed ICF on file. Its presence is what makes enrollment defensible. */
+  icfFilename: string | null;
+  discontinuation: Disposition | null;
+}
+
+/** What a coordinator fills in to enroll someone. */
+export interface EnrollInput {
+  subjectId: string;
+  screeningNumber: string;
+  consentVersion: string;
+  consentDate: string;
+  icfFilename: string | null;
+}
+
 /** What a coordinator fills in to open a trial at this site. */
 export interface NewStudyInput {
   studyId: string;

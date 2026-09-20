@@ -84,7 +84,7 @@ export function NewTrial({ onToast, onCreated }: Props) {
         principalInvestigator: draft.principalInvestigator.trim(),
       } satisfies NewStudyInput)) as Study;
 
-      if (file) await api.uploadProtocol(study.studyId, file);
+      if (file) await api.uploadProtocol(study.studyId, file, extraction);
 
       onCreated();
       onToast(`${study.studyId} opened at this site · protocol loaded`);

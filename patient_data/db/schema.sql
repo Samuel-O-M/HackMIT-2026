@@ -55,8 +55,47 @@ CREATE TABLE prohibited_rules (
 );
 
 CREATE TABLE participants (
-  subject_id TEXT PRIMARY KEY,          -- never a name, by design
-  study_id   TEXT NOT NULL REFERENCES trials(study_id) ON DELETE CASCADE
+  subject_id       TEXT PRIMARY KEY,     -- never a name, by design
+  study_id         TEXT NOT NULL REFERENCES trials(study_id) ON DELETE CASCADE,
+  status           TEXT NOT NULL CHECK (status IN
+                     ('screening','enrolled','discontinued','screen_failed','completed')),
+  -- Assigned at consent, before eligibility is known. A screen failure keeps
+  -- this and never receives a subject id from randomization.
+  screening_number TEXT,
+  consent_version  TEXT,
+  consent_date     TEXT,
+  enrolled_date    TEXT,
+  -- The signed ICF. Consent precedes every study procedure, so an enrollment
+  -- without this on file is not defensible.
+  icf_filename     TEXT
+);
+
+-- CDISC SDTM DS (Disposition). How a participant leaves a study.
+--
+-- There is deliberately no DELETE path for a participant anywhere in this
+-- schema. Leaving is an event recorded here; the participant row, their
+-- visits, sessions and proposed changes all stay. Deleting them would destroy
+-- the audit trail and the denominator of the analysis.
+--
+-- Append-only, and more than one row per participant is normal: end of
+-- treatment and end of study are separate disposition events.
+CREATE TABLE dispositions (
+  disposition_id        INTEGER PRIMARY KEY,
+  subject_id            TEXT NOT NULL REFERENCES participants(subject_id) ON DELETE CASCADE,
+  study_id              TEXT NOT NULL REFERENCES trials(study_id) ON DELETE CASCADE,
+  -- DSDECOD: the standardised term the sponsor counts. Note it is
+  -- 'WITHDRAWAL BY SUBJECT', not 'withdrawal of consent' — different events.
+  reason                TEXT NOT NULL CHECK (reason IN (
+                          'COMPLETED','ADVERSE EVENT','WITHDRAWAL BY SUBJECT',
+                          'LOST TO FOLLOW-UP','PHYSICIAN DECISION','PROTOCOL DEVIATION',
+                          'DEATH','SCREEN FAILURE','OTHER')),
+  detail                TEXT,            -- DSTERM: the verbatim term from source
+  event_date            TEXT NOT NULL,
+  -- Withdrawing consent stops future collection; it does not retract what was
+  -- lawfully collected before. This records what the participant agreed to.
+  retain_collected_data INTEGER NOT NULL CHECK (retain_collected_data IN (0,1)),
+  recorded_by           TEXT NOT NULL,
+  recorded_at           TEXT NOT NULL
 );
 
 CREATE TABLE sessions (
@@ -193,7 +232,7 @@ CREATE TABLE promotions (
 );
 
 -- Curated drug reference. RxNorm is free to use; WHODrug, the regulatory
--- standard for CM coding, needs a paid UMC licence — see BACKEND-ASKS.md.
+-- standard for CM coding, needs a paid UMC license — see BACKEND-ASKS.md.
 CREATE TABLE medications (
   rxcui       TEXT PRIMARY KEY,
   name        TEXT NOT NULL,
@@ -202,6 +241,8 @@ CREATE TABLE medications (
   trips_class TEXT           -- prohibited class this medication falls into
 );
 
+CREATE INDEX idx_participants_study  ON participants(study_id, status);
+CREATE INDEX idx_dispositions_subject ON dispositions(subject_id);
 CREATE INDEX idx_visits_study        ON visits(study_id, visit_at);
 CREATE INDEX idx_visits_status       ON visits(recon_status);
 CREATE INDEX idx_sessions_study      ON sessions(study_id, status);
@@ -216,6 +257,7 @@ CREATE VIEW trial_summary AS
 SELECT t.study_id, t.nct_id, t.short_title, t.phase, t.enrolled_at_site,
        (p.document_id IS NOT NULL)                                        AS has_protocol,
        (SELECT COUNT(*) FROM prohibited_rules pr WHERE pr.document_id = p.document_id) AS rule_count,
+       (SELECT COUNT(*) FROM participants pt WHERE pt.study_id = t.study_id AND pt.status IN ('enrolled','screening')) AS active_participants,
        (SELECT COUNT(*) FROM visits v WHERE v.study_id = t.study_id AND v.recon_status = 'awaiting_review') AS awaiting_review,
        (SELECT COUNT(*) FROM visits v WHERE v.study_id = t.study_id AND v.recon_status = 'in_progress')     AS calls_in_progress,
        (SELECT COUNT(*) FROM proposed_changes c JOIN sessions s ON s.session_id = c.session_id

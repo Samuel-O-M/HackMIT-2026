@@ -1,5 +1,11 @@
 import type { ConmedEntry, ReviewStatus } from '../types/contract';
-import type { ElectronicSignature, NewStudyInput, SupportingDocumentKind } from '../types/ui';
+import type {
+  Disposition,
+  ElectronicSignature,
+  EnrollInput,
+  NewStudyInput,
+  SupportingDocumentKind,
+} from '../types/ui';
 import type { CallEvent, DeviationInput, Transport, Unsubscribe } from './transport';
 
 /**
@@ -14,6 +20,12 @@ import type { CallEvent, DeviationInput, Transport, Unsubscribe } from './transp
  *   GET    /studies/:studyId/documents              → SupportingDocument[]
  *   POST   /studies/:studyId/documents              multipart file + kind → SupportingDocument
  *   POST   /studies                                 NewStudyInput → Study
+ *   GET    /studies/:studyId/participants           → Participant[]
+ *   POST   /studies/:studyId/participants           EnrollInput → Participant
+ *   POST   /studies/:studyId/participants/:id/disposition  Disposition → Participant
+ *
+ * There is deliberately no DELETE for a participant. Leaving a study is a
+ * disposition event; the record and its data are retained.
  *   GET    /sessions/:id                            → ReconciliationSession
  *   PATCH  /sessions/:id/changes/:changeId/status   { status } → ProposedChange
  *   PATCH  /sessions/:id/changes/:changeId          { patch, reason } → ProposedChange
@@ -59,6 +71,17 @@ function makeHttpTransport(base: string): Transport {
       if (!res.ok) throw new Error(`Document upload failed: ${res.status}`);
       return res.json();
     },
+
+    listParticipants: (studyId) => json(`/studies/${studyId}/participants`),
+
+    enrollParticipant: (studyId, input: EnrollInput) =>
+      json(`/studies/${studyId}/participants`, { method: 'POST', body: JSON.stringify(input) }),
+
+    discontinueParticipant: (studyId, subjectId, disposition) =>
+      json(`/studies/${studyId}/participants/${subjectId}/disposition`, {
+        method: 'POST',
+        body: JSON.stringify(disposition as Omit<Disposition, 'recordedBy' | 'recordedAt'>),
+      }),
 
     createStudy: (input: NewStudyInput) =>
       json('/studies', { method: 'POST', body: JSON.stringify(input) }),

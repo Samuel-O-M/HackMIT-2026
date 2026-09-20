@@ -2,7 +2,7 @@ import { LOW_CONFIDENCE } from '../lib/entry';
 
 /**
  * Visible, not screaming. A dim gold meter pulls the eye on a low score without
- * borrowing the alarm colour, which belongs to prohibited findings alone.
+ * borrowing the alarm color, which belongs to prohibited findings alone.
  */
 export function Confidence({ value }: { value: number }) {
   const low = value < LOW_CONFIDENCE;

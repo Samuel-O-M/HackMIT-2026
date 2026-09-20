@@ -34,7 +34,7 @@ sponsor, not from the registry. It is also the trial to demonstrate the upload
 flow on, since its prohibited screening is off until a protocol is loaded.
 
 All five trials are real Regeneron studies. Only the site-level detail in the
-app — investigators, enrolment counts, participants and what they said on the
+app — investigators, enrollment counts, participants and what they said on the
 calls — is synthetic.
 
 The app serves this directory at `/protocol-docs` in development
