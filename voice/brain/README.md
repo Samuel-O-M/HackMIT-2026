@@ -1,7 +1,17 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # The Brain — Talker + Planner
 
-A single-instance orchestrator running a **fast realtime Talker** and a
-**slower background Thinker/Planner**.
+> A single-instance orchestrator running a **fast realtime Talker** and a
+> **slower background Thinker/Planner**.
+
+Part of **[ReconMed](../../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites. This is the agent that holds the
+conversation and reasons about the participant's medication record between
+turns.
 
 ```
                          HEALTH KNOWLEDGE DB  (read only)
@@ -22,6 +32,23 @@ A single-instance orchestrator running a **fast realtime Talker** and a
                        v
                     PATIENT DB  (read + controlled write)
 ```
+
+<details>
+  <summary>Table of contents</summary>
+  <ol>
+    <li><a href="#the-key-decoupling">The key decoupling</a></li>
+    <li><a href="#agents">Agents</a></li>
+    <li><a href="#why-the-planner-is-two-phase">Why the planner is two-phase</a></li>
+    <li><a href="#planner-state">Planner state</a></li>
+    <li><a href="#tools-tools">Tools</a></li>
+    <li><a href="#grounding--no-hallucination">Grounding — no hallucination</a></li>
+    <li><a href="#databases">Databases</a></li>
+    <li><a href="#run">Run</a></li>
+    <li><a href="#config">Config</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+  </ol>
+</details>
 
 ## The key decoupling
 
@@ -133,3 +160,22 @@ module.exports = {
 | `DEEPGRAM_API_KEY` | STT + TTS |
 
 All data is **synthetic** and for demo purposes only — not medical advice.
+
+## License
+
+Distributed under the MIT License. See [`../../LICENSE`](../../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors

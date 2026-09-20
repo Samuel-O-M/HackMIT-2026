@@ -1,8 +1,16 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # medical_data
 
-One place to ask "what is this drug, and what is it part of?". Lives in
-`api/medical_data/` (the backend layer) and is shared by `voice/` (the call
-agent) and `recognize/` (protocol extraction).
+> One place to ask "what is this drug, and what is it part of?".
+
+Part of **[ReconMed](../../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites. This module lives in the backend layer
+and is shared by [`voice/`](../../voice/README.md) (the call agent) and
+[`recognize/`](../../recognize/) (protocol extraction).
 
 ```js
 const meds = require('../../api/medical_data');
@@ -12,6 +20,17 @@ await meds.classify('5640');                // -> ATC + FDA EPC classes (ATC anc
 await meds.resolveClass('systemic corticosteroid'); // -> { quality: 'exact', classes: [{ classId: 'H02', ... }] }
 await meds.checkProhibited('8640', [{ ruleId: 'PR-0021', classIds: ['H02'] }]);
 ```
+
+<details>
+  <summary>Table of contents</summary>
+  <ol>
+    <li><a href="#where-the-data-comes-from">Where the data comes from</a></li>
+    <li><a href="#behaviour-worth-knowing">Behaviour worth knowing</a></li>
+    <li><a href="#cli">CLI</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+  </ol>
+</details>
 
 ## Where the data comes from
 
@@ -59,3 +78,22 @@ node build.js            # re-warm drugs.db and audit the fixture RxCUIs
 ```
 
 Requires Node 24 (`node:sqlite`).
+
+## License
+
+Distributed under the MIT License. See [`../../LICENSE`](../../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors

@@ -1,8 +1,33 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # Voice Agent — local UI + brain
 
-A local harness for the whole voice pipeline:
+> A local harness for the whole voice pipeline: **mic → Deepgram STT → grounded
+> Talker + Planner → Deepgram TTS → speakers.**
 
-**mic → Deepgram STT → Brain (Talker + Thinker/Planner, grounded on the patient & drug databases) → Deepgram TTS → speakers**
+Part of **[ReconMed](../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites. This module is the phone call and the
+agent that runs it.
+
+<details>
+  <summary>Table of contents</summary>
+  <ol>
+    <li><a href="#run">Run</a></li>
+    <li><a href="#phone-access-cloudflare-tunnel">Phone access (Cloudflare Tunnel)</a></li>
+    <li><a href="#follow-up-questions-is-it-working-any-side-effects">Follow-up questions</a></li>
+    <li><a href="#the-agent-places-the-call">The agent places the call</a></li>
+    <li><a href="#making-the-agent-sound-human">Making the agent sound human</a></li>
+    <li><a href="#endpoints">Endpoints</a></li>
+    <li><a href="#keys--config-repo-root-env-gitignored">Keys &amp; config</a></li>
+    <li><a href="#documents">Documents</a></li>
+    <li><a href="#notes">Notes</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+  </ol>
+</details>
 
 The UI is a **single call screen**:
 
@@ -46,7 +71,9 @@ cd api/cloudflare && ./tunnel.sh      # → https://<random>.trycloudflare.com
 ```
 
 Then tap the phone icon in the top bar for phone mode. See
-[`api/cloudflare/README.md`](../api/cloudflare/README.md).
+[`api/cloudflare/README.md`](../api/cloudflare/README.md). On networks that
+block Cloudflare's edge port, use [`api/ngrok/`](../api/ngrok/README.md)
+instead.
 
 ## Follow-up questions (is it working? any side effects?)
 
@@ -169,3 +196,24 @@ Model + reasoning-effort choices for the brain live in code
   live STT runs through the `/ws/listen` WebSocket proxy.
 - `node:sqlite` rows are **null-prototype** — never interpolate one directly
   into a template string (see `brain/lib/format.js`).
+- For the agent's internals, see [`brain/README.md`](./brain/README.md); for
+  outbound calling, see [`telephony/README.md`](./telephony/README.md).
+
+## License
+
+Distributed under the MIT License. See [`../LICENSE`](../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors

@@ -1,6 +1,14 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # Databases
 
-Every database in the project, one folder each, named for what it holds.
+> Every database in the project, one folder each, named for what it holds.
+
+Part of **[ReconMed](../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites.
 
 | Folder | Database | What it is | Written by |
 |---|---|---|---|
@@ -19,6 +27,18 @@ node api/medical_data/build.js            # drug_reference, from RxNav
 ```
 
 They are gitignored. `patient_data/` is the source of truth for anything clinical.
+
+<details>
+  <summary>Table of contents</summary>
+  <ol>
+    <li><a href="#local-for-the-demo-external-when-you-need-it">Local for the demo, external when you need it</a></li>
+    <li><a href="#where-staged-data-lives-and-why-there-are-two-places">Where staged data lives</a></li>
+    <li><a href="#where-transcripts-live">Where transcripts live</a></li>
+    <li><a href="#known-issues">Known issues</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+  </ol>
+</details>
 
 ## Local for the demo, external when you need it
 
@@ -74,3 +94,28 @@ Three places, for three different reasons:
 
 The first is the working copy, the second is for debugging, and the third is
 the one that belongs to the clinical record.
+
+## Known issues
+
+- No Postgres driver yet — see above; the interface is defined, the
+  implementation is not.
+- Every `.db` is gitignored and must be rebuilt after a clone.
+
+## License
+
+Distributed under the MIT License. See [`../LICENSE`](../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors
