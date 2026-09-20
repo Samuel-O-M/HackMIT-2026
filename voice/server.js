@@ -17,6 +17,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const brain = require('./brain/brain');
 const logger = require('./logger');
+const calls = require('./calls');
+const telephony = require('./telephony');
+const { patient } = require('./brain/db');
 
 let WS = null;
 try {
@@ -79,12 +82,17 @@ const MIME = {
   '.png': 'image/png',
 };
 
-function sendJson(res, status, obj) {
+function sendJson(res, status, obj, cors = false) {
   const body = JSON.stringify(obj);
-  res.writeHead(status, {
+  const headers = {
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': Buffer.byteLength(body),
-  });
+  };
+  // Opt-in rather than blanket: only the call endpoints are reached from the
+  // dashboard's origin, and the rest have no business being callable from a
+  // page the user happens to have open.
+  if (cors) headers['Access-Control-Allow-Origin'] = '*';
+  res.writeHead(status, headers);
   res.end(body);
 }
 
@@ -356,16 +364,12 @@ async function handleBrainSession(req, res) {
     studyId: session.study_id ?? null,
   });
 
-  // The agent opens. Callers do not wait to be greeted by the person they rang.
-  let say = '';
-  try {
-    ({ say } = await brain.openCall({ sessionId: session.session_id, subjectId }));
-    if (say) logger.append(session.session_id, 'turn', { userText: null, say, opening: true });
-  } catch (err) {
-    console.error('[open]', err.message);   // a failed opening must not fail the call
-  }
-
-  sendJson(res, 200, { sessionId: session.session_id, subjectId, say });
+  // The agent opens, but not here: the client's first streamed turn carries
+  // `opening: true`, which greets AND streams. Greeting here as well would
+  // leave a saved agent utterance behind, and brain.handleTurn's isOpening
+  // guard (conversation must be empty) would then swallow the spoken one —
+  // so the participant would hear nothing at all.
+  sendJson(res, 200, { sessionId: session.session_id, subjectId });
 }
 
 /** The full record — every tool call with args and result — goes to the offline log. */
@@ -555,6 +559,94 @@ async function handleBrainState(req, res) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Calling
+//
+// The dashboard rings a participant; a handset somewhere answers. With the
+// simulated provider the handset is this same web app open on a phone, and
+// the ring arrives over the server-sent event stream below.
+// ---------------------------------------------------------------------------
+
+/** The number on file for a participant. Loose format; telephony normalises. */
+function phoneFor(subjectId) {
+  try {
+    const row = patient().get('SELECT phone FROM patients WHERE subject_id = ?', subjectId);
+    return row?.phone || null;
+  } catch {
+    return null;
+  }
+}
+
+async function handleCallPlace(req, res) {
+  let payload;
+  try {
+    payload = JSON.parse((await readBody(req)).toString('utf8') || '{}');
+  } catch {
+    sendJson(res, 400, { error: 'Invalid JSON body.' }, true);
+    return;
+  }
+  const { subjectId, to, placedBy } = payload;
+  const number = to || (subjectId ? phoneFor(subjectId) : null);
+  if (!number) {
+    sendJson(res, 400, { error: `No number on file for "${subjectId}".` }, true);
+    return;
+  }
+  const call = await calls.place({ subjectId, to: number, placedBy });
+  logger.append(call.callId, 'call.place', call);
+  // A refused call is a 200 with ok:false — the request was understood, the
+  // call was not placed, and the reason is the useful part.
+  sendJson(res, 200, { ok: call.status !== 'failed', call }, true);
+}
+
+/**
+ * A handset waiting to be rung.
+ *
+ * Server-sent events rather than polling: a ring has to feel immediate, and
+ * SSE reconnects on its own when a phone's network drops, which polling loops
+ * have to reimplement badly.
+ */
+function handleCallStream(req, res) {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    Connection: 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+    'X-Accel-Buffering': 'no',
+  });
+  res.write('retry: 2000\n\n');
+
+  const send = (event) => res.write(`data: ${JSON.stringify(event)}\n\n`);
+  send({ type: 'ready', at: new Date().toISOString() });
+
+  const unsubscribe = calls.subscribe(send);
+  // Comment frames keep proxies (and ngrok) from closing an idle stream.
+  const keepAlive = setInterval(() => res.write(': ping\n\n'), 15000);
+
+  req.on('close', () => {
+    clearInterval(keepAlive);
+    unsubscribe();
+  });
+}
+
+async function handleCallAction(req, res, callId, action) {
+  let payload = {};
+  if (req.method === 'POST') {
+    try {
+      payload = JSON.parse((await readBody(req)).toString('utf8') || '{}');
+    } catch {
+      payload = {};
+    }
+  }
+  const fn = { answer: calls.answer, decline: calls.decline, end: calls.end }[action];
+  const call = fn(callId, payload);
+  if (!call) {
+    sendJson(res, 404, { error: 'Unknown call.' }, true);
+    return;
+  }
+  logger.append(callId, `call.${action}`, call);
+  sendJson(res, 200, { ok: true, call }, true);
+}
+
 const server = http.createServer(async (req, res) => {
   try {
     const { pathname } = new URL(req.url, 'http://localhost');
@@ -573,6 +665,30 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/brain/state' && req.method === 'GET') return await handleBrainState(req, res);
     if (pathname === '/api/brain/debug' && req.method === 'GET') return await handleBrainDebug(req, res);
     if (pathname === '/api/brain/log' && req.method === 'GET') return await handleBrainLog(req, res);
+
+    // The dashboard lives on another origin, so these need preflight.
+    if (pathname.startsWith('/api/calls') && req.method === 'OPTIONS') {
+      res.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'content-type',
+        'Access-Control-Max-Age': '86400',
+      });
+      res.end();
+      return;
+    }
+    if (pathname === '/api/calls/stream' && req.method === 'GET') return handleCallStream(req, res);
+    if (pathname === '/api/calls' && req.method === 'POST') return await handleCallPlace(req, res);
+    if (pathname === '/api/calls' && req.method === 'GET') {
+      return sendJson(res, 200, { calls: calls.list(), telephony: telephony.describe() }, true);
+    }
+    if (pathname === '/api/telephony' && req.method === 'GET') {
+      return sendJson(res, 200, telephony.describe(), true);
+    }
+    {
+      const m = /^\/api\/calls\/([^/]+)\/(answer|decline|end)$/.exec(pathname);
+      if (m) return await handleCallAction(req, res, m[1], m[2]);
+    }
 
     if (pathname.startsWith('/api/')) {
       sendJson(res, 404, { error: 'Unknown API route.' });

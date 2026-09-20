@@ -6147,5 +6147,22 @@
       "caregiverRelationship": null,
       "caregiverAuthStatus": "none"
     }
+  },
+  {
+    "sessionId": "5e8a0c90-0ba1-4606-8291-1b53677ba14f",
+    "subjectId": "S-014",
+    "studyId": "R2810-ONC-1540",
+    "startedAt": "2026-09-20 03:22:31",
+    "endedAt": "2026-09-20T03:24:06.302Z",
+    "status": "in_progress",
+    "changes": [],
+    "adherence": [],
+    "behaviours": [],
+    "symptoms": [],
+    "callParticipants": {
+      "caregiverPresent": false,
+      "caregiverRelationship": null,
+      "caregiverAuthStatus": "none"
+    }
   }
 ]

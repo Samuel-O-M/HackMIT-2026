@@ -776,5 +776,16 @@
       "detail": "3 proposed changes staged for review",
       "reason": null
     }
+  ],
+  "5e8a0c90-0ba1-4606-8291-1b53677ba14f": [
+    {
+      "eventId": "EV-5e8a0c-ID",
+      "at": "2026-09-20T03:24:06.302Z",
+      "actor": "Voice agent",
+      "action": "call_ended",
+      "changeId": null,
+      "detail": "Identity not_attempted after 0 attempt(s) — nothing staged for review",
+      "reason": null
+    }
   ]
 }

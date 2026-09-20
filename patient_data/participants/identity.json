@@ -1,1 +1,10 @@
-{}
+{
+  "5e8a0c90-0ba1-4606-8291-1b53677ba14f": {
+    "sessionId": "5e8a0c90-0ba1-4606-8291-1b53677ba14f",
+    "subjectId": "S-014",
+    "method": "name_and_dob",
+    "outcome": "not_attempted",
+    "attempts": 0,
+    "verifiedAt": null
+  }
+}

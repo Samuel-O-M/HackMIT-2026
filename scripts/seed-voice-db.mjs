@@ -46,7 +46,12 @@ roster.forEach((p, i) => {
   const given = GIVEN[n % GIVEN.length];
   const family = FAMILY[(n * 7) % FAMILY.length];
   const dob = `19${40 + (n % 45)}-${String(1 + (n % 12)).padStart(2, '0')}-${String(1 + (n % 27)).padStart(2, '0')}`;
-  iPatient.run(p.subjectId, given, family, dob, `555-0${String(100 + (n % 800))}`, 'en');
+    // 555-0100 through 555-0199 is the only range NANP reserves as fictitious.
+  // The old formula ran to 555-0899, which strays into numbers that may belong
+  // to real people — and this system is now one env var away from dialling.
+  // 0100 is the site's own caller ID, so participants start at 0101.
+  const phone = `+1617555${String(101 + (n % 99)).padStart(4, '0')}`;
+  iPatient.run(p.subjectId, given, family, dob, phone, 'en');
   iEnrol.run(p.subjectId, p.studyId, typeof p.enrolledDate === 'string' ? p.enrolledDate.slice(0, 10) : null, null);
   contacts[p.subjectId] = { given, family, dob };
 

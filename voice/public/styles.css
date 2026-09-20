@@ -1202,3 +1202,111 @@ html[data-mode="phone"] .error { bottom: calc(env(safe-area-inset-bottom) + 1rem
     transform: translateX(-50%);
   }
 }
+
+/* --------------------------------------------------------------------------
+   Incoming call.
+
+   Full-bleed and dark regardless of theme, because every phone in the world
+   does this and a ringing call that looks like the rest of the page does not
+   read as a ringing call.
+-------------------------------------------------------------------------- */
+.incoming {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #1d2430 0%, #0d1117 100%);
+  color: #f5f7fa;
+  animation: incoming-in 260ms ease-out;
+}
+
+.incoming.hidden {
+  display: none;
+}
+
+@keyframes incoming-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.incoming-inner {
+  width: min(420px, 88vw);
+  text-align: center;
+}
+
+.incoming-label {
+  margin: 0 0 8px;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(245, 247, 250, 0.62);
+}
+
+.incoming-party {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  /* The ring pulses, nothing else moves. */
+  animation: incoming-pulse 2s ease-in-out infinite;
+}
+
+@keyframes incoming-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.66; }
+}
+
+.incoming-sub {
+  margin: 6px 0 0;
+  color: rgba(245, 247, 250, 0.72);
+}
+
+.incoming-acts {
+  display: flex;
+  justify-content: center;
+  gap: 64px;
+  margin-top: 56px;
+}
+
+.round-btn {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgba(245, 247, 250, 0.82);
+  font: inherit;
+  cursor: pointer;
+}
+
+.round-glyph {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #fff;
+  transition: transform 120ms ease;
+}
+
+.round-btn:hover .round-glyph { transform: scale(1.06); }
+.round-btn:active .round-glyph { transform: scale(0.96); }
+.round-btn:focus-visible .round-glyph { outline: 3px solid #fff; outline-offset: 3px; }
+
+.answer .round-glyph { background: #2fae5b; }
+.decline .round-glyph { background: #e0453c; }
+
+.round-label {
+  font-size: 0.8125rem;
+  color: rgba(245, 247, 250, 0.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .incoming { animation: none; }
+  .incoming-party { animation: none; }
+  .round-btn:hover .round-glyph { transform: none; }
+}

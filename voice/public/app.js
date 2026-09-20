@@ -21,7 +21,7 @@
   let muted = false;
   let agentSpeaking = false;
   let currentAudio = null;
-  let openingLine = '';
+  let activeCallId = null;   // the telephony call this session belongs to
   let queue = [];
   let turnBusy = false;
   let pendingFinals = [];
@@ -797,9 +797,6 @@
         body: JSON.stringify({ subjectId }),
       });
       sessionId = s.sessionId;
-      // The agent opens: this is an outbound call, so it speaks first rather
-      // than waiting to be greeted. `say` comes back with the session.
-      openingLine = (s.say || '').trim();
       $('#sessionPill').textContent = `session ${sessionId.slice(0, 8)}… · ${subjectId}`;
       $('#sessionPill').className = 'pill ok';
       log('session.start', { sessionId, subjectId });
@@ -871,16 +868,6 @@
 
       call = { ws, ctx, stream, source, processor, analyser };
       flushInterval = setInterval(maybeFlush, 200);
-
-      // The agent opens. Spoken here rather than earlier because the mic gate
-      // is half-duplex on `agentSpeaking`, which only holds once `call` exists
-      // — and because playing it during the microphone permission prompt would
-      // mean the participant never hears it.
-      if (openingLine) {
-        conversation.push({ speaker: 'agent', text: openingLine });
-        renderConversation();
-        agentSpeak(openingLine).catch(() => {});   // never block the call on TTS
-      }
 
       // Drive the orb's mic level ~10×/s.
       const levelData = new Uint8Array(analyser.frequencyBinCount);
@@ -972,9 +959,155 @@
         log('session.end', { sessionId });
       } catch {}
     }
+    // Close the call record too, so the dashboard stops showing it as live.
+    if (activeCallId) {
+      const callId = activeCallId;
+      activeCallId = null;
+      fetchJson(`/api/calls/${encodeURIComponent(callId)}/end`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId }),
+      }).catch(() => {});
+    }
+  }
+
+  // --------------------------------------------------------- incoming calls
+  //
+  // This handset waits to be rung. The dashboard places the call; the server
+  // pushes a "ringing" event down the stream below; we show the incoming
+  // screen. Answering runs exactly the same startCall() the button runs — the
+  // agent still opens, because it is still an outbound call from the site.
+
+  let incoming = null;       // the call we are currently ringing for
+  let ringTone = null;       // WebAudio, so no asset to ship or fail to load
+  let callStream = null;
+
+  /**
+   * A ring tone without an audio file.
+   *
+   * Two tones at 440 and 480 Hz for two seconds, four off — the North
+   * American ringback cadence. Synthesised because a missing mp3 on a phone
+   * over a tunnel is a silent failure, and silence is the one thing a ringing
+   * phone must not be.
+   */
+  function startRinging() {
+    stopRinging();
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioCtx();
+      const gain = ctx.createGain();
+      gain.gain.value = 0;
+      gain.connect(ctx.destination);
+      const oscs = [440, 480].map((hz) => {
+        const o = ctx.createOscillator();
+        o.frequency.value = hz;
+        o.connect(gain);
+        o.start();
+        return o;
+      });
+      let on = false;
+      const tick = () => {
+        on = !on;
+        const now = ctx.currentTime;
+        gain.gain.cancelScheduledValues(now);
+        gain.gain.linearRampToValueAtTime(on ? 0.08 : 0, now + 0.04);
+        ringTone.timer = window.setTimeout(tick, on ? 2000 : 4000);
+      };
+      ringTone = { ctx, gain, oscs, timer: null };
+      tick();
+    } catch {
+      ringTone = null;   // autoplay blocked until a gesture — the screen still shows
+    }
+  }
+
+  function stopRinging() {
+    if (!ringTone) return;
+    window.clearTimeout(ringTone.timer);
+    try {
+      ringTone.oscs.forEach((o) => o.stop());
+      ringTone.ctx.close();
+    } catch {}
+    ringTone = null;
+  }
+
+  function showIncoming(event) {
+    if (call || incoming) return;        // already busy; the caller gets no answer
+    incoming = event;
+    $('#incomingParty').textContent = 'Study team';
+    $('#incomingSub').textContent = event.subjectId
+      ? `Pre-visit medication review · ${event.subjectId}`
+      : 'Pre-visit medication review';
+    $('#incomingView').classList.remove('hidden');
+    startRinging();
+  }
+
+  function hideIncoming() {
+    incoming = null;
+    stopRinging();
+    $('#incomingView').classList.add('hidden');
+  }
+
+  async function answerIncoming() {
+    if (!incoming) return;
+    const event = incoming;
+    hideIncoming();
+    try {
+      await fetchJson(`/api/calls/${encodeURIComponent(event.callId)}/answer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+    } catch {}
+
+    // Ringing named the participant, so the picker does not have to.
+    if (event.subjectId) {
+      const picker = $('#patient');
+      if (picker && [...picker.options].some((o) => o.value === event.subjectId)) {
+        picker.value = event.subjectId;
+      }
+    }
+    activeCallId = event.callId;
+    await startCall();
+    if (sessionId) {
+      // Tie the call to the session so the two records can be read together.
+      fetchJson(`/api/calls/${encodeURIComponent(event.callId)}/answer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId }),
+      }).catch(() => {});
+    }
+  }
+
+  async function declineIncoming() {
+    if (!incoming) return;
+    const { callId } = incoming;
+    hideIncoming();
+    fetchJson(`/api/calls/${encodeURIComponent(callId)}/decline`, { method: 'POST' }).catch(() => {});
+  }
+
+
+  function listenForCalls() {
+    if (callStream) return;
+    try {
+      callStream = new EventSource('/api/calls/stream');
+    } catch {
+      return;   // no SSE support: the Start button still works
+    }
+    callStream.onmessage = (ev) => {
+      let event;
+      try { event = JSON.parse(ev.data); } catch { return; }
+      if (event.type === 'ringing') showIncoming(event);
+      if (event.type === 'hangup' && incoming?.callId === event.callId) hideIncoming();
+    };
+    // EventSource reconnects on its own; nothing to do but not crash.
+    callStream.onerror = () => {};
   }
 
   // ------------------------------------------------------------- wiring
+  $('#answerCall').addEventListener('click', answerIncoming);
+  $('#declineCall').addEventListener('click', declineIncoming);
+  listenForCalls();
+
   $('#start').addEventListener('click', startCall);
   $('#mute').addEventListener('click', toggleMute);
   $('#end').addEventListener('click', endCall);

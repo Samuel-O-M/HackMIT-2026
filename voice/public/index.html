@@ -101,6 +101,26 @@
       </section>
 
       <!-- ===================== in call ===================== -->
+      <!-- Incoming call. Covers everything: a ringing phone is not one more
+           panel on a page, it is the only thing the screen is doing. -->
+      <section class="incoming hidden" id="incomingView" aria-live="assertive">
+        <div class="incoming-inner">
+          <p class="incoming-label">Incoming call</p>
+          <p class="incoming-party" id="incomingParty">Study team</p>
+          <p class="incoming-sub" id="incomingSub">Pre-visit medication review</p>
+          <div class="incoming-acts">
+            <button id="declineCall" class="round-btn decline" aria-label="Decline">
+              <span class="round-glyph">&#10005;</span>
+              <span class="round-label">Decline</span>
+            </button>
+            <button id="answerCall" class="round-btn answer" aria-label="Answer">
+              <span class="round-glyph">&#9742;</span>
+              <span class="round-label">Answer</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section class="call hidden" id="callView">
         <div class="phone-call-header phone-only" aria-live="polite">
           <div class="phone-party" id="phoneParty">Study team</div>

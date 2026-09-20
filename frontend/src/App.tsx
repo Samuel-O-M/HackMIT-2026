@@ -7,6 +7,7 @@ import { useAuth } from './auth';
 import { AppShell } from './components/AppShell';
 import { Toasts, useToasts } from './components/Toast';
 import { StudyPicker } from './screens/StudyPicker';
+import { placeCall, VOICE_BASE } from './api/telephony';
 import { SessionList } from './screens/SessionList';
 import { Reconciliation } from './screens/Reconciliation';
 import { LiveCall } from './screens/LiveCall';
@@ -60,13 +61,27 @@ export default function App() {
   }, []);
 
   const onStartCall = useCallback(
-    (visit: ScheduledVisit) => {
-      push(
-        `Placing a call to ${visit.subjectId} needs the telephony backend, which is not wired on this branch.`,
-        'warn',
-      );
+    async (visit: ScheduledVisit) => {
+      push(`Calling ${visit.subjectId}…`);
+      try {
+        const call = await placeCall(visit.subjectId, coordinator?.username);
+        if (call.status === 'failed') {
+          // The reason is the useful part: no handset listening, or a number
+          // outside the range the guard will dial.
+          push(call.reason ?? `Could not reach ${visit.subjectId}.`, 'warn');
+          return;
+        }
+        push(`Ringing ${visit.subjectId} on ${call.to ?? 'the number on file'}.`);
+      } catch (err) {
+        push(
+          err instanceof Error
+            ? `${err.message} Is the voice server running on ${VOICE_BASE}?`
+            : 'Could not reach the voice server.',
+          'warn',
+        );
+      }
     },
-    [push],
+    [push, coordinator],
   );
 
   function leave() {
