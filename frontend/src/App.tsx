@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import type { ReconciliationSession } from './types/contract';
 import type { ScheduledVisit, StudySummary } from './types/ui';
@@ -7,7 +7,7 @@ import { useAuth } from './auth';
 import { AppShell } from './components/AppShell';
 import { Toasts, useToasts } from './components/Toast';
 import { StudyPicker } from './screens/StudyPicker';
-import { placeCall, VOICE_BASE } from './api/telephony';
+import { placeCall, VOICE_BASE, waitForCallSession } from './api/telephony';
 import { SessionList } from './screens/SessionList';
 import { Reconciliation } from './screens/Reconciliation';
 import { LiveCall } from './screens/LiveCall';
@@ -27,6 +27,10 @@ export default function App() {
 
   const sessionId = coordinator && 'sessionId' in route ? route.sessionId : null;
 
+  // Read inside async callbacks (the session loader) without re-running them.
+  const routeNameRef = useRef(route.name);
+  routeNameRef.current = route.name;
+
   /** The trial in view: named by the route, or inherited from the open session. */
   const studyId = 'studyId' in route ? route.studyId : session?.studyId ?? null;
   const study = studies.find((s) => s.studyId === studyId) ?? null;
@@ -39,8 +43,15 @@ export default function App() {
     let live = true;
     api.getSession(sessionId).then((next) => {
       if (!live) return;
-      if (next) setSession(next);
-      else {
+      if (next) {
+        setSession(next);
+        return;
+      }
+      // A session the fixtures do not know is a call that is happening now. The
+      // live transcript reads it straight from the voice server, so there is
+      // nothing to load here — and it must not bounce the coordinator away.
+      setSession(null);
+      if (routeNameRef.current !== 'live') {
         push(`Session ${sessionId} was not found. Showing your trials instead.`, 'warn');
         navigate({ name: 'studies' });
       }
@@ -72,6 +83,12 @@ export default function App() {
           return;
         }
         push(`Ringing ${visit.subjectId} on ${call.to ?? 'the number on file'}.`);
+        // Open the transcript the moment the handset answers — the session id
+        // does not exist before then, so there is nothing to show until it does.
+        waitForCallSession(call.callId).then((liveSessionId) => {
+          if (liveSessionId) navigate({ name: 'live', sessionId: liveSessionId });
+          else push(`No answer from ${visit.subjectId}.`, 'warn');
+        });
       } catch (err) {
         push(
           err instanceof Error

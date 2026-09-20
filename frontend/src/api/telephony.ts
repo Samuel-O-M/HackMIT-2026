@@ -64,4 +64,33 @@ export async function telephonyStatus(): Promise<TelephonyStatus> {
   return (await res.json()) as TelephonyStatus;
 }
 
+/**
+ * Wait for a placed call to be answered, then hand back its brain session.
+ *
+ * The session id does not exist until the handset picks up, so there is nothing
+ * to navigate to before then. Resolves null if the call is declined, ends, or
+ * nobody answers within `timeoutMs` — the caller decides what to say about it.
+ */
+export async function waitForCallSession(
+  callId: string,
+  { timeoutMs = 120000, intervalMs = 1000 }: { timeoutMs?: number; intervalMs?: number } = {},
+): Promise<string | null> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const res = await fetch(`${BASE}/api/calls`);
+      if (res.ok) {
+        const body = (await res.json()) as { calls?: PlacedCall[] };
+        const call = (body.calls ?? []).find((c) => c.callId === callId);
+        if (call?.sessionId) return call.sessionId;
+        if (call && ['declined', 'failed', 'ended'].includes(call.status)) return null;
+      }
+    } catch {
+      // A blip is not a reason to give up; the next tick tries again.
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  return null;
+}
+
 export const VOICE_BASE = BASE;
