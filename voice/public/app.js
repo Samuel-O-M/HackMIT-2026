@@ -306,13 +306,17 @@
 
   let brainSig = null;
   async function refresh() {
-    if (!sessionId || devPanel.hidden) return;
+    if (!sessionId) return;
     try {
       const data = await fetchJson(`/api/brain/debug?sessionId=${encodeURIComponent(sessionId)}`);
       if (Array.isArray(data.conversation)) {
         conversation = data.conversation;
         renderConversation();
       }
+      // The grounding/brain/log panes are developer-only. The conversation
+      // above must refresh in patient mode too, otherwise the agent's reply is
+      // never rendered and agentSpeak() is never triggered (silent call).
+      if (devPanel.hidden) return;
       const sig = JSON.stringify({
         p: data.patient ?? null, t: data.lastTurn?.talker?.toolCalls ?? null,
         s: data.state ?? null, pl: data.planner ?? null, lp: data.lastPlan ?? null, ch: data.channel ?? null,
