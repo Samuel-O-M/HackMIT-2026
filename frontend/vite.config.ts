@@ -57,7 +57,7 @@ export default defineConfig({
     // Reachable through the ngrok tunnel: the Host header is the ngrok domain,
     // which Vite's host check would otherwise reject with a 403.
     host: true,
-    allowedHosts: ['.ngrok-free.app'],
+    allowedHosts: ['.ngrok-free.app', 'reconmed.avighnac.com'],
     // The fixtures live in the repo's patient_data/ directory, one level up.
     fs: { allow: ['..'] },
   },
