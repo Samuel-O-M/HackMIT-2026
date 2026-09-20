@@ -1,9 +1,15 @@
 % Slide 01 — title.
+%
+% The right half used to be the wordmark again at 52mm, which said nothing the
+% lockup had not already said. It now carries the three figures the deck goes
+% on to prove, so the problem is established before the first real slide.
+%
 % Quiet by design: the one loud thing in this deck is the prohibited alert
 % (slide 07), so the title carries no alarm colour at all.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
+\hyphenpenalty=10000\exhyphenpenalty=10000\sloppy
 \begin{tikzpicture}[x=1mm,y=1mm]
 \path[use as bounding box] (0,0) rectangle (160,90);
 
@@ -12,24 +18,34 @@
 \node[anchor=west, inner sep=0pt] at (36,79.5)
   {\fontsize{22}{22}\selectfont\displayfont\bfseries\color{brand} ReconMed};
 \node[anchor=west, inner sep=0pt] at (36,71.5)
-  {\fontsize{8.5}{10}\selectfont\sffamily\color{inkii} Automated patient reconciliation};
+  {\fontsize{8.5}{10}\selectfont\sffamily\color{inkii} Automated Medicine Reconciliation};
 
 % ---- headline -----------------------------------------------------------
-\node[anchor=west, align=left, text width=76mm, inner sep=0pt] at (16,51)
+\node[anchor=west, align=left, text width=74mm, inner sep=0pt] at (16,52)
   {\fontsize{24}{28}\selectfont\sffamily\bfseries\color{ink} Reconciled\\ before the visit.};
 
 % ---- sub ----------------------------------------------------------------
-\node[anchor=west, align=left, text width=80mm, inner sep=0pt] at (16,33)
-  {\fontsize{10.5}{14.5}\selectfont\sffamily\color{inkii}
-   Pre-visit concomitant medication\\ reconciliation for clinical trial sites.};
+\node[anchor=west, align=left, text width=74mm, inner sep=0pt] at (16,35)
+  {\fontsize{10.5}{14}\selectfont\sffamily\color{inkii}
+   A voice agent calls trial participants, resolves what they say against
+   the protocol, and hands a coordinator a reviewed draft.};
 
 % ---- hairline + event ---------------------------------------------------
-\draw[line] (16,22) -- (86,22);
-\node[anchor=west, inner sep=0pt] at (16,14)
+\draw[line] (16,19) -- (86,19);
+\node[anchor=west, inner sep=0pt] at (16,12)
   {\fontsize{9}{11}\selectfont\sffamily\color{inkiii} HackMIT 2026};
 
-% ---- the mark, large ----------------------------------------------------
-\node[anchor=center, inner sep=0pt] at (124,45) {\reconmedmark[52mm]};
+% ---- the case, in three published figures -------------------------------
+\draw[line, line width=0.4pt] (94,16) -- (94,80);
+
+\foreach \y/\fig/\what/\src in {%
+  74/{32.8\%}/{of Phase III participants have a protocol deviation}/{Tufts CSDD \textperiodcentered\ 187 protocols},
+  52/{\$4,862}/{per data error, when it is found in retrospective review}/{I-SPY COVID \textperiodcentered\ Comms Medicine 2025},
+  30/{45.5\%}/{of calls to participants surface a medication issue}/{Martinez et al., 25,829 calls}} {
+  \node[anchor=north west, font=\fontsize{19}{21}\selectfont\displayfont\bfseries\color{brand}] at (104,\y) {\fig};
+  \node[anchor=north west, font=\fontsize{7}{8.6}\selectfont\sffamily\color{ink}, align=left, text width=42mm] at (104,\y-8.5) {\what};
+  \node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\color{inkiv}, align=left, text width=42mm] at (104,\y-18) {\src};
+}
 
 \end{tikzpicture}
 \end{document}

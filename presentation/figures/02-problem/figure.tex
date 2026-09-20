@@ -1,6 +1,16 @@
 % Slide 02 — the problem.
 % A coordinator's visit morning, to scale. Everything is decided in the room;
 % the medication list is the one thing that needed days, and gets 20 minutes.
+%
+% On the 20 minutes: it is a site estimate, and a conservative one. Published
+% medication-reconciliation times in other settings run far longer — a median
+% of 50 minutes per patient overall, 46 at internal-medicine admission — so
+% this is not an inflated number. It is labelled as an estimate anyway,
+% because it is the only figure on the slide without a citation.
+%
+% The load-bearing claim is the line beneath it, and that one is corroborated:
+% conmed data is entered at the site visit, which makes it a test of what the
+% participant can recall since the last one.
 \documentclass[border=0pt]{standalone}
 \input{shared/theme}
 \begin{document}
@@ -40,8 +50,13 @@
 
 % the point
 \draw[ink, line width=0.8pt] (133.1,41) -- (133.1,35.5);
-\node[anchor=north, font=\fontsize{7.5}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (133.1,34.5) {20 minutes};
-\node[anchor=north, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkii}] at (133.1,30) {the first time the list meets reality};
+\node[anchor=north, font=\fontsize{7.5}{8.5}\selectfont\sffamily\bfseries\color{ink}] at (133.1,34.5) {\textasciitilde20 minutes};
+\node[anchor=north, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (133.1,30.2) {site estimate};
+
+\node[anchor=north west, font=\fontsize{7.6}{9.2}\selectfont\sffamily\bfseries\color{ink}] at (16,22)
+  {Conmeds are entered at the visit, so the record is whatever the participant remembers.};
+\node[anchor=north west, font=\fontsize{6.4}{7.7}\selectfont\sffamily\color{inkii}] at (16,16.5)
+  {Weeks of pharmacy, dose changes and anything bought over the counter, recalled once, under time pressure.};
 
 \end{tikzpicture}
 \end{document}
