@@ -1,0 +1,18 @@
+# Named (stable) Cloudflare Tunnel — requires a Cloudflare account and a domain
+# whose DNS is managed by Cloudflare. Use this only if you need the same
+# hostname across restarts; for a demo, tunnel.sh (Quick Tunnel) is enough.
+#
+#   cloudflared tunnel login
+#   cloudflared tunnel create voice
+#   cloudflared tunnel route dns voice voice.example.com
+#   cloudflared tunnel --config ./config.yml run
+#
+# Then set this hostname as the phone URL: https://voice.example.com
+
+tunnel: voice
+credentials-file: /home/REPLACE_ME/.cloudflared/REPLACE_TUNNEL_UUID.json
+
+ingress:
+  - hostname: voice.example.com
+    service: http://localhost:8787
+  - service: http_status:404

@@ -17,6 +17,9 @@ The UI is a **single call screen**:
   keeps its own event log (downloadable), and the server appends a JSONL log
   per session to `voice/logs/<sessionId>.jsonl` (also served at
   `GET /api/brain/log?sessionId=…`). Logs are gitignored.
+- **Phone mode** — the phone icon in the top bar (or a narrow/coarse-pointer
+  screen) switches to an iOS-style call screen: same STT/TTS/brain pipeline,
+  laid out for iPhone with safe-area insets, a call timer, and live captions.
 
 See [`API_SETTINGS.md`](./API_SETTINGS.md) for every Deepgram + OpenAI setting,
 and [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the design.
@@ -31,6 +34,19 @@ node server.js       # → http://localhost:8787
 ```
 
 Open **http://localhost:8787**. Mic access works on `localhost` (or HTTPS).
+
+## Phone access (Cloudflare Tunnel)
+
+A phone needs an HTTPS origin, because `getUserMedia` (the microphone) is only
+available in a secure context — `http://<LAN-IP>:8787` will not work. Start a
+tunnel to this server and open the printed URL on the phone:
+
+```bash
+cd api/cloudflare && ./tunnel.sh      # → https://<random>.trycloudflare.com
+```
+
+Then tap the phone icon in the top bar for phone mode. See
+[`api/cloudflare/README.md`](../api/cloudflare/README.md).
 
 ## Endpoints
 

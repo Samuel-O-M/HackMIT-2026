@@ -31,6 +31,8 @@
   let conversation = [];
   let levelTimer = null;
   let currentState = 'idle';
+  let callStartedAt = 0;
+  let durationTimer = null;
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -67,6 +69,40 @@
   $('#themeToggle').addEventListener('click', () => {
     setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
   });
+
+  // ------------------------------------------------------------- phone mode
+  // Layout only: toggling this never touches the call logic. The pre-paint
+  // script in index.html has already set data-mode when it could.
+  const PHONE_MODE_KEY = 'voice.phoneMode';
+  const phoneToggle = $('#phoneToggle');
+
+  function autoPhoneMode() {
+    return (
+      matchMedia('(max-width: 700px)').matches ||
+      (matchMedia('(pointer: coarse)').matches && matchMedia('(max-width: 900px)').matches)
+    );
+  }
+
+  function setPhoneMode(on, persist) {
+    document.documentElement.dataset.mode = on ? 'phone' : 'desktop';
+    if (phoneToggle) {
+      phoneToggle.setAttribute('aria-pressed', String(on));
+      phoneToggle.title = on ? 'Switch to desktop layout' : 'Switch to phone layout';
+    }
+    if (persist) {
+      try { localStorage.setItem(PHONE_MODE_KEY, on ? '1' : '0'); } catch {}
+    }
+  }
+
+  {
+    const preset = document.documentElement.dataset.mode;
+    setPhoneMode(preset ? preset === 'phone' : autoPhoneMode(), false);
+  }
+  if (phoneToggle) {
+    phoneToggle.addEventListener('click', () => {
+      setPhoneMode(document.documentElement.dataset.mode !== 'phone', true);
+    });
+  }
 
   // ------------------------------------------------------------- dev mode
   const devPanel = $('#devPanel');
@@ -118,6 +154,7 @@
     currentState = state;
     $('#callView').dataset.state = state;
     $('#statusText').textContent = STATUS_TEXT[state] || state;
+    updatePhoneHeader();
     updateTyping();
     if (sessionId) {
       fetch('/api/brain/channel', {
@@ -126,6 +163,44 @@
         body: JSON.stringify({ sessionId, state }),
       }).catch(() => {});
     }
+  }
+
+  // Shorter, phone-appropriate wording for the iOS-style header.
+  const PHONE_STATUS_TEXT = {
+    idle: 'Call ended',
+    connecting: 'Connecting…',
+    listening: 'On call',
+    thinking: 'Thinking…',
+    speaking: 'Speaking…',
+    muted: 'Muted',
+  };
+  function updatePhoneHeader() {
+    const el = $('#phoneStatus');
+    if (el) el.textContent = PHONE_STATUS_TEXT[currentState] || currentState;
+  }
+
+  function formatDuration(ms) {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const m = String(Math.floor(total / 60)).padStart(2, '0');
+    const s = String(total % 60).padStart(2, '0');
+    return `${m}:${s}`;
+  }
+  function startDurationTimer() {
+    callStartedAt = Date.now();
+    const el = $('#phoneTimer');
+    if (el) el.textContent = '00:00';
+    if (durationTimer) clearInterval(durationTimer);
+    durationTimer = setInterval(() => {
+      const t = $('#phoneTimer');
+      if (t) t.textContent = formatDuration(Date.now() - callStartedAt);
+    }, 1000);
+  }
+  function stopDurationTimer() {
+    if (durationTimer) clearInterval(durationTimer);
+    durationTimer = null;
+    callStartedAt = 0;
+    const t = $('#phoneTimer');
+    if (t) t.textContent = '00:00';
   }
 
   // ------------------------------------------------------------- conversation
@@ -306,13 +381,17 @@
 
   let brainSig = null;
   async function refresh() {
-    if (!sessionId || devPanel.hidden) return;
+    if (!sessionId) return;
     try {
       const data = await fetchJson(`/api/brain/debug?sessionId=${encodeURIComponent(sessionId)}`);
       if (Array.isArray(data.conversation)) {
         conversation = data.conversation;
         renderConversation();
       }
+      // The grounding/brain/log panes are developer-only. The conversation
+      // above must refresh in patient mode too, otherwise the agent's reply is
+      // never rendered and agentSpeak() is never triggered (silent call).
+      if (devPanel.hidden) return;
       const sig = JSON.stringify({
         p: data.patient ?? null, t: data.lastTurn?.talker?.toolCalls ?? null,
         s: data.state ?? null, pl: data.planner ?? null, lp: data.lastPlan ?? null, ch: data.channel ?? null,
@@ -574,6 +653,7 @@
       $('#mute').disabled = false;
       $('#end').disabled = false;
       setState('listening');
+      startDurationTimer();
       log('mic.start', { sampleRate: ctx.sampleRate });
 
       if (pollTimer) clearInterval(pollTimer);
@@ -605,9 +685,10 @@
   }
 
   async function endCall() {
-    if (!call) { setState('idle'); return; }
+    if (!call) { stopDurationTimer(); setState('idle'); return; }
     const { ws, ctx, stream, source, processor } = call;
     call = null;
+    stopDurationTimer();
     muted = false;
     if (flushInterval) { clearInterval(flushInterval); flushInterval = null; }
     if (levelTimer) { clearInterval(levelTimer); levelTimer = null; }
