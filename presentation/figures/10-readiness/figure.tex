@@ -22,8 +22,8 @@
 \node[subline]  at (16,75.5) {A call about someone's medication is as sensitive as data gets. Three places it could leak; three answers.};
 
 % ---- 1. the voice -------------------------------------------------------
-\fill[surf, rounded corners=2.5pt] (12,26) rectangle (60,68);
-\draw[brand, line width=0.7pt, rounded corners=2.5pt] (12,26) rectangle (60,68);
+\fill[surf, rounded corners=2.5pt] (12,22) rectangle (60,68);
+\draw[brand, line width=0.7pt, rounded corners=2.5pt] (12,22) rectangle (60,68);
 \node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{brand}] at (16,64) {THE VOICE};
 \node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}, align=left, text width=40mm] at (16,59)
   {Their recorded voice need never reach a vendor};
@@ -31,12 +31,12 @@
 \node[anchor=north west, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{ink}] at (16,48) {Speech in and speech out};
 \node[anchor=north west, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{ink}] at (16,44) {run on open models,};
 \node[anchor=north west, font=\fontsize{6.2}{7.6}\selectfont\sffamily\color{ink}] at (16,40) {on this machine's CPU.};
-\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=40mm] at (16,33)
+\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=40mm] at (16,31)
   {No API key, no upload, no account.};
 
 % ---- 2. the record ------------------------------------------------------
-\fill[surf, rounded corners=2.5pt] (64,26) rectangle (112,68);
-\draw[line, line width=0.5pt, rounded corners=2.5pt] (64,26) rectangle (112,68);
+\fill[surf, rounded corners=2.5pt] (64,22) rectangle (112,68);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (64,22) rectangle (112,68);
 \node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{inkiii}] at (68,64) {THE RECORD};
 \node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}, align=left, text width=40mm] at (68,59)
   {Every store sits on the site's own machine};
@@ -45,26 +45,24 @@
   \fill[brand] (68,\y+0.6) circle (0.6);
   \node[anchor=west, font=\fontsize{6}{7.3}\selectfont\sffamily\color{ink}] at (70.5,\y+0.6) {\what};
 }
-\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=40mm] at (68,31)
+\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=40mm] at (68,29)
   {Or point it at the sponsor's server: one setting, same code.};
 
 % ---- 3. the identifiers -------------------------------------------------
-\fill[surf, rounded corners=2.5pt] (116,26) rectangle (148,68);
-\draw[line, line width=0.5pt, rounded corners=2.5pt] (116,26) rectangle (148,68);
+\fill[surf, rounded corners=2.5pt] (116,22) rectangle (148,68);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (116,22) rectangle (148,68);
 \node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{inkiii}] at (119,64) {THE NAMES};
 \node[anchor=north west, font=\fontsize{7.4}{9}\selectfont\sffamily\bfseries\color{ink}, align=left, text width=26mm] at (119,59)
   {They never enter the record at all};
 
-\node[anchor=north west, font=\fontsize{6}{7.3}\selectfont\sffamily\color{ink}, align=left, text width=26mm] at (119,46)
-  {The call hears a name and a date of birth. The trial record keeps neither.};
-\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=26mm] at (119,33)
-  {Both are stripped as the call is filed, leaving the subject number.};
+\node[anchor=north west, font=\fontsize{6}{7.3}\selectfont\sffamily\color{ink}, align=left, text width=27mm] at (119,47)
+  {The call hears both. The record keeps neither.};
+\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiii}, align=left, text width=27mm] at (119,37)
+  {Stripped as the call is filed, leaving the subject number.};
 
 % ---- footing ------------------------------------------------------------
-\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiv}] at (16,19)
+\node[anchor=west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkiv}] at (16,15)
   {The demo runs hosted speech for latency; the local models are built and tested, and switching is a setting rather than a rewrite.};
-\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (16,12)
-  {Three real published protocols, 25 participants \textemdash\ the trials are real, every participant is synthetic.};
 
 \end{tikzpicture}
 \end{document}
