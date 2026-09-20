@@ -5,6 +5,8 @@
 
 # Voice Agent — local UI + brain
 
+<img src="../presentation/thumbnail.png" alt="ReconMed" width="560" />
+
 > The whole voice pipeline in one process: **mic → Deepgram STT → grounded
 > Talker + Planner → Deepgram TTS → speakers.**
 

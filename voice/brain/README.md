@@ -5,6 +5,8 @@
 
 # The Brain — Talker + Planner
 
+<img src="../../presentation/thumbnail.png" alt="ReconMed" width="560" />
+
 > A single-instance orchestrator running a **fast realtime Talker** and a
 > **slower background Thinker/Planner**.
 

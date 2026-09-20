@@ -5,6 +5,8 @@
 
 # Telephony
 
+<img src="../../presentation/thumbnail.png" alt="ReconMed" width="560" />
+
 > Placing a call, with two interchangeable providers behind one interface.
 
 Part of **[ReconMed](../../README.md)** — pre-visit concomitant medication

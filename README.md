@@ -12,6 +12,8 @@
 
 **Automated pre-visit patient reconciliation for clinical trial sites.**
 
+<img src="presentation/thumbnail.png" alt="ReconMed" width="720" />
+
 A voice agent calls the participant before a visit, walks through their
 medications, checks what they say against the trial protocol's prohibited list,
 and hands the coordinator a diff to confirm. A protocol deviation is caught on
@@ -33,6 +35,11 @@ the phone — not in monitoring, weeks later.
     <li><a href="#about-the-project">About the project</a></li>
     <li><a href="#the-problem">The problem</a></li>
     <li><a href="#how-it-works">How it works</a></li>
+    <li><a href="#how-we-built-it">How we built it</a></li>
+    <li><a href="#challenges-we-ran-into">Challenges we ran into</a></li>
+    <li><a href="#accomplishments-were-proud-of">Accomplishments we're proud of</a></li>
+    <li><a href="#what-we-learned">What we learned</a></li>
+    <li><a href="#whats-next-for-our-project">What's next for our project</a></li>
     <li><a href="#built-with">Built with</a></li>
     <li><a href="#quick-start">Quick start</a>
       <ul>
@@ -157,6 +164,72 @@ information versus clinical record, linked by a pseudonymous subject ID.
 id only — no names, ever. The contact layer the voice agent needs to verify who
 it is speaking to is synthesised separately and never touches the clinical
 store.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## How we built it
+
+- **Two-model architecture.** The voice pipeline is split in two. One fast model
+  handles the live conversation with no lag in the turn-taking; a second runs
+  asynchronously between turns to read drug data, plan the conversation, and
+  stage proposed updates.
+- **Drug normalization and local caching.** We downloaded and cached NLM RxNorm
+  and RxClass into local SQLite. A described drug is mapped to canonical
+  ingredient concepts and drug classes instantly, with no external request on the
+  critical path.
+- **Protocol extraction.** An extraction pipeline parses trial protocol documents
+  (PDF/DOCX) with structured LLM outputs to pull out the trial details and the
+  exact list of prohibited medications and their rules.
+- **Strict safety and regulatory separation.** The agent cannot write to the trial
+  record; it only stages proposals. Identifying details (name, phone) never mix
+  with clinical data, which uses subject IDs only. Promotion to the official log
+  needs coordinator review and an e-signature.
+- **Offline privacy fallback.** Open-source models (NVIDIA Parakeet for
+  speech-to-text, Qwen3-TTS for speech, and a local quantized Gemma) let a site
+  run the whole system locally, with no patient audio leaving their network.
+
+## Challenges we ran into
+
+- **Audio latency.** A voice agent only sounds natural with very low response
+  times. We buffered the audio streams carefully and split the fast speaking model
+  from the slower medical reasoning so the patient is never waiting on a computer.
+- **Messy patient descriptions.** People rarely know the brand or generic name of
+  their drugs. Getting the agent to ask the right clarifying questions (dose,
+  bottle label, what symptom it treats) and to map that to RxNorm without
+  hallucinating took a lot of prompt and tool tuning.
+- **Protocol parsing.** Protocols are dense 80+ page PDFs with complex tables and
+  footnotes. Pulling out clean, machine-readable rules for banned drugs meant
+  chunking carefully and enforcing strict JSON schemas.
+
+## Accomplishments we're proud of
+
+- A full end-to-end demo: talk to the agent on the phone, describe a drug vaguely,
+  and watch an accurate diff with a prohibited-medication alert appear on the
+  dashboard.
+- A drug lookup layer that runs entirely against local SQLite, so it is fast,
+  reliable, and free of rate limits.
+- A working local/offline mode with open-source speech and language models,
+  showing this can run in high-privacy clinical settings without cloud
+  dependencies.
+
+## What we learned
+
+- How concomitant medication reporting actually works in trials, the regulatory
+  requirements around changing data (21 CFR Part 11 audit trails), and why an
+  unnoticed protocol deviation ruins study data.
+- How to structure multi-agent audio systems: latency-critical conversation
+  decoupled from heavier background lookups.
+- Navigating federal drug ontologies — RxNorm, ATC classes, and FDA Established
+  Pharmacologic Classes.
+
+## What's next for our project
+
+- Connect the coordinator dashboard to real EDC systems (Veeva, Medidata Rave) so
+  approved logs sync automatically.
+- Support inbound Twilio media streams, so a participant can call the site back
+  whenever it suits them.
+- Cross-reference adverse events: when a participant reports severe unexpected
+  symptoms, automatically flag a safety alert for the site physician.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -372,6 +445,10 @@ Built at **HackMIT 2026** for the **Regeneron** track.
 - [othneildrew/Best-README-Template](https://github.com/othneildrew/Best-README-Template),
   [matiassingers/awesome-readme](https://github.com/matiassingers/awesome-readme),
   and [readme.so](https://readme.so/) for this README's structure.
+
+## Links
+
+- **Code:** [github.com/Samuel-O-M/HackMIT-2026](https://github.com/Samuel-O-M/HackMIT-2026)
 
 ## Contact
 
