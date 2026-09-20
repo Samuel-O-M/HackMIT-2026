@@ -405,8 +405,8 @@ async function readTurnPayload(req, res) {
 async function handleBrainTurn(req, res) {
   const payload = await readTurnPayload(req, res);
   if (!payload) return;
-  const { sessionId, subjectId, text } = payload;
-  const result = await brain.handleTurn({ sessionId, subjectId, userText: String(text || '') });
+  const { sessionId, subjectId, text, source } = payload;
+  const result = await brain.handleTurn({ sessionId, subjectId, userText: String(text || ''), source });
   // The browser only gets the tool names.
   logTurn(sessionId, subjectId, text, result);
   sendJson(res, 200, {
@@ -430,7 +430,7 @@ async function handleBrainTurn(req, res) {
 async function handleBrainTurnStream(req, res) {
   const payload = await readTurnPayload(req, res);
   if (!payload) return;
-  const { sessionId, subjectId, text } = payload;
+  const { sessionId, subjectId, text, source } = payload;
 
   res.writeHead(200, {
     'Content-Type': 'application/x-ndjson; charset=utf-8',
@@ -449,6 +449,7 @@ async function handleBrainTurnStream(req, res) {
       userText: String(text || ''),
       onEvent: send,
       opening: Boolean(payload.opening),
+      source,
     });
     logTurn(sessionId, subjectId, text, result);
     send({

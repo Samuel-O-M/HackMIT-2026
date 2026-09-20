@@ -15,6 +15,7 @@ import { BehaviourPanel } from '../components/BehaviourPanel';
 import { SymptomPanel } from '../components/SymptomPanel';
 import { CaregiverNote } from '../components/CaregiverNote';
 import { CallEndingNote } from '../components/CallEndingNote';
+import { SafetyAlert } from '../components/SafetyAlert';
 import { emptyMeansNothingChanged } from '../lib/callFindings';
 import { placeCall } from '../api/telephony';
 import {
@@ -186,6 +187,20 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
           </div>
         </header>
 
+        {/* Order is deliberate: a symptom that might be serious concerns a
+            person, a prohibited medication concerns the protocol, and the
+            rest is context for reading the page. */}
+        <SafetyAlert changes={session.changes} flags={session.safetyFlags} onJump={jump} />
+
+        <ProhibitedAlert
+          changes={session.changes}
+          behaviours={session.behaviours}
+          deviations={deviations}
+          locked={locked}
+          onJump={jump}
+          onLogDeviation={(change) => setModal({ kind: 'deviation', change })}
+        />
+
         <CallEndingNote
           ending={session.ending}
           onCallAgain={() => {
@@ -203,15 +218,6 @@ export function Reconciliation({ session, coordinator, onSessionChange, onToast 
         />
 
         <CaregiverNote participants={session.callParticipants} />
-
-        <ProhibitedAlert
-          changes={session.changes}
-          behaviours={session.behaviours}
-          deviations={deviations}
-          locked={locked}
-          onJump={jump}
-          onLogDeviation={(change) => setModal({ kind: 'deviation', change })}
-        />
 
         {session.changes.length === 0 ? (
           <div className="empty">

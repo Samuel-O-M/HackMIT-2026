@@ -67,3 +67,34 @@ populate it; decision-only events leave it null.
 A prohibited conmed is a reportable deviation. `ProtocolDeviation` is currently
 UI-side; it belongs in the backend and probably in its own store, since the PI
 signs it and the IRB report draws from it.
+
+## 6. Follow-up answers on `ConmedEntry`, and `safetyFlags` on the session
+
+The voice agent now asks, selectively, how a medicine is going. The answers ride
+on the entry the coordinator reviews. All new fields are **optional**, so nothing
+that ignores them breaks; `null`/absent means "never asked", not "no".
+
+```ts
+interface ConmedEntry {
+  // ...existing fields...
+  effectiveness?: 'working' | 'partly' | 'not_working' | 'unsure' | null;
+  sideEffects?: 'none' | 'reported' | 'serious' | 'unsure' | null;
+  sideEffectsNote?: string | null;   // participant's words
+  stopReason?: string | null;        // participant's words
+}
+
+interface ReconciliationSession {
+  // ...existing fields...
+  safetyFlags?: { detail: string }[];   // serious symptoms tied to no one medication
+}
+```
+
+`serious` is only ever set for the fixed red-flag list in the agent's policy; it
+is not a severity judgement, it exists so a person sees it quickly. The review
+screen surfaces it above the diff. A serious symptom is a potential adverse
+event, so the sponsor's AE reporting path likely needs to hang off this; that is
+not built here.
+
+`src/types/contract.ts` mirrors these; when `shared/types.ts` lands they should
+be added there. The `conmed_entries` table gains matching columns
+(`databases/trial_records/schema.sql`).

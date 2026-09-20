@@ -50,5 +50,10 @@ module.exports = {
   // Loop limits
   maxToolRounds: 4,
   historyTurns: 20,
+
+  // Follow-up questions ("has it been working?", "any side effects?"): asking
+  // them of every medicine sounds like a form. At most this many *optional* ones
+  // per call; the "why did you stop it?" kind is not counted against this.
+  maxFollowups: 3,
   plannerDebounceMs: 250,
 };

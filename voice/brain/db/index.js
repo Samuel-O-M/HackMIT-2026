@@ -52,6 +52,24 @@ class ReadOnlyStore {
   close() { this.db.close(); }
 }
 
+/** Follow-up answers on a staged change; databases seeded before these existed lack them. */
+const FEEDBACK_COLUMNS = ['effectiveness', 'side_effects', 'side_effects_note', 'stop_reason'];
+
+function migrate(db) {
+  const staged = db.prepare('PRAGMA table_info(staged_changes)').all().map((c) => c.name);
+  if (staged.length) {
+    for (const col of FEEDBACK_COLUMNS) {
+      if (!staged.includes(col)) db.exec(`ALTER TABLE staged_changes ADD COLUMN ${col} TEXT`);
+    }
+  }
+  // Utterance provenance: 'stt' when the patient's turn came from speech-to-text,
+  // 'text' when it was typed. Databases seeded before this existed lack it.
+  const utterances = db.prepare('PRAGMA table_info(utterances)').all().map((c) => c.name);
+  if (utterances.length && !utterances.includes('source')) {
+    db.exec("ALTER TABLE utterances ADD COLUMN source TEXT NOT NULL DEFAULT 'text'");
+  }
+}
+
 class ReadWriteStore {
   constructor(file, label) {
     if (!fs.existsSync(file)) {
@@ -67,6 +85,7 @@ class ReadWriteStore {
     } catch {
       /* best effort */
     }
+    migrate(this.db);
   }
   query(sql, ...params) {
     return this.db.prepare(sql).all(...params);

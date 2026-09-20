@@ -48,6 +48,43 @@ cd api/cloudflare && ./tunnel.sh      # → https://<random>.trycloudflare.com
 Then tap the phone icon in the top bar for phone mode. See
 [`api/cloudflare/README.md`](../api/cloudflare/README.md).
 
+## Follow-up questions (is it working? any side effects?)
+
+The agent also learns how a medicine is going for the participant, but a
+question about every medicine sounds like a form, so it is selective
+(`brain/prompts/policy.md` §2c):
+
+| Situation | What it does |
+|-----------|--------------|
+| New medicine (basics recorded) | one open question: "how has that been going for you?" |
+| Stopped or changed a medicine | asks why, at most twice |
+| Unchanged medicine | nothing. "Same as before" is a complete answer |
+| End of the call | one closing "has anything not agreed with you?" before it says goodbye |
+| They raise a problem | one natural question about it, then leaves it |
+
+Capped at three optional questions per call, never about two medicines back to
+back, never repeating something they already said. The planner keeps the count
+in its state (`followups`) and proposes the next question (`followup`); the cap
+and "not before identity is verified" are enforced in code
+(`Brain.stateForTalker`), and the planner cannot mark the closing question asked
+unless an agent turn really asked it (`Brain.reconcileFollowups`).
+
+Answers are stored on the staged change, in the participant's terms:
+`effectiveness` (working / partly / not_working / unsure), `side_effects`
+(none / reported / serious / unsure), `side_effects_note` and `stop_reason` (their
+words). Empty means "never asked", not "no". Re-emitting a medication merges new
+answers into the row already staged. Databases seeded before this get the columns
+added automatically on next start.
+
+**Serious symptoms.** For a fixed red-flag list (chest pain, trouble breathing,
+fainting, swelling of face/lips/throat, severe rash, sudden severe headache,
+bleeding that will not stop, confusion, severe allergic reaction) the agent
+records `serious`, says calmly that it is flagging it for the study team to
+follow up promptly, and gives no advice or reassurance. It is not judging
+severity; it is making sure a person sees it. The review screen shows a banner
+above the diff, a red edge on the row, and for a symptom tied to no medicine, a
+session-level `safetyFlags` entry that the bridge carries from the planner.
+
 ## The agent places the call
 
 When a call connects, the browser immediately asks for an *opening turn*

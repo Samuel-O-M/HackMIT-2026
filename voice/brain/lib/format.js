@@ -10,7 +10,11 @@
  */
 
 function oneLine(row) {
-  return { speaker: row?.speaker ?? 'unknown', text: row?.transcript ?? row?.content ?? '' };
+  return {
+    speaker: row?.speaker ?? 'unknown',
+    text: row?.transcript ?? row?.content ?? '',
+    source: row?.source ?? null,
+  };
 }
 
 /** @param {Array|string|null} conversation */
@@ -21,8 +25,11 @@ function formatConversation(conversation) {
     if (!conversation.length) return '(none)';
     return conversation
       .map((row) => {
-        const { speaker, text } = oneLine(row);
-        return `${speaker}: ${text}`;
+        const { speaker, text, source } = oneLine(row);
+        // Only the agents' view carries the provenance tag; the database, the
+        // UI and the published transcript keep the raw words.
+        const tag = speaker === 'patient' && source === 'stt' ? '[[STT]] ' : '';
+        return `${speaker}: ${tag}${text}`;
       })
       .join('\n');
   }

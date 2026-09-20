@@ -98,7 +98,7 @@
     }
   }
 
-  async function sendTurn(text) {
+  async function sendTurn(text, { stt = false } = {}) {
     const content = (text || '').trim();
     if (!content) return;
     if (!sessionId) {
@@ -116,7 +116,7 @@
       const data = await fetchJson('/api/brain/turn', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, subjectId, text: content }),
+        body: JSON.stringify({ sessionId, subjectId, text: content, source: stt ? 'stt' : 'text' }),
       });
       display.push({ role: 'agent', content: data.say || '(no reply)' });
       render();
@@ -150,7 +150,7 @@
         $('#prodTranscript').value = data.transcript || '';
         $('#prodUseTranscriptBtn').disabled = !data.transcript;
         $('#prodRecordState').textContent = 'done';
-        if ($('#prodAutoSpeak').checked && data.transcript) await sendTurn(data.transcript);
+        if ($('#prodAutoSpeak').checked && data.transcript) await sendTurn(data.transcript, { stt: true });
       } catch (err) {
         $('#prodRecordState').textContent = 'error';
         showError('STT: ' + err.message);
@@ -173,7 +173,7 @@
   $('#prodInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendTurn($('#prodInput').value);
   });
-  $('#prodUseTranscriptBtn').addEventListener('click', () => sendTurn($('#prodTranscript').value));
+  $('#prodUseTranscriptBtn').addEventListener('click', () => sendTurn($('#prodTranscript').value, { stt: true }));
 
   loadPatients();
 })();

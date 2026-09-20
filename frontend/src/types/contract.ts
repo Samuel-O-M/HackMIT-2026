@@ -29,7 +29,25 @@ export interface ConmedEntry {
   stopDate: string | null;
   stopDatePrecision: DatePrecision;
   ongoing: boolean;
+  /**
+   * Follow-up answers from the call, in the participant's terms. All optional:
+   * absent or null means the agent never asked, which is not the same as "no".
+   */
+  effectiveness?: Effectiveness | null;
+  sideEffects?: SideEffects | null;
+  /** What they said, when they reported something. Verbatim. */
+  sideEffectsNote?: string | null;
+  /** Why they stopped or changed it. Verbatim. */
+  stopReason?: string | null;
 }
+
+export type Effectiveness = 'working' | 'partly' | 'not_working' | 'unsure';
+/**
+ * `serious` is only ever set for the fixed red-flag list in the agent's policy
+ * (chest pain, trouble breathing, swelling, ...). It is not a severity
+ * judgement; it exists so a person sees it quickly.
+ */
+export type SideEffects = 'none' | 'reported' | 'serious' | 'unsure';
 
 export interface ProhibitedHit {
   ruleId: string;
@@ -218,4 +236,18 @@ export interface ReconciliationSession {
   symptoms?: SymptomReport[];
   callParticipants?: CallParticipants;
   ending?: CallEnding;
+  /**
+   * Symptoms the participant described that are not tied to one medication
+   * ("I get chest tightness sometimes"). A person needs to see these, but there
+   * is no medication row to hang them on. Words are the participant's own.
+   *
+   * Distinct from `symptoms`, which are attributed to a drug and checked
+   * against its label. These are the ones that belong to nothing, which is
+   * exactly why they would otherwise be lost.
+   */
+  safetyFlags?: SafetyFlag[];
+}
+
+export interface SafetyFlag {
+  detail: string;
 }

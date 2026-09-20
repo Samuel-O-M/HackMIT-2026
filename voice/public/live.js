@@ -330,7 +330,7 @@
   }
 
   /** One conversational turn: talker replies fast; planner runs after. */
-  async function doTurn(text) {
+  async function doTurn(text, { stt = false } = {}) {
     // Never generate or speak over ourselves.
     while (agentSpeaking) await sleep(100);
     setCallStatus('thinking…');
@@ -338,7 +338,7 @@
       await fetchJson('/api/brain/turn', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, subjectId, text }),
+        body: JSON.stringify({ sessionId, subjectId, text, source: stt ? 'stt' : 'text' }),
       });
       await refresh();
       if ($('#liveAutoSpeak').checked) {
@@ -353,10 +353,10 @@
     }
   }
 
-  function enqueueTurn(text) {
+  function enqueueTurn(text, { stt = false } = {}) {
     const t = (text || '').trim();
     if (!t) return;
-    queue.push(t);
+    queue.push({ text: t, stt });
     pump();
   }
 
@@ -364,7 +364,10 @@
     if (turnBusy) return;
     turnBusy = true;
     try {
-      while (queue.length) await doTurn(queue.shift());
+      while (queue.length) {
+        const next = queue.shift();
+        await doTurn(next.text, { stt: next.stt });
+      }
     } finally {
       turnBusy = false;
     }
@@ -381,7 +384,7 @@
     const text = pendingFinals.join(' ').trim();
     pendingFinals = [];
     interim = '';
-    if (text) enqueueTurn(text);
+    if (text) enqueueTurn(text, { stt: true });
   }
 
   function handleStt(msg) {

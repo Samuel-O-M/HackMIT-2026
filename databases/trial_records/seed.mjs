@@ -107,15 +107,15 @@ for (const v of visits) {
 }
 
 const iSession = insert('INSERT INTO sessions (session_id,subject_id,study_id,started_at,ended_at,status) VALUES (?,?,?,?,?,?)');
-const iEntry = insert(`INSERT INTO conmed_entries (log_id,reported_text,rxcui,canonical_name,indication,dose,route,frequency,start_date,start_date_precision,stop_date,stop_date_precision,ongoing)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+const iEntry = insert(`INSERT INTO conmed_entries (log_id,reported_text,rxcui,canonical_name,indication,dose,route,frequency,start_date,start_date_precision,stop_date,stop_date_precision,ongoing,effectiveness,side_effects,side_effects_note,stop_reason)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
 const iChange = insert(`INSERT INTO proposed_changes (change_id,session_id,change_type,target_log_id,current_entry_id,proposed_entry_id,agent_confidence,agent_reasoning,review_status,prohibited_rule_id,prohibited_matched_on,prohibited_class,prohibited_section,prohibited_rationale)
   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
 const iStep = insert('INSERT INTO tool_steps (change_id,seq,tool,input,output) VALUES (?,?,?,?,?)');
 
 function entryId(e) {
   if (!e) return null;
-  const r = iEntry.run(e.logId, e.reportedText, e.rxcui, e.canonicalName, e.indication, e.dose, e.route, e.frequency, e.startDate, e.startDatePrecision, e.stopDate, e.stopDatePrecision, e.ongoing ? 1 : 0);
+  const r = iEntry.run(e.logId, e.reportedText, e.rxcui, e.canonicalName, e.indication, e.dose, e.route, e.frequency, e.startDate, e.startDatePrecision, e.stopDate, e.stopDatePrecision, e.ongoing ? 1 : 0, e.effectiveness ?? null, e.sideEffects ?? null, e.sideEffectsNote ?? null, e.stopReason ?? null);
   bump('conmed_entries');
   return Number(r.lastInsertRowid);
 }
