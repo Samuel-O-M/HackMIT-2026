@@ -10,7 +10,10 @@ import type {
   DataQuery,
   ElectronicSignature,
   ProtocolDeviation,
+  Disposition,
+  EnrollInput,
   NewStudyInput,
+  Participant,
   ProtocolDocument,
   ScheduledVisit,
   Study,
@@ -70,7 +73,7 @@ export interface Transport {
    * Upload a protocol. The backend stores the file and extracts the prohibited
    * list from its concomitant medications section; the UI only shows the result.
    */
-  uploadProtocol(studyId: string, file: File): Promise<ProtocolDocument>;
+  uploadProtocol(studyId: string, file: File, extraction?: unknown): Promise<ProtocolDocument>;
 
   /** The baseline medication log and visit schedule for a trial. */
   listSupportingDocuments(studyId: string): Promise<SupportingDocument[]>;
@@ -79,6 +82,25 @@ export interface Transport {
     kind: SupportingDocumentKind,
     file: File,
   ): Promise<SupportingDocument>;
+
+  listParticipants(studyId: string): Promise<Participant[]>;
+
+  /**
+   * Enroll someone. Consent must already be signed — the ICF is the record that
+   * makes the enrollment defensible, so it is part of the input.
+   */
+  enrollParticipant(studyId: string, input: EnrollInput): Promise<Participant>;
+
+  /**
+   * Record that a participant has left the study. This is a disposition event,
+   * not a deletion: the row stays, their data stays, and the reason is a CDISC
+   * DS term the sponsor can count.
+   */
+  discontinueParticipant(
+    studyId: string,
+    subjectId: string,
+    disposition: Omit<Disposition, 'recordedBy' | 'recordedAt'>,
+  ): Promise<Participant>;
 
   /** Open a new trial at this site. */
   createStudy(input: NewStudyInput): Promise<Study>;

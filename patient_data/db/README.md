@@ -7,7 +7,7 @@ node patient_data/db/seed.mjs        # rebuild db/conmed.db from data/
 sqlite3 patient_data/db/conmed.db    # open it
 ```
 
-`patient_data/` is the source of truth. `conmed.db` is a derived artefact — safe to
+`patient_data/` is the source of truth. `conmed.db` is a derived artifact — safe to
 delete and rebuild at any time, and it is not what the frontend reads.
 
 ## Why it exists

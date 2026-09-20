@@ -88,7 +88,7 @@
   "name": "Atorvastatin",
   "atc": "C10AA05",
   "class": "Statin",
-  "indication": "Hyperlipidaemia",
+  "indication": "Hyperlipidemia",
   "doses": [
    "20 mg",
    "40 mg"
@@ -169,7 +169,7 @@
   "name": "Omeprazole",
   "atc": "A02BC01",
   "class": "Proton pump inhibitor",
-  "indication": "Gastro-oesophageal reflux",
+  "indication": "Gastro-esophageal reflux",
   "doses": [
    "20 mg"
   ],
@@ -405,7 +405,7 @@
   "name": "Furosemide",
   "atc": "C03CA01",
   "class": "Loop diuretic",
-  "indication": "Oedema",
+  "indication": "Edema",
   "doses": [
    "20 mg",
    "40 mg"
@@ -452,7 +452,7 @@
   "name": "Simvastatin",
   "atc": "C10AA01",
   "class": "Statin",
-  "indication": "Hyperlipidaemia",
+  "indication": "Hyperlipidemia",
   "doses": [
    "20 mg",
    "40 mg"

@@ -23,7 +23,7 @@ and investigational products come from each study's ClinicalTrials.gov record.
 Four of the five have their actual published Clinical Study Protocol checked in,
 and the prohibited rules cite the section of that document they were read from.
 
-**Synthetic:** everything at site level — investigator names, enrolment counts,
+**Synthetic:** everything at site level — investigator names, enrollment counts,
 the participants, their medications, and everything said on the calls. No real
 participant data is in this repository, and none should be.
 

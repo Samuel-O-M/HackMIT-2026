@@ -10,6 +10,7 @@ export type Route =
   | { name: 'visits'; studyId: string }
   | { name: 'newTrial' }
   | { name: 'documents'; studyId: string }
+  | { name: 'participants'; studyId: string }
   | { name: 'review'; sessionId: string }
   | { name: 'live'; sessionId: string }
   | { name: 'audit'; sessionId: string };
@@ -22,6 +23,7 @@ export function parseRoute(hash: string): Route {
 
   if (segments[0] === 'study' && segments[1]) {
     if (segments[2] === 'documents') return { name: 'documents', studyId: segments[1] };
+    if (segments[2] === 'participants') return { name: 'participants', studyId: segments[1] };
     return { name: 'visits', studyId: segments[1] };
   }
 
@@ -42,6 +44,8 @@ export function hrefFor(route: Route): string {
       return '#/new-trial';
     case 'documents':
       return `#/study/${route.studyId}/documents`;
+    case 'participants':
+      return `#/study/${route.studyId}/participants`;
     case 'review':
       return `#/session/${route.sessionId}`;
     case 'live':

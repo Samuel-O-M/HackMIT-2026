@@ -19,6 +19,21 @@ import { dirname, join } from 'node:path';
 const ROOT = join(process.cwd(), '..');
 const DATA = join(ROOT, 'patient_data');
 const read = (p) => JSON.parse(readFileSync(join(DATA, p), 'utf8'));
+/**
+ * Anything added through the app — a trial opened from a protocol, a
+ * participant enrolled — is not derivable from the inputs here. Regenerating
+ * would silently delete it, so records this script did not produce are carried
+ * forward. Keyed on `key`, matched against what the rebuild generated.
+ */
+const preserve = (relPath, generated, key) => {
+  const f = join(DATA, relPath);
+  if (!existsSync(f)) return generated;
+  const ids = new Set(generated.map((x) => x[key]));
+  const kept = JSON.parse(readFileSync(f, 'utf8')).filter((x) => !ids.has(x[key]));
+  if (kept.length) console.log(`  kept ${kept.length} record(s) added through the app`);
+  return [...generated, ...kept];
+};
+
 const write = (p, v) => {
   const f = join(DATA, p);
   mkdirSync(dirname(f), { recursive: true });
@@ -50,7 +65,7 @@ const TRIAL_COPY = {
   'R2810-ONC-1620': ['Cemiplimab in advanced basal cell carcinoma', 'Cemiplimab (REGN2810)', 'Advanced basal cell carcinoma after hedgehog inhibitor therapy'],
   'R2810-ONC-1624': ['Cemiplimab vs chemotherapy in metastatic NSCLC', 'Cemiplimab (REGN2810)', 'Metastatic non-small cell lung cancer, PD-L1 high'],
   'R2810-ONC-1676': ['Cemiplimab in recurrent cervical cancer', 'Cemiplimab (REGN2810)', 'Recurrent or metastatic platinum-refractory cervical cancer'],
-  'R2810-ONC-1690': ['Cemiplimab in paediatric solid and CNS tumours', 'Cemiplimab (REGN2810)', 'Relapsed or refractory solid and central nervous system tumours'],
+  'R2810-ONC-1690': ['Cemiplimab in pediatric solid and CNS tumors', 'Cemiplimab (REGN2810)', 'Relapsed or refractory solid and central nervous system tumors'],
   'R2810-ONC-1901': ['Cemiplimab in stage II–IV skin cancer', 'Cemiplimab (REGN2810)', 'Cutaneous squamous cell carcinoma, stage II to IV'],
   'R2810-ONC-16111': ['Cemiplimab + ipilimumab + chemotherapy in NSCLC', 'Cemiplimab + ipilimumab', 'Advanced non-small cell lung cancer'],
   'R2810-ONC-16113': ['Cemiplimab + platinum doublet in NSCLC', 'Cemiplimab + chemotherapy', 'Advanced non-small cell lung cancer'],
@@ -111,8 +126,13 @@ registry.forEach((t, i) => {
 });
 
 console.log(`trials: ${trials.length} · with protocol: ${Object.keys(protocols).length}`);
-write('trials/trials.json', trials);
-write('trials/protocols.json', protocols);
+write('trials/trials.json', preserve('trials/trials.json', trials, 'studyId'));
+{
+  const f = join(DATA, 'trials', 'protocols.json');
+  const existing = existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : {};
+  for (const [id, doc] of Object.entries(existing)) if (!protocols[id]) protocols[id] = doc;
+  write('trials/protocols.json', protocols);
+}
 
 /* ---------------------------------------------------------- participants */
 
@@ -209,7 +229,7 @@ const r = rng(776611);
 for (const trial of trials) {
   const rules = protocols[trial.studyId]?.rules ?? [];
   const ruleFor = (cls) => rules.find((x) => x.className === cls) ?? null;
-  // Roughly the site's enrolment, minus anyone already hand-written onto it.
+  // Roughly the site's enrollment, minus anyone already hand-written onto it.
   const existing = HAND.filter((s) => s.studyId === trial.studyId).length;
   const count = Math.max(3, Math.min(5, trial.enrolledAtSite - existing));
 
@@ -268,7 +288,7 @@ for (const trial of trials) {
     }
     // An unresolved entry on a few — a real output, not an error.
     if (chance(r, 0.22)) {
-      changes.push({ changeId: `CH-${++changeSeq}`, changeType: 'add', targetLogId: null, current: null, proposed: { logId: `NEW-${sessionSeq}-u`, reportedText: pick(r, ['a small white tablet for my stomach, I do not know the name', 'something my wife picks up for my joints', 'a yellow capsule, twice a day, I would have to check the box']), rxcui: null, canonicalName: null, indication: 'Unspecified', dose: null, route: 'Oral', frequency: 'Once daily', startDate: null, startDatePrecision: 'unknown', stopDate: null, stopDatePrecision: 'unknown', ongoing: true }, agentConfidence: 0.33 + r() * 0.12, agentReasoning: 'Participant described a medication they could not name. Colour and form are not enough to identify a product, so no resolution was attempted beyond the failed lookup. The coordinator needs to ask them to bring the bottle to the visit.', toolTrace: [{ tool: 'resolve_drug', input: 'unnamed tablet', output: 'no match above threshold' }, { tool: 'resolve_date', input: `"${pick(r, REASONS)}"`, output: 'unresolved · precision=unknown' }], prohibitedHit: null, reviewStatus: 'pending' });
+      changes.push({ changeId: `CH-${++changeSeq}`, changeType: 'add', targetLogId: null, current: null, proposed: { logId: `NEW-${sessionSeq}-u`, reportedText: pick(r, ['a small white tablet for my stomach, I do not know the name', 'something my wife picks up for my joints', 'a yellow capsule, twice a day, I would have to check the box']), rxcui: null, canonicalName: null, indication: 'Unspecified', dose: null, route: 'Oral', frequency: 'Once daily', startDate: null, startDatePrecision: 'unknown', stopDate: null, stopDatePrecision: 'unknown', ongoing: true }, agentConfidence: 0.33 + r() * 0.12, agentReasoning: 'Participant described a medication they could not name. Color and form are not enough to identify a product, so no resolution was attempted beyond the failed lookup. The coordinator needs to ask them to bring the bottle to the visit.', toolTrace: [{ tool: 'resolve_drug', input: 'unnamed tablet', output: 'no match above threshold' }, { tool: 'resolve_date', input: `"${pick(r, REASONS)}"`, output: 'unresolved · precision=unknown' }], prohibitedHit: null, reviewStatus: 'pending' });
     }
 
     const startH = 8 + Math.floor(r() * 6);
@@ -305,6 +325,34 @@ write('participants/sessions.json', sessions);
 write('participants/transcripts.json', transcripts);
 write('participants/visits.json', visits);
 write('participants/audit.json', audit);
+
+/*
+  Participants as a record in their own right, not something inferred from a
+  visit. Real enrollment is: consent signed -> screening number -> eligibility
+  checked -> randomized, which is what assigns the subject id. Leaving a study
+  is a disposition event with a CDISC DS reason, never a deletion.
+*/
+const CONSENT_VERSIONS = ['ICF v3.0', 'ICF v2.1', 'ICF v4.0'];
+const roster = [];
+const seenSubjects = new Set();
+for (const v of visits) {
+  if (seenSubjects.has(v.subjectId)) continue;
+  seenSubjects.add(v.subjectId);
+  const n = Number(v.subjectId.replace(/\D/g, '')) || 1;
+  const consentDay = -(30 + (n % 240));
+  roster.push({
+    subjectId: v.subjectId,
+    studyId: v.studyId,
+    status: 'enrolled',
+    screeningNumber: `SCR-${String(n).padStart(4, '0')}`,
+    consentVersion: CONSENT_VERSIONS[n % CONSENT_VERSIONS.length],
+    consentDate: { dayOffset: consentDay, time: '09:00' },
+    enrolledDate: { dayOffset: consentDay + 14, time: '11:00' },
+    icfFilename: null,
+    discontinuation: null,
+  });
+}
+write('participants/participants.json', preserve('participants/participants.json', roster, 'subjectId'));
 
 const subjects = new Set(visits.map((v) => v.subjectId));
 console.log(`participants: ${subjects.size} · visits: ${visits.length} · sessions: ${sessions.length} · transcripts: ${Object.keys(transcripts).length}`);

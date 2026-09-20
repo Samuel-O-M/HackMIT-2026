@@ -142,7 +142,7 @@
       "reportedText": "and there is a little blue pill I take for my stomach, I could not tell you the name"
      },
      "agentConfidence": 0.41,
-     "agentReasoning": "Participant described an unnamed blue tablet taken once daily for a stomach complaint. Colour and indication are not enough to identify a product \u2014 famotidine, omeprazole and dicyclomine all ship as blue tablets. No resolution was attempted beyond the failed lookup. This needs the coordinator to ask the participant to bring the bottle to the visit.",
+     "agentReasoning": "Participant described an unnamed blue tablet taken once daily for a stomach complaint. Color and indication are not enough to identify a product \u2014 famotidine, omeprazole and dicyclomine all ship as blue tablets. No resolution was attempted beyond the failed lookup. This needs the coordinator to ask the participant to bring the bottle to the visit.",
      "toolTrace": [
       {
        "tool": "resolve_drug",
@@ -231,7 +231,7 @@
      "current": {
       "rxcui": "7646",
       "canonicalName": "Omeprazole",
-      "indication": "Gastro-oesophageal reflux",
+      "indication": "Gastro-esophageal reflux",
       "dose": "20 mg",
       "route": "Oral",
       "frequency": "Once daily",
@@ -246,7 +246,7 @@
      "proposed": {
       "rxcui": "7646",
       "canonicalName": "Omeprazole",
-      "indication": "Gastro-oesophageal reflux",
+      "indication": "Gastro-esophageal reflux",
       "dose": "20 mg",
       "route": "Oral",
       "frequency": "Once daily",
@@ -287,7 +287,7 @@
      "current": {
       "rxcui": "83367",
       "canonicalName": "Atorvastatin",
-      "indication": "Hyperlipidaemia",
+      "indication": "Hyperlipidemia",
       "dose": "20 mg",
       "route": "Oral",
       "frequency": "Once daily at night",
@@ -302,7 +302,7 @@
      "proposed": {
       "rxcui": "83367",
       "canonicalName": "Atorvastatin",
-      "indication": "Hyperlipidaemia",
+      "indication": "Hyperlipidemia",
       "dose": "20 mg",
       "route": "Oral",
       "frequency": "Once daily at night",

@@ -13,6 +13,7 @@ import { LiveCall } from './screens/LiveCall';
 import { Audit } from './screens/Audit';
 import { Documents } from './screens/Documents';
 import { NewTrial } from './screens/NewTrial';
+import { Participants } from './screens/Participants';
 import { SignIn } from './screens/SignIn';
 
 export default function App() {
@@ -97,6 +98,9 @@ export default function App() {
       )}
       {route.name === 'newTrial' && (
         <NewTrial onToast={push} onCreated={() => setReloadKey((n) => n + 1)} />
+      )}
+      {route.name === 'participants' && (
+        <Participants studyId={route.studyId} study={study} onToast={push} />
       )}
       {route.name === 'documents' && (
         <Documents

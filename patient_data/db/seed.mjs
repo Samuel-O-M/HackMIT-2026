@@ -4,7 +4,7 @@
  * Run: node patient_data/db/seed.mjs      (from the repo root)
  *
  * Uses node:sqlite, built into Node 22+, so there is no dependency to install.
- * The database is a derived artefact — patient_data/ stays the source of truth, and
+ * The database is a derived artifact — patient_data/ stays the source of truth, and
  * this is safe to delete and rebuild at any time.
  */
 import { DatabaseSync } from 'node:sqlite';
@@ -41,6 +41,7 @@ const sessions = read('participants/sessions.json');
 const transcripts = read('participants/transcripts.json');
 const audit = read('participants/audit.json');
 const meds = JSON.parse(readFileSync(join(ROOT, 'medical_data', 'medications.json'), 'utf8'));
+const roster = read('participants/participants.json');
 
 const insert = (sql) => db.prepare(sql);
 const counts = {};
@@ -68,13 +69,35 @@ for (const p of Object.values(protocols)) {
   }
 }
 
-const iPart = insert('INSERT INTO participants (subject_id,study_id) VALUES (?,?)');
+const iPart = insert(`INSERT INTO participants
+  (subject_id,study_id,status,screening_number,consent_version,consent_date,enrolled_date,icf_filename)
+  VALUES (?,?,?,?,?,?,?,?)`);
+const iDisp = insert(`INSERT INTO dispositions
+  (subject_id,study_id,reason,detail,event_date,retain_collected_data,recorded_by,recorded_at)
+  VALUES (?,?,?,?,?,?,?,?)`);
+
 const seen = new Set();
-for (const v of visits) {
-  if (seen.has(v.subjectId)) continue;
-  seen.add(v.subjectId);
-  iPart.run(v.subjectId, v.studyId);
+for (const p of roster) {
+  seen.add(p.subjectId);
+  iPart.run(p.subjectId, p.studyId, p.status, p.screeningNumber, p.consentVersion,
+    toIso(p.consentDate), toIso(p.enrolledDate), p.icfFilename);
   bump('participants');
+  if (p.discontinuation) {
+    const d = p.discontinuation;
+    iDisp.run(p.subjectId, p.studyId, d.reason, d.detail, d.date,
+      d.retainCollectedData ? 1 : 0, d.recordedBy, d.recordedAt);
+    bump('dispositions');
+  }
+}
+// A visit for someone not on the roster would be an orphan; surface it rather
+// than silently inventing a participant row for them.
+for (const v of visits) {
+  if (!seen.has(v.subjectId)) {
+    console.warn(`  visit references unknown participant ${v.subjectId}`);
+    iPart.run(v.subjectId, v.studyId, 'enrolled', null, null, null, null, null);
+    seen.add(v.subjectId);
+    bump('participants');
+  }
 }
 
 const iSession = insert('INSERT INTO sessions (session_id,subject_id,study_id,started_at,ended_at,status) VALUES (?,?,?,?,?,?)');

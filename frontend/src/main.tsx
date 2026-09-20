@@ -3,8 +3,10 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import './styles/base.css';
 import { initTheme } from './theme';
+import { installRealExtractor } from './agents/realExtractor';
 
 initTheme();
+installRealExtractor();
 
 const root = document.getElementById('root');
 if (!root) throw new Error('#root is missing from index.html');

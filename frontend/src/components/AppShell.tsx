@@ -91,6 +91,11 @@ export function AppShell({ route, study, session, coordinator, onSignOut, childr
                 count={study?.awaitingReview ?? 0}
               />
               <NavLink
+                to={{ name: 'participants', studyId }}
+                current={route.name === 'participants'}
+                label="Participants"
+              />
+              <NavLink
                 to={{ name: 'documents', studyId }}
                 current={route.name === 'documents'}
                 label="Documents"

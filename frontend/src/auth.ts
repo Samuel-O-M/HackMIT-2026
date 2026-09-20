@@ -64,7 +64,7 @@ export function attemptSignIn(username: string, password: string): SignInResult 
     return { ok: false, reason: 'Enter your username and password.' };
   }
   if (name !== DEMO_USERNAME || password !== DEMO_PASSWORD) {
-    return { ok: false, reason: 'That username and password combination was not recognised.' };
+    return { ok: false, reason: 'That username and password combination was not recognized.' };
   }
   signedIn = DEMO_COORDINATOR;
   write(signedIn);

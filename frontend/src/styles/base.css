@@ -241,7 +241,7 @@ input, select, textarea {
 
 .rows { display: grid; }
 
-.diff { --diff-grid: 92px minmax(0, 1fr) minmax(0, 1fr) 94px 152px; }
+.diff { --diff-grid: 92px minmax(0, 1fr) minmax(0, 1fr) 94px 176px; }
 
 .row { border-top: 1px solid var(--line); }
 .row:first-child { border-top: 0; }
@@ -259,7 +259,7 @@ input, select, textarea {
 }
 .row-grid > * + * { padding-left: var(--s4); }
 
-/* change-type tag: structure carries the meaning, colour is a hairline */
+/* change-type tag: structure carries the meaning, color is a hairline */
 .tag {
   display: inline-block;
   padding: 1px 0 1px 7px;
@@ -367,6 +367,35 @@ input, select, textarea {
 
 .row-actions { display: grid; gap: var(--s2); justify-items: stretch; }
 .action-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s1); }
+
+/* The tick sits in the button's left padding, out of the text flow, so the
+   label stays centred whether or not it is drawn and the width never changes.
+   Padding is symmetric, which is what keeps the text actually centred. */
+.btn[data-kind='accept'],
+.btn[data-kind='reject'] {
+  position: relative;
+  padding-inline: 16px;
+}
+.tick {
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  transform: translateY(-50%);
+}
+.tick[data-on='true']::before {
+  content: '';
+  position: absolute;
+  left: 1px;
+  top: 0;
+  width: 4px;
+  height: 8px;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(40deg);
+}
+
 
 .btn {
   padding: 5px var(--s3);
@@ -649,6 +678,12 @@ input, select, textarea {
 .srow-signals .flag { color: var(--alarm); font-weight: 620; }
 .srow-act { display: flex; justify-content: flex-end; }
 
+.sessions .people-cols, .sessions .people-row { --visit-grid: 150px 120px minmax(0, 1fr) 260px 130px; }
+.people-row[data-left='true'] { background: var(--row-rejected); }
+.people-row[data-left='true'] .srow-subject { color: var(--ink-2); }
+.form-grid.two { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); padding: 0; gap: var(--s3); }
+.field-row input[type='file'] { padding: 5px; font-size: var(--t-12); }
+
 /* ---------- live call ---------- */
 
 .live {
@@ -756,7 +791,7 @@ input, select, textarea {
 /* ---------- tablet ---------- */
 
 @media (max-width: 1180px) {
-  .diff { --diff-grid: 70px minmax(0, 1fr) minmax(0, 1fr) 80px 132px; }
+  .diff { --diff-grid: 70px minmax(0, 1fr) minmax(0, 1fr) 80px 168px; }
   .sessions { --visit-grid: 96px 100px minmax(0, 1fr) 132px 150px; }
   .srow { gap: var(--s3); }
   .sessions-cols { gap: var(--s3); }
@@ -769,7 +804,7 @@ input, select, textarea {
   .rail-mark span, .rail-link span:last-child:not(.rail-count), .rail-foot { display: none; }
   .view { padding: var(--s4) var(--s4) var(--s6); }
   .promote { padding-inline: var(--s4); }
-  .diff { --diff-grid: 64px minmax(0, 1fr) minmax(0, 1fr) 72px 120px; }
+  .diff { --diff-grid: 64px minmax(0, 1fr) minmax(0, 1fr) 72px 160px; }
   .sessions-cols { display: none; }
   .srow {
     grid-template-columns: 90px minmax(0, 1fr) 140px;
