@@ -11,6 +11,8 @@
  * POST /agent/extract-protocol   multipart file  -> ProtocolExtraction
  * GET  /agent/trials             -> { trials, protocols } as they are on disk
  * POST /agent/trials             { trial, protocol } -> persists to patient_data/
+ * POST /agent/sessions           { session, identity, transcript } -> review queue
+ * GET  /agent/identity           -> identity check per session
  * GET  /agent/participants       -> Participant[]
  * POST /agent/participants       Participant -> upsert by subject id
  *
@@ -92,6 +94,57 @@ createServer(async (req, res) => {
     }
 
     const rosterPath = join(ROOT, 'patient_data', 'participants', 'participants.json');
+    const partDir = join(ROOT, 'patient_data', 'participants');
+    const loadJson = (f, fallback) => {
+      try { return JSON.parse(readFileSync(join(partDir, f), 'utf8')); } catch { return fallback; }
+    };
+    const saveJson = (f, v) => writeFileSync(join(partDir, f), `${JSON.stringify(v, null, 2)}\n`);
+
+    if (req.method === 'GET' && req.url === '/agent/identity') {
+      return json(res, 200, loadJson('identity.json', {}));
+    }
+
+    if (req.method === 'POST' && req.url === '/agent/sessions') {
+      const { session, identity, transcript } = JSON.parse((await body(req)).toString());
+
+      const sessions = loadJson('sessions.json', []);
+      const i = sessions.findIndex((s) => s.sessionId === session.sessionId);
+      if (i === -1) sessions.push(session); else sessions[i] = session;
+      saveJson('sessions.json', sessions);
+
+      if (transcript?.length) {
+        const all = loadJson('transcripts.json', {});
+        all[session.sessionId] = transcript;
+        saveJson('transcripts.json', all);
+      }
+
+      if (identity) {
+        const checks = loadJson('identity.json', {});
+        checks[session.sessionId] = identity;
+        saveJson('identity.json', checks);
+      }
+
+      // The call itself is a fact worth keeping whatever the identity outcome.
+      const audit = loadJson('audit.json', {});
+      audit[session.sessionId] = [
+        ...(audit[session.sessionId] ?? []),
+        {
+          eventId: `EV-${session.sessionId.slice(0, 6)}-ID`,
+          at: session.endedAt,
+          actor: 'Voice agent',
+          action: 'call_ended',
+          changeId: null,
+          detail: identity?.outcome === 'verified'
+            ? `${session.changes.length} proposed change(s) staged · identity verified`
+            : `Identity ${identity?.outcome ?? 'not checked'} after ${identity?.attempts ?? 0} attempt(s) — nothing staged for review`,
+          reason: null,
+        },
+      ];
+      saveJson('audit.json', audit);
+
+      console.log(`published ${session.sessionId} · ${session.changes.length} change(s) · identity ${identity?.outcome}`);
+      return json(res, 200, { ok: true });
+    }
 
     if (req.method === 'GET' && req.url === '/agent/participants') {
       return json(res, 200, JSON.parse(readFileSync(rosterPath, 'utf8')));

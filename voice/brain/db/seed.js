@@ -17,8 +17,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { DatabaseSync } = require('node:sqlite');
 
-const GENERAL_DB = path.join(__dirname, 'general_health.db');
-const PATIENT_DB = path.join(__dirname, 'patient.db');
+const GENERAL_DB = path.join(__dirname, '..', '..', '..', 'databases', 'health_guidance', 'general_health.db');
+const PATIENT_DB = path.join(__dirname, '..', '..', '..', 'databases', 'call_sessions', 'patient.db');
 
 // ---------------------------------------------------------------------------
 // general_health.db  (read-only)
@@ -152,6 +152,32 @@ function seedPatient() {
       status     TEXT DEFAULT 'open',
       identity_status   TEXT DEFAULT 'unverified',
       identity_attempts INTEGER DEFAULT 0
+    );
+    -- What the call proposes. NOT the medication log.
+    --
+    -- The agent is a proposer, never a writer: a coordinator reviews every one
+    -- of these and only then promotes it into the medications table. Writing
+    -- to the log would mean a rejection had to be a delete, which breaks the
+    -- audit trail the study depends on.
+    CREATE TABLE staged_changes (
+      staged_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id   TEXT NOT NULL REFERENCES call_sessions(session_id),
+      subject_id   TEXT NOT NULL REFERENCES patients(subject_id),
+      study_id     TEXT,
+      change_type  TEXT,
+      reported_text TEXT,
+      rxcui        TEXT,
+      canonical_name TEXT,
+      indication   TEXT,
+      dose         TEXT,
+      route        TEXT,
+      frequency    TEXT,
+      start_date   TEXT,
+      start_date_precision TEXT,
+      stop_date    TEXT,
+      stop_date_precision  TEXT,
+      ongoing      INTEGER,
+      created_at   TEXT DEFAULT (datetime('now'))
     );
     CREATE TABLE utterances (
       utterance_id INTEGER PRIMARY KEY AUTOINCREMENT,

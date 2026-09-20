@@ -15,8 +15,8 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { DatabaseSync } = require('node:sqlite');
 
-const GENERAL_DB = path.join(__dirname, 'general_health.db');
-const PATIENT_DB = path.join(__dirname, 'patient.db');
+const GENERAL_DB = path.join(__dirname, '..', '..', '..', 'databases', 'health_guidance', 'general_health.db');
+const PATIENT_DB = path.join(__dirname, '..', '..', '..', 'databases', 'call_sessions', 'patient.db');
 
 function assertSelect(sql, label) {
   const head = sql.trim().split(/\s+/)[0].toUpperCase();

@@ -7,7 +7,7 @@
  * The database is a derived artifact — patient_data/ stays the source of truth, and
  * this is safe to delete and rebuild at any time.
  */
-import { DatabaseSync } from 'node:sqlite';
+import { locate, open } from '../connection.mjs';
 import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,7 +15,8 @@ import { fileURLToPath } from 'node:url';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const DATA = join(ROOT, 'patient_data');
-const DB_PATH = join(HERE, 'conmed.db');
+const target = locate('trial_records');
+const DB_PATH = target.file;
 
 const read = (p) => JSON.parse(readFileSync(join(DATA, p), 'utf8'));
 
@@ -30,8 +31,13 @@ function toIso(v) {
   return new Date(midnight.getTime() + v.dayOffset * DAY + h * 3_600_000 + m * 60_000).toISOString();
 }
 
+if (target.driver !== 'sqlite') {
+  console.error(`trial_records points at ${target.driver}. Seed that server from its own migrations;`);
+  console.error('this script only builds the local demo database.');
+  process.exit(1);
+}
 if (existsSync(DB_PATH)) rmSync(DB_PATH);
-const db = new DatabaseSync(DB_PATH);
+const db = open('trial_records');
 db.exec(readFileSync(join(HERE, 'schema.sql'), 'utf8'));
 
 const trials = read('trials/trials.json');

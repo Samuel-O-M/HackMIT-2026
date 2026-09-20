@@ -120,44 +120,42 @@ function update({ subjectId, sessionId, op, payload = {} }) {
     }
 
     case 'add_medication_change': {
+      // Staged for review, never written to the medication log. The coordinator
+      // promotes; the agent proposes. See staged_changes in db/seed.js.
       const canonical = payload.canonical_name || null;
       const status = payload.status || 'active';
+      const changeType =
+        status === 'stopped' ? 'stop' :
+        status === 'changed' ? 'modify' :
+        status === 'unchanged' ? 'confirm_unchanged' : 'add';
+
       if (canonical) {
         const dupe = p.get(
-          `SELECT log_id FROM medications
-            WHERE subject_id = ? AND created_by = 'agent'
-              AND ifnull(canonical_name,'') = ifnull(?,'')
-              AND ifnull(status,'') = ifnull(?,'')
-              AND ifnull(stop_date,'') = ifnull(?,'')
-            LIMIT 1`,
-          subjectId,
-          canonical,
-          status,
-          payload.stop_date || null
+          `SELECT staged_id FROM staged_changes
+            WHERE session_id = ? AND ifnull(canonical_name,'') = ifnull(?,'')
+              AND ifnull(change_type,'') = ifnull(?,'') LIMIT 1`,
+          sessionId, canonical, changeType
         );
         if (dupe) return { ok: true, op, skipped: 'duplicate' };
       }
+
       p.execute(
-        `INSERT INTO medications
-           (subject_id, reported_text, rxcui, canonical_name, indication, dose, route, frequency,
-            status, start_date, start_date_precision, stop_date, stop_date_precision, ongoing, created_by)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'agent')`,
-        subjectId,
-        payload.reported_text || null,
-        payload.rxcui || null,
-        canonical,
-        payload.indication || null,
-        payload.dose || null,
-        payload.route || null,
-        payload.frequency || null,
-        status,
-        payload.start_date || null,
-        payload.precision || null,
-        payload.stop_date || null,
-        payload.precision || null,
-        status === 'stopped' ? 0 : 1
+        `INSERT INTO staged_changes
+           (session_id, subject_id, study_id, change_type, reported_text, rxcui, canonical_name,
+            indication, dose, route, frequency, start_date, start_date_precision,
+            stop_date, stop_date_precision, ongoing)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        sessionId, subjectId,
+        p.get('SELECT study_id FROM call_sessions WHERE session_id = ?', sessionId)?.study_id || null,
+        changeType,
+        payload.reported_text || null, payload.rxcui || null, canonical,
+        payload.indication || null, payload.dose || null, payload.route || null,
+        payload.frequency || null, payload.start_date || null,
+        payload.precision || payload.start_date_precision || 'unknown',
+        payload.stop_date || null, payload.stop_date_precision || 'unknown',
+        payload.ongoing === false ? 0 : 1
       );
-      return { ok: true, op, canonical_name: canonical, status };
+      return { ok: true, op, staged: true };
     }
 
     case 'add_advice': {
