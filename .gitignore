@@ -8,4 +8,6 @@ voice/brain/db/*.db-shm
 voice/brain/db/*.db-wal
 voice/logs/
 databases/**/*.db
+databases/**/*.db-shm
+databases/**/*.db-wal
 databases/call_sessions/contacts.json
