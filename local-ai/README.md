@@ -3,10 +3,10 @@
 [![MIT License][license-shield]][license-url]
 [![Contributors][contributors-shield]][contributors-url]
 
-# `local-ai` — offline STT + TTS for the voice agent
+# `local-ai` — offline STT, TTS + chat for the voice agent
 
-> Replacements for the two closed API calls in `voice/server.js` (Deepgram
-> STT/TTS) using open weights that live **in the repo**.
+> Replacements for the closed API calls in `voice/` (Deepgram STT/TTS, OpenAI
+> chat) using open weights that live **in the repo**.
 
 Part of **[ReconMed](../README.md)** — pre-visit concomitant medication
 reconciliation for clinical trial sites. This folder is a drop-in, fully offline
@@ -16,10 +16,12 @@ alternative to the Deepgram path in [`voice/`](../voice/README.md).
 |------|-------|---------|---------|
 | **TTS** | [`Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice`](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice) | ~2.5 GB safetensors | `qwen-tts` (PyTorch) |
 | **STT** | [`nvidia/parakeet-unified-en-0.6b`](https://huggingface.co/nvidia/parakeet-unified-en-0.6b) | ~2.5 GB `.nemo` | NVIDIA NeMo |
+| **LLM** | [`google/gemma-4-E4B-it-qat-q4_0-gguf`](https://huggingface.co/google/gemma-4-E4B-it-qat-q4_0-gguf) | ~5.2 GB GGUF | llama.cpp (OpenAI-compatible) |
 
-Both are ~0.6 B parameters, English, and run on **CPU** — no API key, no network
-at inference time, nothing leaves the machine. Weights are downloaded into
-`local-ai/models/` (gitignored) so they sit inside the repo but are not committed.
+The speech models are ~0.6 B parameters and the chat model ~4.5 B effective; all
+run on **CPU** — no API key, no network at inference time, nothing leaves the
+machine. Weights are downloaded into `local-ai/models/` (gitignored) so they sit
+inside the repo but are not committed.
 
 > **This folder is standalone and deliberately not wired in.** The existing
 > Deepgram/OpenAI path in `voice/server.js` is untouched. See
@@ -52,19 +54,22 @@ GitHub's 100 MB limit), so a clone downloads them once:
 
 ```bash
 git clone git@github.com:Samuel-O-M/HackMIT-2026.git && cd HackMIT-2026/local-ai
-./setup.sh --test     # uv envs + weights (~5 GB); --test also runs the round-trip
+./setup.sh --test        # uv envs + weights (~5 GB); --test also runs the round-trip
+./setup.sh --with-llm    # optional: also Gemma 4 E4B Q4 for the brain (~5 GB more)
 ```
 
-Then start the servers (`tts/` on `:5002`, `stt/` on `:5001`) and follow
+Then start the servers (`tts/` on `:5002`, `stt/` on `:5001`,
+[`llm/`](llm/README.md) on `:5003`) and follow
 [Use it from the voice app](#use-it-from-the-voice-app).
 
 ## Layout
 
 ```
 local-ai/
-  setup.sh   one-shot: create both envs + download weights (see TL;DR)
+  setup.sh   one-shot: create envs + download weights (see TL;DR)
   tts/    Qwen3-TTS wrapper + HTTP server + tests      (own uv env)
   stt/    Parakeet wrapper + HTTP server + tests       (own uv env)
+  llm/    Gemma 4 E4B Q4 via llama.cpp (OpenAI API)    (own uv env + runtime)
   scripts/roundtrip.py   TTS -> wav -> STT cross-check
   models/  downloaded weights (gitignored)
   out/     generated audio (gitignored)
@@ -123,6 +128,17 @@ GET  /api/health   -> { ok, provider, mode, device, speakers, languages }
 
 ```
 GET  /api/health   -> { ok, provider, modelPath, loaded, device }
+```
+
+**LLM (optional)** — `local-ai/llm/` serves Gemma 4 E4B Q4 through llama.cpp on an
+**OpenAI-compatible** API, so the brain can be pointed at it with a base-URL and
+model change (see [`llm/README.md`](llm/README.md)). It is not wired in; the
+`LOCAL-LLM HOOK` comments in `voice/brain/config.js` and
+`voice/brain/lib/openai.js` show the swap.
+
+```
+POST /v1/chat/completions   OpenAI shape, incl. `tools` (function calling)
+GET  /v1/models
 ```
 
 ## Use it from the voice app

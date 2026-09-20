@@ -61,6 +61,9 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const DEEPGRAM_STT_MODEL = process.env.DEEPGRAM_STT_MODEL || 'nova-3';
 const DEEPGRAM_TTS_MODEL = process.env.DEEPGRAM_TTS_MODEL || 'aura-2-thalia-en';
 // Model + reasoning effort are chosen here, in code — not in .env.
+// LOCAL-LLM HOOK: set to 'gemma-4-e4b' to serve this plain chat proxy from the
+// local model in ../../local-ai/llm/ instead of Luna (also change the upstream
+// URL in handleChat below). See local-ai/llm/README.md.
 const OPENAI_MODEL = 'gpt-5.6-luna';
 const OPENAI_REASONING_EFFORT = 'medium';
 
@@ -155,6 +158,11 @@ const STT_PARAMS = [
   'profanity_filter', 'redact', 'keywords', 'keyterm', 'search', 'replace', 'endpointing',
   'interim_results', 'vad_events', 'utterance_end_ms', 'encoding', 'sample_rate', 'channels',
   'multichannel', 'dictation', 'detect_entities', 'tag', 'version', 'mip_opt_out',
+];
+// Flux (turn-taking model) lives on /v2/listen and takes its own parameters.
+const FLUX_PARAMS = [
+  'model', 'encoding', 'sample_rate', 'eager_eot_threshold', 'eot_threshold', 'eot_timeout_ms',
+  'keyterm', 'tag', 'mip_opt_out',
 ];
 const TTS_PARAMS = ['model', 'encoding', 'container', 'sample_rate', 'bit_rate', 'speed', 'mip_opt_out'];
 
@@ -276,12 +284,26 @@ async function handleTts(req, res) {
     return;
   }
 
-  const audio = Buffer.from(await dgRes.arrayBuffer());
+  // Pass the audio through as it is produced. Deepgram's first bytes arrive in
+  // ~0.1 s but a full sentence takes ~1 s, so buffering the clip here made every
+  // reply wait for audio that could already have been playing.
   res.writeHead(200, {
     'Content-Type': dgRes.headers.get('content-type') || 'audio/mpeg',
-    'Content-Length': audio.length,
+    'Cache-Control': 'no-cache, no-transform',
+    'X-Accel-Buffering': 'no',
   });
-  res.end(audio);
+  const reader = dgRes.body.getReader();
+  res.on('close', () => reader.cancel().catch(() => {}));
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      res.write(value);
+    }
+  } catch {
+    /* client went away or Deepgram dropped: nothing more to send */
+  }
+  res.end();
 }
 
 async function handleChat(req, res) {
@@ -306,6 +328,10 @@ async function handleChat(req, res) {
     ? incoming
     : [{ role: 'system', content: SYSTEM_PROMPT }, ...incoming];
 
+  // LOCAL-LLM HOOK (chat proxy). To use the local Gemma 4 E4B Q4 server in
+  // ../../local-ai/llm instead of OpenAI, replace the URL below with
+  //   `${process.env.LOCAL_LLM_URL || 'http://127.0.0.1:5003'}/v1/chat/completions`
+  // and drop the Authorization header; set OPENAI_MODEL to 'gemma-4-e4b' above.
   const oaRes = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -906,10 +932,11 @@ const server = http.createServer(async (req, res) => {
 // ---- live STT WebSocket proxy (/ws/listen -> Deepgram) ----
 function handleLiveProxy(client, searchParams) {
   const params = new URLSearchParams();
-  applyAllowed(searchParams, params, STT_PARAMS);
+  const flux = /^flux/i.test(searchParams.get('model') || '');
+  applyAllowed(searchParams, params, flux ? FLUX_PARAMS : STT_PARAMS);
   if (!params.has('model')) params.set('model', DEEPGRAM_STT_MODEL);
 
-  const dg = new WS.WebSocket(`wss://api.deepgram.com/v1/listen?${params}`, {
+  const dg = new WS.WebSocket(`wss://api.deepgram.com/${flux ? 'v2' : 'v1'}/listen?${params}`, {
     headers: { Authorization: `Token ${DEEPGRAM_API_KEY}` },
   });
   const pending = [];
@@ -922,9 +949,13 @@ function handleLiveProxy(client, searchParams) {
   let keepAlive = null;
   dg.on('open', () => {
     while (pending.length) dg.send(pending.shift());
-    keepAlive = setInterval(() => {
-      if (dg.readyState === OPEN) dg.send(JSON.stringify({ type: 'KeepAlive' }));
-    }, 5000);
+    // Flux has no KeepAlive message (it answers with an error and hangs up); the
+    // handset sends it silence instead, so it never sees a gap.
+    if (!flux) {
+      keepAlive = setInterval(() => {
+        if (dg.readyState === OPEN) dg.send(JSON.stringify({ type: 'KeepAlive' }));
+      }, 5000);
+    }
   });
   dg.on('message', (data, isBinary) => {
     if (client.readyState === OPEN) client.send(data, { binary: isBinary });

@@ -11,7 +11,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const config = require('../config');
 const { chatWithTools, chatWithToolsStream } = require('../lib/openai');
-const { createChunker, speakable } = require('../lib/speech');
+const { createChunker, createPlanSplitter, speakable } = require('../lib/speech');
 const { formatConversation } = require('../lib/format');
 const { schemasFor, dispatch } = require('../tools');
 const patientTools = require('../tools/patient');
@@ -28,6 +28,9 @@ function cleanSpoken(text) {
   out = out.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim();
   if (out.startsWith('"') && out.endsWith('"') && out.length > 1) out = out.slice(1, -1).trim();
   out = out.replace(/^(agent|assistant|say|speak|output)\s*[:\-]\s*/i, '').trim();
+  // Safety net: the directive is stripped by the splitter, but a stray marker
+  // must never reach the speaker.
+  out = out.replace(/<<\s*PLAN\s*:[\s\S]*$/i, '').trim();
   return out;
 }
 
@@ -69,7 +72,14 @@ function buildContext({ plannerState, conversation, patientRecord, opening = fal
         'You speak first: open the call as your instructions describe.'
     );
   }
-  parts.push('Return ONLY the words to say out loud.');
+  // Last line of the prompt, so it is the instruction with the most pull: the
+  // words, then the planner line. Without naming it here the model returns
+  // speech alone and the planner goes back to guessing.
+  parts.push(
+    'Return the words to say out loud, then the planner line as its own last line: ' +
+      '<<PLAN: what the planner should work out next>>. The planner line is required on every turn ' +
+      'and is never spoken. Start with something short and true so it can be said while the rest is still being written.'
+  );
   return parts.join('\n\n');
 }
 
@@ -116,7 +126,8 @@ async function respond({ plannerState, conversation, subjectId, sessionId }) {
     maxRounds: config.maxToolRounds,
     execute: (name, args) => dispatch(name, args, { subjectId, sessionId }),
   });
-  return { say: cleanSpoken(text), toolCalls, model };
+  const plan = String(text || '').match(/<<\s*PLAN\s*:([\s\S]*?)(?:>>|$)/i);
+  return { say: cleanSpoken(text), toolCalls, model, directive: plan && plan[1].trim() ? plan[1].trim() : null };
 }
 
 /**
@@ -146,6 +157,9 @@ async function respondStream({ plannerState, conversation, subjectId, sessionId,
     onChunk({ text: clean });
   };
   const chunker = createChunker((piece) => send(piece));
+  // Speech first, directive last: the splitter feeds the chunker only the words
+  // to say, so the planner line costs the participant nothing.
+  const splitter = createPlanSplitter((piece) => chunker.push(piece));
 
   const { text, toolCalls, model } = await chatWithToolsStream({
     messages,
@@ -154,10 +168,11 @@ async function respondStream({ plannerState, conversation, subjectId, sessionId,
     effort: config.talkerEffort,
     maxRounds: config.maxToolRounds,
     execute: (name, args) => dispatch(name, args, { subjectId, sessionId }),
-    onText: (delta) => chunker.push(delta),
+    onText: (delta) => splitter.push(delta),
     // Speak whatever the model already wrote before the tool wait; if it wrote
     // nothing, tell the client there is a wait to cover.
     onToolStart: ({ spokenSoFar }) => {
+      splitter.flush();
       chunker.flush();
       if (!spokenSoFar.trim() && !waited) {
         waited = true;
@@ -165,8 +180,9 @@ async function respondStream({ plannerState, conversation, subjectId, sessionId,
       }
     },
   });
+  splitter.flush();
   chunker.flush();
-  return { say: cleanSpoken(text), toolCalls, model };
+  return { say: cleanSpoken(splitter.speech || text), toolCalls, model, directive: splitter.directive };
 }
 
 module.exports = { respond, respondStream, cleanSpoken, SYSTEM_PROMPT };

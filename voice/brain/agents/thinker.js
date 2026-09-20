@@ -25,12 +25,22 @@ const POLICY = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'policy.md'
 const ROLE = fs.readFileSync(path.join(__dirname, '..', 'prompts', 'thinker.md'), 'utf8');
 const SYSTEM_PROMPT = `${POLICY}\n\n---\n\n${ROLE}`;
 
-function buildContext({ plannerState, conversation }) {
+function buildContext({ plannerState, conversation, directive }) {
   const state = plannerState ? JSON.stringify(plannerState, null, 2) : '(none yet)';
-  return [
+  const parts = [
     `### CURRENT PLANNER STATE\n${state}`,
     `### FULL CONVERSATION\n${formatConversation(conversation)}`,
-  ].join('\n\n');
+  ];
+  // The Talker was in the room when the answer was given. What it asks for here
+  // is a lead, not an order: follow it unless the transcript says otherwise.
+  if (directive) {
+    parts.push(
+      `### WHAT THE VOICE AGENT ASKED YOU TO WORK OUT\n${directive}\n\n` +
+        'It heard the participant say this just now. Treat it as the most urgent item, ' +
+        'but keep your own judgement: if the transcript does not support it, say so in your state and move on.'
+    );
+  }
+  return parts.join('\n\n');
 }
 
 function safeParse(text) {
@@ -124,8 +134,8 @@ async function synthesize(context, results) {
   return { state: normalize(parseJson(text)), model };
 }
 
-async function plan({ plannerState, conversation, subjectId, sessionId }) {
-  const context = buildContext({ plannerState, conversation });
+async function plan({ plannerState, conversation, subjectId, sessionId, directive = null }) {
+  const context = buildContext({ plannerState, conversation, directive });
 
   let requests = [];
   try {
