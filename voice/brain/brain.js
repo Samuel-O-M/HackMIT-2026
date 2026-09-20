@@ -59,6 +59,8 @@ class Brain {
         state: null,
         plannerRunning: false,
         plannerDirty: false,
+        // What the Talker asked the planner to work out next (consumed by runPlan).
+        plannerDirective: null,
         plannerPromise: null,
         plannerErrors: [],
         lastPlanModel: null,
@@ -203,7 +205,7 @@ class Brain {
     let firstChunkMs = null;
     // With `onEvent` the reply is streamed: short speakable chunks go out as
     // the model writes them. Without it, behaviour is unchanged.
-    const { say, toolCalls, model } = onEvent
+    const { say, toolCalls, model, directive } = onEvent
       ? await talker.respondStream({
           plannerState: state,
           conversation,
@@ -226,18 +228,22 @@ class Brain {
       at: new Date().toISOString(),
       userText,
       say,
-      talker: { model, latencyMs, firstChunkMs, toolCalls, stateUsed: state },
+      talker: { model, latencyMs, firstChunkMs, toolCalls, stateUsed: state, directive },
     };
 
-    // Fire-and-forget: the patient never waits for the planner.
-    const planned = this.schedulePlan(sessionId, subjectId);
+    // Fire-and-forget: the patient never waits for the planner. The Talker has
+    // just heard the answer, so it says here what the planner should work out —
+    // the planner is no longer rediscovering the turn on its own.
+    const planned = this.schedulePlan(sessionId, subjectId, directive);
 
-    return { say, state, toolCalls, model, latencyMs, firstChunkMs, sessionId, planning: Boolean(planned) };
+    return { say, state, toolCalls, model, latencyMs, firstChunkMs, sessionId, planning: Boolean(planned), directive };
   }
 
   /** Queue a planner run (collapses bursts). Returns the running promise, if any. */
-  schedulePlan(sessionId, subjectId) {
+  schedulePlan(sessionId, subjectId, directive = null) {
     const rt = this.runtime(sessionId);
+    // Newest directive wins: a burst of turns collapses into one planner run.
+    if (directive) rt.plannerDirective = directive;
     if (rt.plannerRunning) {
       rt.plannerDirty = true;
       return rt.plannerPromise;
@@ -284,11 +290,15 @@ class Brain {
     const conversation = this.getConversation(sessionId, 50);
     const state = { ...(this.getState(sessionId, subjectId) || {}), identity_status: this.identityStatus(sessionId) };
 
+    const directive = rt.plannerDirective;
+    rt.plannerDirective = null;
+
     const { state: next, toolCalls, model } = await thinker.plan({
       plannerState: state,
       conversation,
       subjectId,
       sessionId,
+      directive,
     });
 
     // Apply writes from `to_save` through controlled functions.

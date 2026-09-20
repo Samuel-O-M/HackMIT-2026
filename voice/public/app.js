@@ -467,15 +467,20 @@
   }
 
   // ------------------------------------------------------------- TTS
-  const VOICE_MODEL = 'aura-2-helena-en'; // keep in sync with scripts/build-fillers.js
+  // aura-1, not aura-2: measured across 3 runs each, aura-1 returns first audio
+  // in ~40 ms and a whole sentence in ~100 ms (30-44x realtime), against ~80-120 ms
+  // and ~1.5 s (3x realtime) for aura-2. The clip is fully in hand before it has
+  // finished playing, so a slow tunnel cannot stall speech mid-sentence.
+  const VOICE_MODEL = 'aura-asteria-en'; // keep in sync with scripts/build-fillers.js
 
   // A little human texture, and no more: the agent sometimes says "Mm-hm" or
   // "Okay" the instant the participant stops (a pre-recorded clip, so no delay),
   // and pauses briefly between sentences. Anything longer ("let me check...")
   // sounded scripted. Clips come from scripts/build-fillers.js.
-  const OPENER_CHANCE = 0.45;       // chance of a quick backchannel on a turn...
-  const OPENER_CHANCE_AFTER = 0.15; // ...and right after having done one
+  const OPENER_CHANCE = 0;          // blind backchannels are off: "mm-hm" then a gap of silence sounds worse than the gap
+  const OPENER_CHANCE_AFTER = 0;
   const BREATH_MS = [130, 300];     // pause between sentences
+  const SENTENCE_END = /[.!?…]["')\]]?\s*$/;
   const RECENT_FILLERS = 4;         // never repeat a clip heard in the last few
   const WAIT_SOUNDS = ['Okay.', 'Uh-huh.']; // covers a lookup: "okay..." is a person about to go and check
 
@@ -528,25 +533,82 @@
     return audio;
   }
 
-  /** Start synthesising one chunk of the real reply. Resolves to a ready Audio, or null if TTS failed. */
+  // Reply audio is streamed as raw PCM and scheduled on the call's AudioContext
+  // as it arrives, so playback starts on the first bytes instead of after the
+  // whole clip has downloaded (~1 s for a sentence).
+  const TTS_RATE = 24000;
+  const TTS_PREBUFFER_S = 0.1;
+
+  /** Start synthesising one chunk of the real reply. Resolves once audio starts arriving, or null if TTS failed. */
   async function synthesize(text) {
+    const ctx = call?.ctx;
+    if (!ctx) return null;
     try {
-      const res = await fetch(`/api/tts?model=${VOICE_MODEL}`, {
+      const res = await fetch(`/api/tts?model=${VOICE_MODEL}&encoding=linear16&container=none&sample_rate=${TTS_RATE}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
       });
-      if (!res.ok) throw new Error(`TTS failed (${res.status})`);
-      const audio = new Audio(URL.createObjectURL(await res.blob()));
-      audio.preload = 'auto';
-      return audio;
+      if (!res.ok || !res.body) throw new Error(`TTS failed (${res.status})`);
+      return { ctx, reader: res.body.getReader(), dataset: {}, stop() {} };
     } catch (err) {
       log('tts.error', { error: String(err.message || err) });
       return null;
     }
   }
 
+  async function playStream(clip) {
+    const { ctx, reader } = clip;
+    const sources = [];
+    let stopped = false;
+    let nextTime = 0;
+    let carry = new Uint8Array(0);
+    clip.stop = () => {
+      stopped = true;
+      for (const src of sources) { try { src.stop(); } catch {} }
+      reader.cancel().catch(() => {});
+    };
+    currentAudio = clip;
+    try { await ctx.resume(); } catch {}
+
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done || stopped) break;
+        // A network chunk can end mid-sample; keep the odd byte for the next one.
+        const bytes = new Uint8Array(carry.length + value.length);
+        bytes.set(carry);
+        bytes.set(value, carry.length);
+        const usable = bytes.length - (bytes.length % 2);
+        carry = bytes.slice(usable);
+        if (!usable) continue;
+
+        const view = new DataView(bytes.buffer, 0, usable);
+        const buffer = ctx.createBuffer(1, usable / 2, TTS_RATE);
+        const samples = buffer.getChannelData(0);
+        for (let i = 0; i < samples.length; i++) samples[i] = view.getInt16(i * 2, true) / 32768;
+
+        const src = ctx.createBufferSource();
+        src.buffer = buffer;
+        src.connect(ctx.destination);
+        // First chunk: a hair of headroom. Later chunks: butt up against the last,
+        // or start now if the network fell behind.
+        if (nextTime < ctx.currentTime) nextTime = ctx.currentTime + (sources.length ? 0.02 : TTS_PREBUFFER_S);
+        src.start(nextTime);
+        nextTime += buffer.duration;
+        sources.push(src);
+      }
+    } catch (err) {
+      log('tts.stream_error', { error: String(err.message || err) });
+    }
+    // Resolve when the last scheduled sample has actually been played.
+    const last = sources[sources.length - 1];
+    if (last && !stopped) await new Promise((resolve) => { last.onended = resolve; });
+    if (currentAudio === clip) currentAudio = null;
+  }
+
   function playAudio(audio) {
+    if (audio.reader) return playStream(audio);
     return new Promise((resolve) => {
       currentAudio = audio;
       const done = () => {
@@ -574,6 +636,7 @@
     let wake = () => {};
     let started = false;
     let lastEndAt = 0;
+    let lastText = '';
 
     const waitForItem = () => new Promise((resolve) => { wake = resolve; });
     const push = (item) => {
@@ -602,11 +665,14 @@
         }
         const audio = await item.audio;
         if (!audio) continue;
-        if (item.kind === 'say' && lastEndAt) {
+        // A pause belongs between sentences. A chunk split mid-sentence to get
+        // speech started must run straight on, or the gap lands inside a phrase.
+        if (item.kind === 'say' && lastEndAt && SENTENCE_END.test(lastText)) {
           const breath = BREATH_MS[0] + Math.random() * (BREATH_MS[1] - BREATH_MS[0]);
           const remaining = lastEndAt + breath - Date.now();
           if (remaining > 0) await sleep(remaining);
         }
+        if (item.kind === 'say') lastText = item.text || '';
         await play(audio, item.kind, item.text);
       }
     })();
@@ -791,8 +857,69 @@
     if (text) enqueueTurn(text, { stt: true });
   }
 
+  // Flux (default) reports whole turns: Update carries the words so far, and
+  // EndOfTurn is the model's call that the speaker is done. `?stt=nova` falls
+  // back to the older silence-timer path.
+  const USE_FLUX = new URLSearchParams(location.search).get('stt') !== 'nova';
+  const FLUX_EOT_THRESHOLD = 0.6; // when Flux calls the turn over; the grace below is the real safety net
+  const SILENCE = new Int16Array(4096);
+
+  // Flux decides a turn has ended from the words, so a complete-sounding phrase
+  // mid-thought ("I think it is..." before the dose) ends it at ANY threshold —
+  // raising the threshold does not fix it, it only makes some turns never fire.
+  // So every ended turn is held briefly: if they carry on, the two halves are
+  // merged into one turn instead of the agent replying over them. Costs this
+  // much on every reply, and is the difference between a fluid call and one
+  // that talks across people. Raise it if anyone is still being cut off.
+  // Measured on a real call: 500 ms still split "My name is Samuel Mateo, and my
+  // date of birth is January first..." into two turns — the agent answered the
+  // name half while the date was still being said, and the mic gate then ate it.
+  // 1200 ms merges the halves. It is spent only after someone stops talking, and
+  // is the cheapest place to buy the guarantee that nobody is cut off.
+  const EOT_GRACE_MS = 1200;
+  let heldTurn = '';
+  let holdTimer = null;
+
+  function releaseHeldTurn() {
+    holdTimer = null;
+    const text = heldTurn.trim();
+    heldTurn = '';
+    pendingFinals = [];
+    if (text) enqueueTurn(text, { stt: true });
+  }
+
+  function cancelHold() {
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+  }
+
+  function handleFlux(msg) {
+    const text = (msg.transcript || '').trim();
+    if (msg.event === 'EndOfTurn') {
+      if (text) heldTurn = heldTurn ? `${heldTurn} ${text}` : text;
+      interim = '';
+      // Mirrored so the on-screen draft and endCall's flush both see it.
+      pendingFinals = heldTurn ? [heldTurn] : [];
+      cancelHold();
+      holdTimer = window.setTimeout(releaseHeldTurn, EOT_GRACE_MS);
+      log('stt.end_of_turn', { text, confidence: msg.end_of_turn_confidence, held: heldTurn });
+      renderDraft();
+    } else if (msg.event === 'Update' || msg.event === 'StartOfTurn' || msg.event === 'TurnResumed') {
+      if (!text) return;
+      // They carried on: what we were holding was a pause, not the end of a turn.
+      if (holdTimer) {
+        cancelHold();
+        log('stt.resumed', { held: heldTurn });
+      }
+      interim = text;
+      noteVoice();
+      if (call && !agentSpeaking && !muted) setState('listening');
+      renderDraft();
+    }
+  }
+
   function handleStt(msg) {
     if (greeting) return; // the agent is about to speak first; nothing said yet counts
+    if (msg.type === 'TurnInfo') return handleFlux(msg);
     if (msg.type === 'Results') {
       const t = msg.channel?.alternatives?.[0]?.transcript || '';
       if (!t) return;
@@ -876,21 +1003,28 @@
 
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const params = new URLSearchParams();
-      params.set('model', 'nova-3');
       params.set('encoding', 'linear16');
       params.set('sample_rate', String(ctx.sampleRate));
-      // Keep speech as words — smart_format rewrites spoken dates into digits,
-      // which loses fidelity for identity checks.
-      params.set('smart_format', 'false');
-      params.set('numerals', 'false');
-      params.set('punctuate', 'true');
-      params.set('interim_results', 'true');
-      params.set('vad_events', 'true');
-      // endpointing only decides when a final transcript is emitted; when we
-      // reply is decided by SILENCE_MS above. Deepgram's minimum
-      // utterance_end_ms is 1000.
-      params.set('endpointing', '400');
-      params.set('utterance_end_ms', '1000');
+      if (USE_FLUX) {
+        // Flux decides when the turn is over (it reads the words, not just the
+        // silence) and reports it as EndOfTurn. No timers of ours involved.
+        params.set('model', 'flux-general-en');
+        params.set('eot_threshold', String(FLUX_EOT_THRESHOLD));
+      } else {
+        params.set('model', 'nova-3');
+        // Keep speech as words — smart_format rewrites spoken dates into digits,
+        // which loses fidelity for identity checks.
+        params.set('smart_format', 'false');
+        params.set('numerals', 'false');
+        params.set('punctuate', 'true');
+        params.set('interim_results', 'true');
+        params.set('vad_events', 'true');
+        // endpointing only decides when a final transcript is emitted; when we
+        // reply is decided by SILENCE_MS above. Deepgram's minimum
+        // utterance_end_ms is 1000.
+        params.set('endpointing', '400');
+        params.set('utterance_end_ms', '1000');
+      }
 
       const proto = location.protocol === 'https:' ? 'wss' : 'ws';
       const ws = new WebSocket(`${proto}://${location.host}/ws/listen?${params}`);
@@ -918,7 +1052,12 @@
       const processor = ctx.createScriptProcessor(4096, 1, 1);
       processor.onaudioprocess = (e) => {
         if (ws.readyState !== WebSocket.OPEN) return;
-        if (agentSpeaking || muted) return; // half-duplex + mute
+        if (agentSpeaking || muted) {
+          // Half-duplex + mute. Flux gets silence rather than nothing, so the
+          // stream is continuous and never times out while the agent talks.
+          if (USE_FLUX) ws.send(SILENCE.buffer);
+          return;
+        }
         const f32 = e.inputBuffer.getChannelData(0);
         const i16 = new Int16Array(f32.length);
         for (let i = 0; i < f32.length; i++) {
@@ -997,6 +1136,9 @@
     try { source.disconnect(); } catch {}
     try { stream.getTracks().forEach((t) => t.stop()); } catch {}
     try { if (ws.readyState === WebSocket.OPEN) ws.close(); } catch {}
+    cancelHold();
+    if (heldTurn) { pendingFinals = [heldTurn]; heldTurn = ''; }
+    try { currentAudio?.stop?.(); currentAudio?.pause?.(); } catch {}
     try { ctx.close(); } catch {}
     flushFinals();
     $('#mute').disabled = true;
