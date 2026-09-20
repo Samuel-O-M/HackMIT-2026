@@ -836,8 +836,8 @@
   // thinking: "I take... um...").
   // How long to wait after speech before replying. Generous on purpose: a short
   // pause is treated as a space inside a turn, not the end of one.
-  const SILENCE_MS = 500;
-  const SILENCE_TRAILING_MS = 800;
+  const SILENCE_MS = 1000;
+  const SILENCE_TRAILING_MS = 1600;
   const FINISHED = /[.?!]["')\]]?\s*$/;
   const noteVoice = () => { lastVoiceAt = Date.now(); };
 
@@ -1024,8 +1024,8 @@
         // endpointing only decides when a final transcript is emitted; when we
         // reply is decided by SILENCE_MS above. Deliberately generous so a
         // natural pause mid-sentence is not read as the end of a turn.
-        params.set('endpointing', '400');
-        params.set('utterance_end_ms', '750');
+        params.set('endpointing', '800');
+        params.set('utterance_end_ms', '1500');
       }
 
       const proto = location.protocol === 'https:' ? 'wss' : 'ws';
