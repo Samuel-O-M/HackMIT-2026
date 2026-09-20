@@ -1,7 +1,16 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # `local-ai` — offline STT + TTS for the voice agent
 
-Replacements for the two closed API calls in `voice/server.js` (Deepgram STT/TTS)
-using open weights that live **in the repo**:
+> Replacements for the two closed API calls in `voice/server.js` (Deepgram
+> STT/TTS) using open weights that live **in the repo**.
+
+Part of **[ReconMed](../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites. This folder is a drop-in, fully offline
+alternative to the Deepgram path in [`voice/`](../voice/README.md).
 
 | Role | Model | Weights | Runtime |
 |------|-------|---------|---------|
@@ -15,6 +24,26 @@ at inference time, nothing leaves the machine. Weights are downloaded into
 > **This folder is standalone and deliberately not wired in.** The existing
 > Deepgram/OpenAI path in `voice/server.js` is untouched. See
 > [Use it from the voice app](#use-it-from-the-voice-app) for the two-line switch.
+
+<details>
+  <summary>Table of contents</summary>
+  <ol>
+    <li><a href="#tldr--make-it-work">TL;DR — make it work</a></li>
+    <li><a href="#layout">Layout</a></li>
+    <li><a href="#prerequisites">Prerequisites</a></li>
+    <li><a href="#quick-start">Quick start</a></li>
+    <li><a href="#http-contracts-identical-to-voiceserverjs">HTTP contracts</a></li>
+    <li><a href="#use-it-from-the-voice-app">Use it from the voice app</a></li>
+    <li><a href="#what-is-not-wired-live-streaming-stt">What is not wired</a></li>
+    <li><a href="#test-machine-full-disclosure">Test machine</a></li>
+    <li><a href="#real-time-expectation">Real-time expectation</a></li>
+    <li><a href="#measured-performance-this-laptop-worst-case">Measured performance</a></li>
+    <li><a href="#verified">Verified</a></li>
+    <li><a href="#notes">Notes</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+  </ol>
+</details>
 
 ## TL;DR — make it work
 
@@ -208,3 +237,22 @@ matches. Example round-trip:
 - The Parakeet checkpoint ships `validation_ds: null`, which NeMo 3.0 reads
   unguarded during batch transcribe. `local_stt.py` patches this in `load()`
   (see the comment there) — no action needed.
+
+## License
+
+Distributed under the MIT License. See [`../LICENSE`](../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors

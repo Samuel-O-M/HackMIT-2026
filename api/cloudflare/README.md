@@ -1,12 +1,35 @@
+<a id="readme-top"></a>
+
+[![MIT License][license-shield]][license-url]
+[![Contributors][contributors-shield]][contributors-url]
+
 # Cloudflare Tunnel — phone access for the voice UI
 
-Expose the voice server (`voice/server.js`, port **8787**) on a public HTTPS URL so a
-phone can open the call screen. HTTPS matters: `getUserMedia` (the microphone) is
-only available in a secure context, so `http://<your-LAN-IP>:8787` will **not**
-work on a phone. A tunnel fixes that without touching the router.
+> Expose the voice server (`voice/server.js`, port **8787**) on a public HTTPS
+> URL so a phone can open the call screen.
+
+Part of **[ReconMed](../../README.md)** — pre-visit concomitant medication
+reconciliation for clinical trial sites.
+
+HTTPS matters: `getUserMedia` (the microphone) is only available in a secure
+context, so `http://<your-LAN-IP>:8787` will **not** work on a phone. A tunnel
+fixes that without touching the router.
 
 The computer's own browser keeps using `http://localhost:8787`; only the phone
 needs the tunnel. Both hit the same server, so they share the same call session.
+
+<details>
+  <summary>Table of contents</summary>
+  <ol>
+    <li><a href="#quick-start">Quick start</a></li>
+    <li><a href="#files">Files</a></li>
+    <li><a href="#quick-tunnel-vs-named-tunnel">Quick Tunnel vs named tunnel</a></li>
+    <li><a href="#security">Security</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contributors">Contributors</a></li>
+  </ol>
+</details>
 
 ## Quick start
 
@@ -63,3 +86,24 @@ subdomain is hard to guess, but treat the link as a secret:
   `./bin/cloudflared` directly.
 - **404 / blank page** — make sure the voice server is running on 8787 and that
   you passed the right `--port`.
+- **Tunnel will not connect at all** — the network may be blocking cloudflared's
+  edge port (7844). Use [`api/ngrok/`](../ngrok/README.md) instead.
+
+## License
+
+Distributed under the MIT License. See [`../../LICENSE`](../../LICENSE).
+
+## Contributors
+
+Built at **HackMIT 2026** for the **Regeneron** track.
+
+- **Samuel Orellana Mateo** — [@Samuel-O-M](https://github.com/Samuel-O-M)
+- **Ayushi Mehrotra** — [@ayushimehrotra](https://github.com/ayushimehrotra)
+- **Avighna Chhatrapati** — [@avighnac](https://github.com/avighnac)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[license-shield]: https://img.shields.io/github/license/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[license-url]: ../../LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/Samuel-O-M/HackMIT-2026.svg?style=for-the-badge
+[contributors-url]: https://github.com/Samuel-O-M/HackMIT-2026/graphs/contributors
