@@ -35,11 +35,13 @@ the phone — not in monitoring, weeks later.
     <li><a href="#about-the-project">About the project</a></li>
     <li><a href="#the-problem">The problem</a></li>
     <li><a href="#how-it-works">How it works</a></li>
+    <li><a href="#technical-details">Technical details</a></li>
     <li><a href="#how-we-built-it">How we built it</a></li>
     <li><a href="#challenges-we-ran-into">Challenges we ran into</a></li>
     <li><a href="#accomplishments-were-proud-of">Accomplishments we're proud of</a></li>
     <li><a href="#what-we-learned">What we learned</a></li>
     <li><a href="#whats-next-for-our-project">What's next for our project</a></li>
+    <li><a href="#hackmit-2026-sponsor-challenges">HackMIT 2026 sponsor challenges</a></li>
     <li><a href="#built-with">Built with</a></li>
     <li><a href="#quick-start">Quick start</a>
       <ul>
@@ -167,6 +169,35 @@ store.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Technical details
+
+Three APIs do the heavy lifting, all proxied server-side, so no key ever reaches
+the browser.
+
+**Speech in — Deepgram streaming STT.** The browser captures linear16 mono PCM
+and streams it over a WebSocket to `/ws/listen`, which proxies Deepgram's
+streaming endpoint (`nova-3`, interim results on). We keep `smart_format` and
+`numerals` **off** so a spoken date stays words — "January first" must not come
+back as `01/01` before the identity check compares it. Turn end is decided on the
+client: ~1 s of silence after a finished sentence (1.6 s when the answer trails
+off), with a half-duplex gate that mutes the mic while the agent is speaking.
+
+**Speech out — Deepgram Aura-2 TTS.** `/api/tts` returns raw PCM (`linear16`,
+24 kHz, `container=none`), which the client schedules on an `AudioContext` as it
+arrives. Replies are split on `.` and synthesised sentence by sentence, so
+playback starts on the first sentence while the rest are still being generated.
+Voice: `aura-2-helena-en`.
+
+**Reasoning — OpenAI GPT-5.6 Luna (Chat Completions).** Two agents share one model
+with different settings. The **Talker** is realtime and always has function tools
+attached, so it runs at `reasoning_effort: none`; the **Planner** has no tools and
+runs at `reasoning_effort: medium` across two passes (decide retrievals, then
+synthesise state). Tool calls arrive as streamed `tool_call` deltas, are executed
+against the local databases, and go back as `tool` messages. Every request has a
+hard timeout and retries with backoff.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## How we built it
 
 - **Two-model architecture.** The voice pipeline is split in two. One fast model
@@ -230,6 +261,35 @@ store.
   whenever it suits them.
 - Cross-reference adverse events: when a participant reports severe unexpected
   symptoms, automatically flag a safety alert for the site physician.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## HackMIT 2026 sponsor challenges
+
+- **Regeneron — Help Patients: Make Clinical Trials and Biostatistics Better.**
+  ReconMed targets a real bottleneck: pre-visit concomitant medication
+  reconciliation. It is open source under the MIT license, runs from a clean
+  clone, and exists to keep the trial record accurate so a protocol deviation is
+  caught on the phone, not in monitoring weeks later.
+- **Deepgram — Build Something Worth Talking To.** The project is a full
+  end-to-end voice agent on Deepgram: streaming **Nova-3** for speech in and
+  **Aura-2** for speech out, behind a server-side WebSocket proxy.
+- **OpenAI — 5th Teammate.** **GPT-5.6 Luna** powers both agents through the Chat
+  Completions API with function calling, and **Codex** was the development
+  teammate for building and iterating on the codebase.
+- **Cognition — Best Use of Devin.** Devin was used as an AI software engineer on
+  the project, planning, writing, and testing parts of the code alongside us.
+- **The Token Company — LLM cost saving.** Cost was a design constraint, not an
+  afterthought: NLM RxNorm/RxClass are cached in local SQLite so drug lookups cost
+  zero tokens; a fast, no-reasoning model handles the live turn and the deeper
+  reasoning runs only in the background; and the whole pipeline can run on
+  open-source models (NVIDIA Parakeet, Qwen3-TTS, quantised Gemma) to bring the
+  LLM bill to **zero** for sites that need it.
+- **Ramp — Save Time. Save Money.** The product exists to save a coordinator time
+  (a pre-visit med review becomes a call that runs itself, and the coordinator
+  only reviews a diff) and money (it replaces a pharmacist manually reconciling
+  three sources against the protocol, and catches deviations before they cost a
+  per-protocol exclusion).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
