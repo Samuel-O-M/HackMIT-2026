@@ -845,12 +845,12 @@
   }
 
   // ------------------------------------------------------------- call
-  async function startCall() {
+  async function startCall(calledSubjectId) {
     if (call) return;
     clearError();
     try {
-      subjectId = $('#patient').value;
-      if (!subjectId) return showError('Pick who is on the call first.');
+      subjectId = calledSubjectId || null;
+      if (!subjectId) return showError('No participant on this call.');
 
       const s = await fetchJson('/api/brain/session', {
         method: 'POST',
@@ -1031,7 +1031,7 @@
   //
   // This handset waits to be rung. The dashboard places the call; the server
   // pushes a "ringing" event down the stream below; we show the incoming
-  // screen. Answering runs exactly the same startCall() the button runs — the
+  // screen. Answering runs the same startCall() the call flow uses — the
   // agent still opens, because it is still an outbound call from the site.
 
   let incoming = null;       // the call we are currently ringing for
@@ -1115,15 +1115,9 @@
       });
     } catch {}
 
-    // Ringing named the participant, so the picker does not have to.
-    if (event.subjectId) {
-      const picker = $('#patient');
-      if (picker && [...picker.options].some((o) => o.value === event.subjectId)) {
-        picker.value = event.subjectId;
-      }
-    }
+    // Ringing named the participant, so the handset does not have to.
     activeCallId = event.callId;
-    await startCall();
+    await startCall(event.subjectId);
     if (sessionId) {
       // Tie the call to the session so the two records can be read together.
       fetchJson(`/api/calls/${encodeURIComponent(event.callId)}/answer`, {
@@ -1164,7 +1158,6 @@
   $('#declineCall').addEventListener('click', declineIncoming);
   listenForCalls();
 
-  $('#start').addEventListener('click', startCall);
   $('#mute').addEventListener('click', toggleMute);
   $('#end').addEventListener('click', endCall);
   $('#backToStart').addEventListener('click', () => {
@@ -1192,28 +1185,25 @@
     if (e.key === 'Enter') sendTyped();
   });
 
-  $('#patient').addEventListener('change', () => {
-    if (call) endCall();
-    sessionId = null;
-    $('#sessionPill').textContent = 'no session';
-    $('#sessionPill').className = 'pill';
-  });
-
-  async function loadPatients() {
-    try {
-      const { patients } = await fetchJson('/api/patients');
-      const sel = $('#patient');
-      sel.textContent = '';
-      for (const p of patients) {
-        const opt = document.createElement('option');
-        opt.value = p.subject_id;
-        opt.textContent = `${p.given_name} ${p.family_name}`;
-        sel.appendChild(opt);
-      }
-    } catch (err) {
-      showError('Could not load participants: ' + err.message);
+  // ------------------------------------------------------------- idle clock
+  //
+  // The idle screen is a clock and nothing else — the handset does not offer to
+  // place a call, it waits to be rung. Ticking locally keeps the screen honest
+  // without a network round-trip.
+  function tickClock() {
+    const now = new Date();
+    const time = $('#idleTime');
+    const date = $('#idleDate');
+    if (time) {
+      time.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      time.dateTime = now.toISOString();
+    }
+    if (date) {
+      date.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
     }
   }
+  tickClock();
+  window.setInterval(tickClock, 15000);
 
   async function loadHealth() {
     try {
@@ -1229,6 +1219,5 @@
     }
   }
 
-  loadPatients();
   setState('idle');
 })();

@@ -22,6 +22,7 @@ import { SEED_PROTOCOLS } from '../mocks/protocols';
 import { extractProtocolDetails } from '../agents/protocolExtractor';
 import {
   fetchLiveParticipants,
+  fetchLiveSessions,
   fetchLiveTrials,
   persistParticipant,
   persistTrial,
@@ -145,6 +146,32 @@ function hydrateRoster(): Promise<void> {
     }
   });
   return rosterHydrated;
+}
+
+/**
+ * Pull in calls published since the build. Not cached: the point is to find a
+ * call that ended a moment ago. Anything already in memory wins, so review
+ * decisions made in this browser are never overwritten by a refetch.
+ */
+async function hydrateSessions(): Promise<void> {
+  const live = await fetchLiveSessions();
+  if (!live) return;
+  for (const raw of live.sessions as (Omit<ReconciliationSession, 'startedAt' | 'endedAt'> & {
+    startedAt: unknown;
+    endedAt: unknown;
+  })[]) {
+    if (sessions.has(raw.sessionId)) continue;
+    sessions.set(raw.sessionId, {
+      ...raw,
+      startedAt: toIso(raw.startedAt as never),
+      endedAt: raw.endedAt ? toIso(raw.endedAt as never) : null,
+    } as ReconciliationSession);
+  }
+  Object.assign(TRANSCRIPTS, live.transcripts);
+  for (const [id, events] of Object.entries(live.audit)) {
+    if (audit.has(id)) continue;
+    audit.set(id, (events as (AuditEvent & { at: unknown })[]).map((e) => ({ ...e, at: toIso(e.at as never) })));
+  }
 }
 
 function isToday(iso: string): boolean {
@@ -313,7 +340,8 @@ export const mockTransport: Transport = {
     return clone(document);
   },
 
-  getSession(sessionId) {
+  async getSession(sessionId) {
+    if (!sessions.has(sessionId)) await hydrateSessions();
     const session = sessions.get(sessionId);
     return settle(session ? clone(session) : null);
   },

@@ -10,7 +10,9 @@ import { registerProtocolExtractor } from './protocolExtractor';
  * the placeholder in protocolExtractor.ts takes over, which is why the UI still
  * labels an unverified extraction.
  */
-const BASE = (import.meta.env.VITE_AGENT_BASE as string | undefined) ?? 'http://localhost:5174';
+// Same-origin by default: vite proxies /agent to the service (see vite.config.ts),
+// so a browser on another machine reaches it without a public URL of its own.
+const BASE = ((import.meta.env.VITE_AGENT_BASE as string | undefined) ?? '').replace(/\/$/, '');
 
 export interface AgentExtraction extends ProtocolExtraction {
   filename?: string;
@@ -40,6 +42,24 @@ export async function fetchLiveTrials(): Promise<{ trials: unknown[]; protocols:
     return res.ok ? await res.json() : null;
   } catch {
     return null;   // service down: the bundled data still works
+  }
+}
+
+/**
+ * Calls the voice agent has published for review. The bundle only knows the
+ * sessions that existed at build time, so a call that ended after it needs
+ * this to be reviewable.
+ */
+export async function fetchLiveSessions(): Promise<{
+  sessions: unknown[];
+  transcripts: Record<string, unknown>;
+  audit: Record<string, unknown[]>;
+} | null> {
+  try {
+    const res = await fetch(`${BASE}/agent/sessions`);
+    return res.ok ? await res.json() : null;
+  } catch {
+    return null;
   }
 }
 

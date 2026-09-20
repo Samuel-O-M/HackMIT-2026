@@ -260,6 +260,38 @@ html[data-theme="dark"] .icon-sun { display: none; }
   font-weight: 600;
   margin-bottom: 0.55rem;
 }
+.welcome-note {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------- idle */
+/* The handset before it rings: the time, and nothing else. */
+.idle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+.idle-time {
+  font-size: clamp(3.4rem, 16vw, 5.5rem);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--text);
+}
+.idle-date {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--muted);
+}
+html[data-mode="phone"] .idle-time { color: #fff; }
+html[data-mode="phone"] .idle-date { color: var(--phone-muted); }
 .who-row { display: flex; gap: 0.7rem; flex-wrap: wrap; }
 .who-select {
   flex: 1 1 200px;
@@ -921,6 +953,13 @@ html[data-mode="phone"] .who-label {
   font-size: 0.9rem;
   text-align: center;
   margin-bottom: 0.55rem;
+}
+html[data-mode="phone"] .welcome-note {
+  color: var(--phone-muted);
+  text-align: center;
+  font-size: 0.9rem;
+  max-width: 300px;
+  margin: 0 auto;
 }
 html[data-mode="phone"] .who-row {
   flex-direction: column;

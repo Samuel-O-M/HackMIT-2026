@@ -24,6 +24,9 @@ const PATIENT_DB = path.join(__dirname, '..', '..', '..', 'databases', 'call_ses
 // general_health.db  (read-only)
 // ---------------------------------------------------------------------------
 function seedGeneral() {
+  // Empty directories are not tracked by git and the .db files are ignored, so
+  // a fresh clone has neither the folder nor the file.
+  fs.mkdirSync(path.dirname(GENERAL_DB), { recursive: true });
   const db = new DatabaseSync(GENERAL_DB);
 
   db.exec(`
@@ -78,6 +81,7 @@ function seedGeneral() {
 // patient.db  (read + controlled write)
 // ---------------------------------------------------------------------------
 function seedPatient() {
+  fs.mkdirSync(path.dirname(PATIENT_DB), { recursive: true });
   const db = new DatabaseSync(PATIENT_DB);
 
   db.exec(`
