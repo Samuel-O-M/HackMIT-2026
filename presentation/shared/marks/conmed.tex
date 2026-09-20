@@ -1,0 +1,21 @@
+% The conmed mark, 100x100 mm, drawn once and included at any size.
+% Two records converging into one line.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (100,100);
+
+% badge
+\fill[ink, rounded corners=18] (0,0) rectangle (100,100);
+
+% two inputs converging, one output
+\draw[white, line width=7mm, line cap=round, line join=round]
+  (16,66) -- (40,66) to[out=0,in=180] (58,50);
+\draw[white, line width=7mm, line cap=round, line join=round]
+  (16,34) -- (40,34) to[out=0,in=180] (58,50);
+\draw[white, line width=7mm, line cap=round]
+  (58,50) -- (85,50);
+
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,43 @@
+% Slide 12 — impact and close.
+% Real numbers from the fixture set, and who each one helps.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {What it changes};
+\node[subline]  at (16,76) {The quiet majority is the point: twenty-seven medications confirmed without anyone being asked.};
+
+% ---- the numbers --------------------------------------------------------
+\foreach \x/\n/\lab in {%
+  12/30/calls run,
+  48/69/changes proposed,
+  84/27/confirmed unchanged,
+  120/8/real protocols}{%
+  \fill[surf, rounded corners=2pt] (\x,46) rectangle (\x+32,66);
+  \draw[line, line width=0.4pt, rounded corners=2pt] (\x,46) rectangle (\x+32,66);
+  \node[num] at (\x+6,57) {\n};
+  \node[anchor=north west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkiii}, align=left, text width=24mm] at (\x+6,52.5) {\lab};
+}
+
+% ---- who it helps -------------------------------------------------------
+\fill[ink] (34,29) circle (1);
+\node[anchor=west, font=\fontsize{6.8}{8}\selectfont\sffamily\bfseries\color{ink}] at (36,33) {coordinator};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (36,29.5) {starts from a draft, not a blank form};
+
+\fill[ink] (78,29) circle (1);
+\node[anchor=west, font=\fontsize{6.8}{8}\selectfont\sffamily\bfseries\color{ink}] at (80,33) {sponsor};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (80,29.5) {fewer deviations found late};
+
+\fill[ink] (122,29) circle (1);
+\node[anchor=west, font=\fontsize{6.8}{8}\selectfont\sffamily\bfseries\color{ink}] at (124,33) {participant};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (124,29.5) {nothing to remember or repeat};
+
+% ---- close --------------------------------------------------------------
+\draw[line] (14,24) -- (146,24);
+\node[anchor=west, font=\fontsize{7}{8.5}\selectfont\sffamily\color{inkii}] at (14,17)
+  {Open source (MIT) \textperiodcentered\ point it at your own model \textperiodcentered\ pilot it at one site};
+
+\end{tikzpicture}
+\end{document}

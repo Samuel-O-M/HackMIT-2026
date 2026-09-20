@@ -1,0 +1,45 @@
+% Slide 11 — demo.
+% The call itself: a phone running the agent, and a QR to the project.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {See it make the call};
+\node[subline]  at (16,76) {A call three days before the visit \textemdash\ heard, understood, staged.};
+
+% ---- phone --------------------------------------------------------------
+\fill[ink, rounded corners=5pt] (32,14) rectangle (76,69);
+\draw[lineii, line width=0.5pt, rounded corners=5pt] (35,19) rectangle (73,64);
+\node[anchor=center, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{white}] at (54,60.5) {Participant 0412};
+\node[anchor=center, font=\fontsize{5.6}{7}\selectfont\sffamily\color{inkiv}] at (54,57) {identity verified \textperiodcentered\ 02:14};
+
+% live waveform
+\foreach \x/\h in {41/2,44/4,47/3,50/5,53/3,56/5,59/3,62/4,65/2,68/3}{%
+  \fill[modify, rounded corners=0.4pt] (\x,{51.5-\h*0.5}) rectangle (\x+1.1,{51.5+\h*0.5});
+}
+
+% captions
+\fill[modify, rounded corners=2pt] (38,40.5) rectangle (70,47);
+\node[anchor=center, font=\fontsize{5.6}{7}\selectfont\sffamily\color{white}] at (54,43.75) {anything else for your stomach?};
+\fill[surfiii, rounded corners=2pt] (38,32.5) rectangle (70,38.5);
+\node[anchor=center, font=\fontsize{5.6}{7}\selectfont\sffamily\color{ink}] at (54,35.5) {just ibuprofen, for my knee};
+
+% controls (no red: red belongs to findings)
+\fill[surfiii, rounded corners=3pt] (38,22) rectangle (45,28.5);
+\draw[line] (41.5,25.25) circle (2.2);
+\fill[inkii, rounded corners=3pt]   (63,22) rectangle (70,28.5);
+\draw[line] (66.5,25.25) circle (2.2);
+\node[anchor=center, font=\fontsize{5}{6}\selectfont\sffamily\color{inkiv}] at (41.5,19.5) {mute};
+\node[anchor=center, font=\fontsize{5}{6}\selectfont\sffamily\color{inkiv}] at (66.5,19.5) {end};
+
+% ---- scan ---------------------------------------------------------------
+\fill[surf, rounded corners=2pt] (102,36) rectangle (148,74);
+\draw[line, line width=0.5pt, rounded corners=2pt] (102,36) rectangle (148,74);
+\node[anchor=center] at (125,55) {\includegraphics[width=32mm]{shared/marks/qr-repo.png}};
+\node[anchor=center, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (125,31) {scan \textemdash\ the whole project};
+\node[anchor=center, font=\fontsize{6}{7}\selectfont\ttfamily\color{inkiii}] at (125,27) {github.com/Samuel-O-M/HackMIT-2026};
+
+\end{tikzpicture}
+\end{document}

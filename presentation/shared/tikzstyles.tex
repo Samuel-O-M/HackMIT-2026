@@ -1,0 +1,25 @@
+% Shared TikZ styles. Every figure draws in millimetres (x=1mm,y=1mm) on a
+% 160x90 canvas, so these sizes are literal.
+%
+% No blank lines may appear inside the \tikzset below: a blank line is \par,
+% and the key parser will not tolerate it.
+\tikzset{
+  panel/.style     = {draw=line, fill=surf,   line width=0.4pt, rounded corners=2pt},
+  panelgray/.style = {draw=line, fill=surfii, line width=0.4pt, rounded corners=2pt},
+  screen/.style    = {draw=line, fill=surf,   line width=0.5pt, rounded corners=2.5pt},
+  hair/.style      = {draw=line,   line width=0.4pt},
+  hairii/.style    = {draw=lineii, line width=0.5pt},
+  dimbar/.style    = {fill=line,   rounded corners=0.6pt},
+  dimbarsm/.style  = {fill=lineii, rounded corners=0.5pt},
+  lab/.style       = {font=\fontsize{7}{8.5}\selectfont\sffamily\color{inkiii}, inner sep=0pt, outer sep=0pt},
+  val/.style       = {font=\fontsize{9}{11}\selectfont\sffamily\color{ink},    inner sep=0pt, outer sep=0pt},
+  valb/.style      = {font=\fontsize{9}{11}\selectfont\sffamily\bfseries\color{ink}, inner sep=0pt, outer sep=0pt},
+  code/.style      = {font=\fontsize{7}{8.5}\selectfont\ttfamily\color{inkiii}, inner sep=0pt, outer sep=0pt},
+  tag/.style       = {font=\fontsize{5.6}{6.5}\selectfont\sffamily\bfseries, inner xsep=1.3mm, inner ysep=0.7mm, rounded corners=1.4pt},
+  pill/.style      = {font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries, inner xsep=1.5mm, inner ysep=0.85mm, rounded corners=1.5pt},
+  headline/.style  = {font=\fontsize{12}{14}\selectfont\sffamily\bfseries\color{ink}, anchor=west, inner sep=0pt, outer sep=0pt},
+  subline/.style   = {font=\fontsize{7.5}{9}\selectfont\sffamily\color{inkii}, anchor=west, inner sep=0pt, outer sep=0pt},
+  cardlab/.style   = {font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkiii}, anchor=west, inner sep=0pt, outer sep=0pt},
+  num/.style       = {font=\fontsize{22}{23}\selectfont\sffamily\bfseries\color{ink}, anchor=west, inner sep=0pt, outer sep=0pt},
+  flow/.style      = {-{Stealth[length=1.5mm,width=1.2mm]}, draw=lineii, line width=0.7pt},
+}

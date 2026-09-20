@@ -1,0 +1,68 @@
+% Slide 09 — the record.
+% 21 CFR Part 11: an append-only audit trail and a signature that carries
+% printed name, timestamp and meaning. Trust as a data model.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {The record a monitor will ask for};
+\node[subline]  at (16,76) {21 CFR Part 11: why it changed, who approved it, and when.};
+
+% ---- audit trail --------------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (10,16) rectangle (98,70);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (10,16) rectangle (98,70);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (15,65.5) {Audit trail};
+\node[anchor=east, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiii}] at (93,65.5) {append-only};
+\draw[line] (10,62.5) -- (98,62.5);
+
+\foreach \cy in {56.5,45,33.5,22}{ \draw[line] (14,\cy-5.75) -- (94,\cy-5.75); }
+
+% 10:24 · Voice agent · proposed stop ibuprofen
+\node[code] at (15,59)                 {10:24};
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (28,59) {Voice agent};
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkii}] at (54,59) {proposed stop ibuprofen};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (28,55.6) {reason: \textemdash};
+
+% 10:31 · J. Okafor · accepted
+\node[code] at (15,47.5)               {10:31};
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (28,47.5) {J. Okafor, CRC};
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{accept}] at (54,47.5) {accepted};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (28,44.1) {reason: GI bleed reported};
+
+% 10:31 · J. Okafor · edited dose
+\node[code] at (15,36)                 {10:31};
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (28,36) {J. Okafor, CRC};
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{modify}] at (54,36) {edited dose};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (28,32.6) {reason: confirmed with participant};
+
+% 10:32 · J. Okafor · promoted
+\node[code] at (15,24.5)               {10:32};
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (28,24.5) {J. Okafor, CRC};
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{ink}] at (54,24.5) {promoted 1 change};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (28,21.1) {reason: electronic signature applied};
+
+% ---- signature ----------------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (104,34) rectangle (150,70);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (104,34) rectangle (150,70);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (109,65.5) {Electronic signature};
+\draw[line] (104,62.5) -- (150,62.5);
+
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (109,56.5) {J. Okafor, CRC};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiii}] at (109,52.6) {Clinical research coordinator};
+
+\node[anchor=west, font=\fontsize{9}{10}\selectfont\sffamily\bfseries\color{accept}] at (109,45.5) {Approved};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (109,41.5) {2026-09-19 10:32};
+
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (104,28)
+  {A signature carries printed name,};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiv}] at (104,24)
+  {timestamp and meaning (11.50).};
+
+% ---- what 11.10(e) demands ---------------------------------------------
+\node[anchor=west, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkii}] at (104,18)
+  {Every entry carries who / when / why.};
+
+\end{tikzpicture}
+\end{document}

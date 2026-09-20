@@ -1,0 +1,59 @@
+% Slide 05 — the pipeline.
+% Five stages, one wall: the agent proposes, a person decides, and the log is
+% written only on Promote. That boundary is the whole design.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {The agent proposes. A coordinator decides.};
+\node[subline]  at (16,76) {Nothing reaches the medication log without a signature.};
+
+% ---- stages -------------------------------------------------------------
+\foreach \x/\title/\sub in {%
+  12/Call/voice agent,
+  40/Ground/RxNorm \textperiodcentered\ protocol,
+  68/Propose/staged changes,
+  96/Review/coordinator,
+  124/Promote/signed log}{%
+  \fill[surf, rounded corners=2pt] (\x,46) rectangle (\x+24,66);
+  \draw[line, line width=0.4pt, rounded corners=2pt] (\x,46) rectangle (\x+24,66);
+  \node[anchor=center, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (\x+12,60) {\title};
+  \node[anchor=center, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiii}] at (\x+12,53) {\sub};
+}
+
+% arrows between stages
+\foreach \x in {36.5, 64.5, 92.5, 120.5}{ \draw[flow] (\x,56) -- (\x+3,56); }
+
+% the human line
+\draw[ink, dashed, line width=0.7pt] (94,44) -- (94,72);
+\node[anchor=south, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{ink}] at (94,72) {no agent write};
+
+% who owns which half
+\draw[lineii, line width=0.5pt] (14,42) -- (90,42);
+\draw[lineii, line width=0.5pt] (14,42) -- (14,40.5);
+\draw[lineii, line width=0.5pt] (90,42) -- (90,40.5);
+\node[anchor=north, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkiii}] at (52,40.5) {the agent};
+
+\draw[lineii, line width=0.5pt] (98,42) -- (146,42);
+\draw[lineii, line width=0.5pt] (98,42) -- (98,40.5);
+\draw[lineii, line width=0.5pt] (146,42) -- (146,40.5);
+\node[anchor=north, font=\fontsize{6.4}{7.5}\selectfont\sffamily\color{inkiii}] at (122,40.5) {the coordinator};
+
+% ---- where it is stored -------------------------------------------------
+\fill[surfii, rounded corners=2pt] (12,18) rectangle (88,32);
+\draw[line, line width=0.4pt, rounded corners=2pt] (12,18) rectangle (88,32);
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (16,28) {call\_sessions/patient.db};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiii}] at (16,23) {staged changes \textperiodcentered\ transient};
+
+\fill[surf, rounded corners=2pt] (100,18) rectangle (148,32);
+\draw[line, line width=0.4pt, rounded corners=2pt] (100,18) rectangle (148,32);
+\node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (104,28) {trial\_records/conmed.db};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiii}] at (104,23) {proposed $\rightarrow$ log \textperiodcentered\ durable};
+
+\node[anchor=center, font=\fontsize{6.6}{8}\selectfont\sffamily\color{inkii}] at (80,11.5)
+  {the medication log is written only on Promote, under an electronic signature};
+
+\end{tikzpicture}
+\end{document}

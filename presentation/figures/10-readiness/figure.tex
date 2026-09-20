@@ -1,0 +1,58 @@
+% Slide 10 — readiness.
+% The demo has to run on conference wifi, so everything is local SQLite and the
+% only network call is to the model. The same code re-points at a server.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {One machine, no network};
+\node[subline]  at (16,76) {Eight real Regeneron protocols and 42 participants — all synthetic at site level.};
+
+% ---- everything local ---------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (10,20) rectangle (96,70);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (10,20) rectangle (96,70);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (15,65.5) {Everything local};
+\draw[line] (10,62.5) -- (96,62.5);
+
+\foreach \cy/\name/\purpose in {%
+  56/conmed.db/the trial record,
+  47.5/patient.db/the call in progress,
+  39/drugs.db/RxNorm / RxClass cache,
+  30.5/general\_health.db/plain-language guidance}{%
+  \fill[surfiii, rounded corners=1pt] (14,\cy-2.2) rectangle (20,\cy+2.2);
+  \draw[line, line width=0.4pt, rounded corners=1pt] (14,\cy-2.2) rectangle (20,\cy+2.2);
+  \draw[line] (14,\cy+0.7) -- (20,\cy+0.7);
+  \node[anchor=west, font=\fontsize{6.6}{8}\selectfont\sffamily\bfseries\color{ink}] at (23,\cy+1.5) {\name};
+  \node[anchor=west, font=\fontsize{6}{7}\selectfont\sffamily\color{inkiii}] at (23,\cy-2) {\purpose};
+}
+
+\node[anchor=west, font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkiv}] at (15,24)
+  {delete any of them and rebuild from the source data};
+
+% ---- or point it at a server -------------------------------------------
+\fill[surf, rounded corners=2.5pt] (104,20) rectangle (150,70);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (104,20) rectangle (150,70);
+\node[anchor=west, font=\fontsize{8}{9.5}\selectfont\sffamily\bfseries\color{ink}] at (109,65.5) {Or a server};
+\draw[line] (104,62.5) -- (150,62.5);
+
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\ttfamily\color{inkii}] at (109,56)
+  {DATABASE\_URL=};
+\node[anchor=west, font=\fontsize{6}{7}\selectfont\ttfamily\color{inkii}] at (109,52.5)
+  {postgres://\dots};
+
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (109,46)
+  {no database is opened by path:};
+\node[anchor=west, font=\fontsize{6.2}{7.5}\selectfont\sffamily\color{inkiii}] at (109,42.5)
+  {one environment variable, same code};
+
+\fill[add!10!white, rounded corners=1.5pt] (109,31) rectangle (145,37);
+\draw[add, line width=0.4pt, rounded corners=1.5pt] (109,31) rectangle (145,37);
+\node[anchor=center, font=\fontsize{6.4}{7.5}\selectfont\sffamily\bfseries\color{add}] at (127,34) {MIT \textperiodcentered\ open source};
+
+\node[anchor=west, font=\fontsize{6.2}{7}\selectfont\sffamily\color{inkiv}] at (109,25)
+  {the same schema, three methods};
+
+\end{tikzpicture}
+\end{document}
