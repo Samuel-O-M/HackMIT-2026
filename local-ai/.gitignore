@@ -1,0 +1,13 @@
+# Model weights: downloaded into the repo so inference is fully offline, but not
+# committed (multi-GB binaries). Recreate with the per-project download_model.py.
+models/
+
+# Per-project uv virtualenvs
+.venv/
+
+# Generated audio + round-trip scratch
+out/
+
+# Python
+__pycache__/
+*.pyc
