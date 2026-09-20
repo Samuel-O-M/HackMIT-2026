@@ -40,13 +40,15 @@
 \node[anchor=north, font=\fontsize{6}{7.2}\selectfont\sffamily\color{inkiii}] at (112,17.8) {per protocol};
 
 \draw[line, line width=0.5pt] (24,28) -- (132,28);
-\node[anchor=west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}] at (16,33)
-  {share of enrolled};
-\node[anchor=west, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}] at (16,29.8)
-  {patients affected};
+
+% What the bars measure. Centred beneath the axis rather than beside it: set
+% to the left of the baseline the text ran wider than the 15mm of margin and
+% collided with the Phase I bar.
+\node[anchor=north, font=\fontsize{6.2}{7.4}\selectfont\sffamily\color{inkiii}] at (78,12.5)
+  {bars: share of enrolled patients with at least one protocol deviation};
 
 % ---- source -------------------------------------------------------------
-\node[anchor=west, font=\fontsize{5.4}{6.4}\selectfont\sffamily\color{inkiv}] at (16,9)
+\node[anchor=west, font=\fontsize{5.4}{6.4}\selectfont\sffamily\color{inkiv}] at (16,5.5)
   {Getz et al., \textit{Therapeutic Innovation \& Regulatory Science} 56:632\textendash636, 2022. All deviation types, not medication-specific.};
 
 \end{tikzpicture}
