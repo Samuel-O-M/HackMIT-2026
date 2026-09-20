@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import type { ProposedChange } from '../types/contract';
 import type { DataQuery } from '../types/ui';
-import { CHANGE_TAG, CHANGE_VERB, changedFields } from '../lib/entry';
+import { CHANGE_TAG, CHANGE_VERB, changedFields, hasSeriousSymptom } from '../lib/entry';
 import type { EditableField } from '../lib/entry';
 import { Confidence } from './Confidence';
 import { EntryCell } from './EntryCell';
@@ -44,6 +44,7 @@ export function ChangeRow({
       data-status={change.reviewStatus}
       data-queried={openQuery !== null}
       data-prohibited={change.prohibitedHit !== null}
+      data-serious={hasSeriousSymptom(change)}
       aria-label={`${CHANGE_VERB[change.changeType]}: ${change.proposed.canonicalName ?? change.proposed.reportedText}`}
     >
       <div className="row-grid">

@@ -52,6 +52,17 @@ class ReadOnlyStore {
   close() { this.db.close(); }
 }
 
+/** Follow-up answers on a staged change; databases seeded before these existed lack them. */
+const FEEDBACK_COLUMNS = ['effectiveness', 'side_effects', 'side_effects_note', 'stop_reason'];
+
+function migrate(db) {
+  const have = db.prepare('PRAGMA table_info(staged_changes)').all().map((c) => c.name);
+  if (have.length === 0) return; // table absent: nothing seeded yet
+  for (const col of FEEDBACK_COLUMNS) {
+    if (!have.includes(col)) db.exec(`ALTER TABLE staged_changes ADD COLUMN ${col} TEXT`);
+  }
+}
+
 class ReadWriteStore {
   constructor(file, label) {
     if (!fs.existsSync(file)) {
@@ -67,6 +78,7 @@ class ReadWriteStore {
     } catch {
       /* best effort */
     }
+    migrate(this.db);
   }
   query(sql, ...params) {
     return this.db.prepare(sql).all(...params);

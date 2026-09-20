@@ -44,10 +44,20 @@
     {
       "atMs": 46912,
       "speaker": "agent",
-      "text": "Thank you for telling me. I am flagging that for your coordinator to discuss at the visit. Has anything else started by prescription, including anything another doctor prescribed?"
+      "text": "Thank you for telling me. I am flagging that for your coordinator to discuss at the visit. How has the prednisone been going for you?"
     },
     {
-      "atMs": 57882,
+      "atMs": 51512,
+      "speaker": "participant",
+      "text": "It helps my joints a lot, but it keeps me awake at night."
+    },
+    {
+      "atMs": 56712,
+      "speaker": "agent",
+      "text": "Thank you for telling me. Has anything else started by prescription, including anything another doctor prescribed?"
+    },
+    {
+      "atMs": 67682,
       "speaker": "participant",
       "text": "And there is a little blue pill I take for my stomach, but I couldn't tell you the name.",
       "yields": [
@@ -55,32 +65,32 @@
       ]
     },
     {
-      "atMs": 65519,
+      "atMs": 75319,
       "speaker": "agent",
       "text": "What is the little blue pill for, and did you get it by prescription or buy it over the counter?"
     },
     {
-      "atMs": 73526,
+      "atMs": 83326,
       "speaker": "participant",
       "text": "It\u2019s for my stomach, but I\u2019m not sure if it was prescribed or something I bought myself. I can\u2019t remember the name."
     },
     {
-      "atMs": 82274,
+      "atMs": 92074,
       "speaker": "agent",
       "text": "That is alright. Your coordinator will ask you to bring the bottle to the visit so we can record it properly. Is there anything else new that a doctor prescribed?"
     },
     {
-      "atMs": 93985,
+      "atMs": 103785,
       "speaker": "participant",
       "text": "No, I don't think any other doctor prescribed anything new."
     },
     {
-      "atMs": 98289,
+      "atMs": 108089,
       "speaker": "agent",
       "text": "Thank you. Is there anything you buy without a prescription, such as painkillers, antacids, or anything for sleep?"
     },
     {
-      "atMs": 105556,
+      "atMs": 115356,
       "speaker": "participant",
       "text": "I use melatonin gummies on and off for sleep. I\u2019ve done that for years now.",
       "yields": [
@@ -88,22 +98,22 @@
       ]
     },
     {
-      "atMs": 111712,
+      "atMs": 121512,
       "speaker": "agent",
       "text": "Thank you for telling me. Do you know the strength listed on the melatonin gummies?"
     },
     {
-      "atMs": 117868,
+      "atMs": 127668,
       "speaker": "participant",
       "text": "I think they\u2019re 5 milligrams, but I\u2019m not completely sure."
     },
     {
-      "atMs": 122172,
+      "atMs": 131972,
       "speaker": "agent",
       "text": "Thank you. I will record the melatonin strength as approximately five milligrams. Have you had any vaccinations in the last few months?"
     },
     {
-      "atMs": 130920,
+      "atMs": 140720,
       "speaker": "participant",
       "text": "I had the shingles jab at the pharmacy in August, just the one shot.",
       "yields": [
@@ -111,52 +121,52 @@
       ]
     },
     {
-      "atMs": 136705,
+      "atMs": 146505,
       "speaker": "agent",
       "text": "Thank you for telling me. Do you know which brand of shingles vaccine you received?"
     },
     {
-      "atMs": 142861,
+      "atMs": 152661,
       "speaker": "participant",
       "text": "No, I\u2019m afraid I don\u2019t know the brand. It was just the one shot at the pharmacy."
     },
     {
-      "atMs": 149757,
+      "atMs": 159557,
       "speaker": "agent",
       "text": "Thank you. I will record the shingles vaccine brand as unknown. I have one more question: are you taking any vitamins or herbal products?"
     },
     {
-      "atMs": 159246,
+      "atMs": 169046,
       "speaker": "participant",
       "text": "No vitamins or herbal products that I can think of."
     },
     {
-      "atMs": 163550,
+      "atMs": 173350,
       "speaker": "agent",
       "text": "Thank you. That is everything I needed. Thank you for your time."
     },
     {
-      "atMs": 168594,
+      "atMs": 178394,
       "speaker": "participant",
       "text": "Okay, thank you. I\u2019ll see you at the next visit."
     },
     {
-      "atMs": 172898,
+      "atMs": 182698,
       "speaker": "agent",
       "text": "Thank you. I will see you at the next visit."
     },
     {
-      "atMs": 177202,
+      "atMs": 187002,
       "speaker": "participant",
       "text": "All right, take care."
     },
     {
-      "atMs": 179402,
+      "atMs": 189202,
       "speaker": "agent",
       "text": "Take care."
     },
     {
-      "atMs": 181602,
+      "atMs": 191402,
       "speaker": "participant",
       "text": "Take care."
     }
@@ -425,6 +435,26 @@
       "atMs": 73221,
       "speaker": "agent",
       "text": "Thank you. I will record methotrexate as fifteen milligrams once weekly on Sundays. Do you know when you started taking it?"
+    },
+    {
+      "atMs": 78421,
+      "speaker": "participant",
+      "text": "About three weeks ago, in the middle of August."
+    },
+    {
+      "atMs": 83021,
+      "speaker": "agent",
+      "text": "Thank you. How has the methotrexate been going for you?"
+    },
+    {
+      "atMs": 88621,
+      "speaker": "participant",
+      "text": "The joints feel a lot better, but I get short of breath on the stairs now."
+    },
+    {
+      "atMs": 94221,
+      "speaker": "agent",
+      "text": "Thank you for telling me. That is important, and I am flagging it for the study team to follow up promptly."
     }
   ],
   "SES-2026-0498": [

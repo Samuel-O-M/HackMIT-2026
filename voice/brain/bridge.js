@@ -35,6 +35,11 @@ function toProposedChange(row, index) {
     stopDate: row.stop_date || null,
     stopDatePrecision: row.stop_date_precision || 'unknown',
     ongoing: row.ongoing !== 0,
+    // Follow-up answers: null means the agent never asked, not "no".
+    effectiveness: row.effectiveness || null,
+    sideEffects: row.side_effects || null,
+    sideEffectsNote: row.side_effects_note || null,
+    stopReason: row.stop_reason || null,
   };
   return {
     changeId: `CH-${row.session_id.slice(0, 4)}-${String(index + 1).padStart(2, '0')}`,
@@ -62,6 +67,20 @@ async function publishSession(sessionId) {
   }
 
   const staged = p.query('SELECT * FROM staged_changes WHERE session_id = ? ORDER BY staged_id', sessionId) || [];
+  // Safety flags live only in the planner's state. A symptom that belongs to no
+  // one medication has no staged row, so without this it would never reach a
+  // coordinator at all.
+  let safetyFlags = [];
+  try {
+    const row = p.get('SELECT state FROM planner_state WHERE session_id = ?', sessionId);
+    const flags = row ? JSON.parse(row.state).flags : [];
+    safetyFlags = (Array.isArray(flags) ? flags : [])
+      .filter((f) => f && f.type === 'safety' && f.detail)
+      .map((f) => ({ detail: String(f.detail).slice(0, 500) }));
+  } catch {
+    /* an unreadable state is not a reason to lose the call */
+  }
+
   const turns = p.query('SELECT speaker, transcript FROM utterances WHERE session_id = ? ORDER BY seq', sessionId) || [];
 
   const identity = {
@@ -87,6 +106,7 @@ async function publishSession(sessionId) {
       // data. It is published so the attempt is on record, and held back.
       status: identity.outcome === 'verified' ? 'awaiting_review' : 'in_progress',
       changes: identity.outcome === 'verified' ? staged.map(toProposedChange) : [],
+      ...(identity.outcome === 'verified' && safetyFlags.length ? { safetyFlags } : {}),
     },
     identity,
     transcript: turns.map((t, i) => ({

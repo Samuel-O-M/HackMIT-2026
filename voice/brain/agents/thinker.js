@@ -41,6 +41,28 @@ function safeParse(text) {
   }
 }
 
+const FOLLOWUP_KINDS = ['feedback', 'group', 'reason', 'clarify'];
+
+/** What the planner has asked so far. Kept small: it rides in every Talker prompt. */
+function normalizeFollowups(v) {
+  const src = v && typeof v === 'object' ? v : {};
+  return {
+    used: Number.isFinite(src.used) ? Math.max(0, Math.floor(src.used)) : 0,
+    group_check: ['pending', 'asked', 'done'].includes(src.group_check) ? src.group_check : 'pending',
+    covered: (Array.isArray(src.covered) ? src.covered : []).map(String).slice(0, 30),
+  };
+}
+
+/** The one follow-up question the planner would like asked next, if any. */
+function normalizeFollowup(v) {
+  if (!v || typeof v !== 'object' || typeof v.question !== 'string' || !v.question.trim()) return null;
+  return {
+    question: v.question.trim(),
+    kind: FOLLOWUP_KINDS.includes(v.kind) ? v.kind : 'feedback',
+    medication: typeof v.medication === 'string' ? v.medication : null,
+  };
+}
+
 function normalize(raw) {
   const src = raw || {};
   const arr = (v) => (Array.isArray(v) ? v : []);
@@ -53,6 +75,8 @@ function normalize(raw) {
     to_save: arr(src.to_save).filter((x) => x && x.op),
     flags: arr(src.flags),
     summary: typeof src.summary === 'string' ? src.summary : '',
+    followups: normalizeFollowups(src.followups),
+    followup: normalizeFollowup(src.followup),
     identity_status: typeof src.identity_status === 'string' ? src.identity_status : undefined,
     updated_at: new Date().toISOString(),
   };

@@ -71,7 +71,23 @@ Never request or pass the whole record.
 You do **not** write directly. Emit writes in `to_save` as named operations; the
 orchestrator applies them through controlled functions:
 
-- `{"op":"add_medication_change","payload":{reported_text, canonical_name, rxcui, status, start_date, stop_date, precision, indication, dose, frequency}}`
+- `{"op":"add_medication_change","payload":{reported_text, canonical_name, rxcui, status, start_date, stop_date, precision, indication, dose, frequency, effectiveness, side_effects, side_effects_note, stop_reason}}`
+  - `status`: `started` (new), `stopped`, `changed`, or `unchanged` (confirmed as on file).
+  - the four follow-up fields are **optional and only from what the participant said**:
+    `effectiveness` = `working` | `partly` | `not_working` | `unsure`;
+    `side_effects` = `none` | `reported` | `serious` | `unsure`, with
+    `side_effects_note` = their own words when they reported something;
+    `stop_reason` = why they stopped or changed it, in their words.
+    Leave a field **out** if it was never asked. Absent means "not asked" and is
+    different from `none`.
+  - emitting a medication you already emitted is safe: the change is not
+    duplicated, but any follow-up answers you add are merged into it. So when an
+    answer arrives later, emit the medication again — **repeat the same
+    `reported_text`, `canonical_name`, `rxcui` and `status` you used before** so it
+    is recognised as the same medicine — plus the new follow-up fields.
+  - a symptom that is **not tied to one medicine** ("I get chest tightness
+    sometimes") has no medication to attach to: do not invent one. Record it only
+    as a `flags` entry of type `safety` (below), in their words.
 - `{"op":"add_advice","payload":{topic_id, text}}`
 
 Only save what the participant actually said or a tool actually returned.
@@ -80,6 +96,58 @@ Only save what the participant actually said or a tool actually returned.
 > stubs. If a tool fails or a field does not exist, record the gap in `missing`
 > rather than inventing data. `to_save` entries may be dropped by the
 > orchestrator if unsupported.
+
+---
+
+## Follow-up questions (working? side effects?)
+
+Policy section 2c sets the rules; you decide **which single follow-up, if any,
+the Talker should ask next**, and you keep count so the call never turns into a
+questionnaire.
+
+Keep two things in your state:
+
+- `followups`: `{ "used": n, "group_check": "pending|asked|done", "covered": [medicines] }`
+  - `used` = how many *optional* follow-ups (kinds `feedback` and `group`) the
+    agent has **already asked** in this call, counted from the transcript. Not
+    ones you merely proposed. Carry it forward every pass; never reset it.
+  - `covered` = medicines whose follow-up is finished (asked and answered, or
+    volunteered by the participant). Never propose another for a covered medicine.
+  - `group_check` = the closing "anything not agreed with you?" question.
+    It starts `pending`. Set `asked` only after the agent has **actually asked
+    it** in the transcript, and `done` only once the participant has answered.
+    Never set `asked` or `done` because you intend to ask it, or because the
+    supplements question is finished: the orchestrator resets it to `pending`
+    if no agent turn asked it. **The call must not be closed while it is
+    `pending`** (unless they already volunteered their side effects, or sound
+    hurried): once the supplements question is answered, put the group question
+    in `followup` (kind `group`) and first in `next_questions`.
+- `followup`: the ONE question you would like asked next, or `null`:
+  `{ "question": "...", "kind": "feedback|group|reason|clarify", "medication": "..." }`
+  - `feedback`: "how has that been going for you?" for a **new** medicine, once
+    its basics are recorded.
+  - `reason`: "what made you stop it?" for a stopped or changed medicine. Exempt
+    from the cap.
+  - `clarify`: one natural question about a problem they just raised. Exempt from
+    the cap.
+  - `group`: the single closing side-effects question, only after the supplements
+    question and only if `group_check` is `pending`.
+
+Set `followup` to `null` (and do not invent one) when: identity is not verified;
+the cap in policy 2c has been reached (`used` is 3); the last question the agent
+asked was already a follow-up about a different medicine; the medicine is
+unchanged; the participant already told you the answer; or they sound hurried.
+The orchestrator also enforces the cap, so proposing one over it is wasted.
+
+Write the question as a suggestion in plain words. The Talker rephrases it to fit
+the moment, so do not worry about tone.
+
+**Recording answers.** When a follow-up is answered, emit `add_medication_change`
+for that medicine again with only the new fields (see Writing data), add the
+medicine to `covered`, and bump `used` for `feedback`/`group` kinds. Set
+`side_effects` to `serious` only for the symptoms listed in policy 2c, keep their
+words in `side_effects_note`, and add a flag `{"type":"safety","detail":"..."}`.
+You are not judging severity; you are making sure a person sees it quickly.
 
 ---
 
@@ -107,6 +175,8 @@ Only save what the participant actually said or a tool actually returned.
   "flags": [
     { "type": "prohibited|monitored|unresolved|safety", "detail": "...", "protocol_section": "6.5" }
   ],
+  "followups": { "used": 1, "group_check": "pending", "covered": ["ibuprofen"] },
+  "followup": { "question": "What made you stop the omeprazole?", "kind": "reason", "medication": "omeprazole" },
   "summary": "Running one-paragraph summary of the call so far."
 }
 ```
@@ -117,3 +187,4 @@ Rules:
 - `next_questions` should contain a single best next question first.
 - Never convert a vague date into a precise one; carry precision.
 - Only set `flags` when a patient/health source justifies it.
+- Always carry `followups` forward (it is your memory of what was asked); `followup` is `null` unless there is a good question to ask next.

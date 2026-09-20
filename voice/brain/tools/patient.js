@@ -91,6 +91,56 @@ function read({ subjectId, sessionId, scope, limit }) {
   }
 }
 
+
+const EFFECTIVENESS = ['working', 'partly', 'not_working', 'unsure'];
+const SIDE_EFFECTS = ['none', 'reported', 'serious', 'unsure'];
+const clip = (v, n) => (v == null ? null : String(v).trim().slice(0, n) || null);
+
+/**
+ * The follow-up answers on a medication, validated. Anything outside the
+ * allowed values is dropped rather than stored: these are the participant's
+ * words classified coarsely, and a made-up category is worse than a blank.
+ * `null`/absent means "not asked" and is never written as a value.
+ */
+function readFeedback(payload) {
+  const out = {};
+  if (EFFECTIVENESS.includes(payload.effectiveness)) out.effectiveness = payload.effectiveness;
+  if (SIDE_EFFECTS.includes(payload.side_effects)) out.side_effects = payload.side_effects;
+  const note = clip(payload.side_effects_note, 500);
+  if (note) out.side_effects_note = note;
+  const reason = clip(payload.stop_reason, 300);
+  if (reason) out.stop_reason = reason;
+  return out;
+}
+
+/** Fold new follow-up answers into an already-staged row. Returns the fields changed. */
+function mergeFeedback(p, row, feedback) {
+  const sets = [];
+  const vals = [];
+  const put = (col, val) => {
+    sets.push(`${col} = ?`);
+    vals.push(val);
+  };
+  if (feedback.effectiveness) put('effectiveness', feedback.effectiveness);
+  if (feedback.stop_reason) put('stop_reason', feedback.stop_reason);
+  if (feedback.side_effects) {
+    // "serious" is sticky: a later, calmer-sounding answer must not hide it.
+    put('side_effects', row.side_effects === 'serious' ? 'serious' : feedback.side_effects);
+  }
+  if (feedback.side_effects_note) {
+    // Answers accumulate ("upset stomach" ... then "mostly evenings"), but the
+    // planner often re-sends the earlier words inside the later ones.
+    const prior = row.side_effects_note;
+    const next = feedback.side_effects_note;
+    let note = next;
+    if (prior && !next.includes(prior)) note = prior.includes(next) ? prior : `${prior}; ${next}`;
+    put('side_effects_note', note.slice(0, 500));
+  }
+  if (!sets.length) return [];
+  p.execute(`UPDATE staged_changes SET ${sets.join(', ')} WHERE staged_id = ?`, ...vals, row.staged_id);
+  return sets.map((s) => s.split(' ')[0]);
+}
+
 const WRITE_OPS = ['set_planner_state', 'add_medication_change', 'add_advice'];
 
 function update({ subjectId, sessionId, op, payload = {} }) {
@@ -128,23 +178,37 @@ function update({ subjectId, sessionId, op, payload = {} }) {
         status === 'stopped' ? 'stop' :
         status === 'changed' ? 'modify' :
         status === 'unchanged' ? 'confirm_unchanged' : 'add';
+      const feedback = readFeedback(payload);
 
-      if (canonical) {
+      // The same medicine, however the planner happens to identify it this pass.
+      const reported = payload.reported_text ? String(payload.reported_text).trim().toLowerCase() : null;
+      const rxcui = payload.rxcui || null;
+      if (canonical || rxcui || reported) {
         const dupe = p.get(
-          `SELECT staged_id FROM staged_changes
-            WHERE session_id = ? AND ifnull(canonical_name,'') = ifnull(?,'')
-              AND ifnull(change_type,'') = ifnull(?,'') LIMIT 1`,
-          sessionId, canonical, changeType
+          `SELECT staged_id, side_effects, side_effects_note FROM staged_changes
+            WHERE session_id = ? AND ifnull(change_type,'') = ?
+              AND ( (? IS NOT NULL AND lower(canonical_name) = lower(?))
+                 OR (? IS NOT NULL AND rxcui = ?)
+                 OR (? IS NOT NULL AND lower(trim(reported_text)) = ?) )
+            LIMIT 1`,
+          sessionId, changeType, canonical, canonical, rxcui, rxcui, reported, reported
         );
-        if (dupe) return { ok: true, op, skipped: 'duplicate' };
+        if (dupe) {
+          // The planner re-emits a medication every pass. The change itself is
+          // already staged, but a later pass may carry a new follow-up answer
+          // ("it upsets my stomach"), which must not be lost to the duplicate check.
+          const merged = mergeFeedback(p, dupe, feedback);
+          return { ok: true, op, skipped: 'duplicate', ...(merged.length ? { merged } : {}) };
+        }
       }
 
       p.execute(
         `INSERT INTO staged_changes
            (session_id, subject_id, study_id, change_type, reported_text, rxcui, canonical_name,
             indication, dose, route, frequency, start_date, start_date_precision,
-            stop_date, stop_date_precision, ongoing)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            stop_date, stop_date_precision, ongoing,
+            effectiveness, side_effects, side_effects_note, stop_reason)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         sessionId, subjectId,
         p.get('SELECT study_id FROM call_sessions WHERE session_id = ?', sessionId)?.study_id || null,
         changeType,
@@ -153,7 +217,9 @@ function update({ subjectId, sessionId, op, payload = {} }) {
         payload.frequency || null, payload.start_date || null,
         payload.precision || payload.start_date_precision || 'unknown',
         payload.stop_date || null, payload.stop_date_precision || 'unknown',
-        payload.ongoing === false ? 0 : 1
+        payload.ongoing === false ? 0 : 1,
+        feedback.effectiveness ?? null, feedback.side_effects ?? null,
+        feedback.side_effects_note ?? null, feedback.stop_reason ?? null
       );
       return { ok: true, op, staged: true };
     }

@@ -177,6 +177,11 @@ function seedPatient() {
       stop_date    TEXT,
       stop_date_precision  TEXT,
       ongoing      INTEGER,
+      -- Follow-up answers, in the participant's terms. NULL = never asked.
+      effectiveness     TEXT,   -- working | partly | not_working | unsure
+      side_effects      TEXT,   -- none | reported | serious | unsure
+      side_effects_note TEXT,   -- what they said, when they reported something
+      stop_reason       TEXT,   -- why they stopped or changed it
       created_at   TEXT DEFAULT (datetime('now'))
     );
     CREATE TABLE utterances (
