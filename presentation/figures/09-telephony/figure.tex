@@ -1,0 +1,56 @@
+% Slide 09 — how the call reaches a phone.
+%
+% Worth a slide because "a voice agent calls the participant" invites the
+% question "calls them how?", and the answer is a real one: the same interface
+% drives a browser handset and a real telephone, and the demo picks the first
+% because the second costs money per minute.
+%
+% The fictitious-number guard is the detail to dwell on. It is the difference
+% between a demo that could dial a stranger and one that cannot.
+\documentclass[border=0pt]{standalone}
+\input{shared/theme}
+\begin{document}
+\hyphenpenalty=10000\exhyphenpenalty=10000
+\begin{tikzpicture}[x=1mm,y=1mm]
+\path[use as bounding box] (0,0) rectangle (160,90);
+
+\node[headline] at (16,82) {It really does place a call};
+\node[subline]  at (16,75.5) {One interface, two carriers. The demo uses the one that does not bill per minute.};
+
+% ---- the flow -----------------------------------------------------------
+\foreach \x/\step/\who in {%
+  14/{Coordinator presses Call}/{the dashboard},
+  52/{A handset rings}/{wherever it is},
+  90/{They answer}/{and the agent speaks first},
+  128/{The call runs}/{identical either way}}{%
+  \fill[surf, rounded corners=2pt] (\x,56) rectangle (\x+30,68);
+  \draw[line, line width=0.4pt, rounded corners=2pt] (\x,56) rectangle (\x+30,68);
+  \node[anchor=north, font=\fontsize{6}{7.3}\selectfont\sffamily\bfseries\color{ink}, align=center, text width=27mm] at (\x+15,66) {\step};
+  \node[anchor=north, font=\fontsize{5.4}{6.5}\selectfont\sffamily\color{inkiii}, align=center, text width=27mm] at (\x+15,60.5) {\who};
+}
+\foreach \x in {45, 83, 121}{ \draw[flow] (\x,62) -- (\x+5,62); }
+
+% ---- the two carriers ---------------------------------------------------
+\fill[surf, rounded corners=2.5pt] (14,22) rectangle (78,48);
+\draw[brand, line width=0.7pt, rounded corners=2.5pt] (14,22) rectangle (78,48);
+\node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{brand}] at (18,45) {WHAT THE DEMO USES};
+\node[anchor=north west, font=\fontsize{7.2}{8.8}\selectfont\sffamily\bfseries\color{ink}] at (18,40) {A handset on our own wifi};
+\node[anchor=north west, font=\fontsize{5.8}{7.2}\selectfont\sffamily\color{inkii}, align=left, text width=56mm] at (18,34)
+  {The phone loads the call screen and waits to be rung. Costs nothing, needs no account, and everything after ``hello'' is the real pipeline.};
+
+\fill[surf, rounded corners=2.5pt] (82,22) rectangle (146,48);
+\draw[line, line width=0.5pt, rounded corners=2.5pt] (82,22) rectangle (146,48);
+\node[anchor=north west, font=\fontsize{5.6}{6.8}\selectfont\sffamily\bfseries\color{inkiii}] at (86,45) {WHAT A SITE WOULD USE};
+\node[anchor=north west, font=\fontsize{7.2}{8.8}\selectfont\sffamily\bfseries\color{ink}] at (86,40) {An actual telephone};
+\node[anchor=north west, font=\fontsize{5.8}{7.2}\selectfont\sffamily\color{inkii}, align=left, text width=56mm] at (86,34)
+  {The carrier path is written and switched on with one setting. We left it off: a live call bills by the minute, and it proves nothing the other column does not.};
+
+% ---- the guard ----------------------------------------------------------
+\draw[line, line width=0.5pt] (14,16) -- (146,16);
+\node[anchor=north west, font=\fontsize{6.8}{8.2}\selectfont\sffamily\bfseries\color{ink}] at (14,13)
+  {It refuses to dial a number that could belong to a real person.};
+\node[anchor=north west, font=\fontsize{5.8}{7}\selectfont\sffamily\color{inkii}, align=left, text width=132mm] at (14,8.5)
+  {Only 555-0100 to 555-0199 is reserved as permanently unassignable, so every other number is rejected unless someone deliberately says otherwise. Switching carrier is one variable; a wrong number should not be one typo.};
+
+\end{tikzpicture}
+\end{document}
