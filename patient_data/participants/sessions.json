@@ -35,27 +35,27 @@
           "reportedText": "my other doctor put me on prednisone for the joint pain, twenty milligrams"
         },
         "agentConfidence": 0.93,
-        "agentReasoning": "Participant named prednisone and a dose of 20 mg once daily, started by a physician outside the study. The protocol permits systemic corticosteroids only up to 10 mg/day prednisone equivalent; 20 mg is double that limit. This is a dose-threshold breach rather than a blanket ban \u2014 the drug itself is allowed, the dose is not, so the coordinator may be able to resolve it with a taper rather than a withdrawal.",
+        "agentReasoning": "Participant named prednisone and a dose of 20 mg once daily, started by a physician outside the study. The protocol permits systemic corticosteroids only up to 10 mg/day prednisone equivalent; 20 mg is double that limit. This is a dose-threshold breach rather than a blanket ban — the drug itself is allowed, the dose is not, so the coordinator may be able to resolve it with a taper rather than a withdrawal.",
         "toolTrace": [
           {
             "tool": "resolve_drug",
             "input": "prednisone",
-            "output": "rxcui=8640 \u00b7 Prednisone \u00b7 confidence 0.99"
+            "output": "rxcui=8640 · Prednisone · confidence 0.99"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=8640",
-            "output": "ATC H02AB07 \u00b7 Systemic corticosteroid (glucocorticoid)"
+            "output": "ATC H02AB07 · Systemic corticosteroid (glucocorticoid)"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Systemic corticosteroid \u00b7 dose=20 mg/day \u00b7 R2810-ONC-1540",
-            "output": "HIT \u00b7 rule PR-0021 \u00b7 \u00a75.7.2 \u00b7 exceeds 10 mg/day prednisone-equivalent limit"
+            "input": "class=Systemic corticosteroid · dose=20 mg/day · R2810-ONC-1540",
+            "output": "HIT · rule PR-0021 · §5.7.2 · exceeds 10 mg/day prednisone-equivalent limit"
           },
           {
             "tool": "resolve_date",
             "input": "\"about two and a half weeks ago\"",
-            "output": "2026-09-02 \u00b7 precision=day"
+            "output": "2026-09-02 · precision=day"
           }
         ],
         "prohibitedHit": {
@@ -88,27 +88,27 @@
           "reportedText": "I had the shingles jab at the pharmacy in August, just the one shot"
         },
         "agentConfidence": 0.61,
-        "agentReasoning": "Participant reports a shingles vaccination as a single dose. Two products exist: Zostavax, which is live attenuated and prohibited, and Shingrix, which is recombinant and permitted. The single-dose detail points to Zostavax, since Shingrix is a two-dose series \u2014 but the participant did not name the brand and may simply not have had the second dose yet. This resolution is an inference from dosing schedule alone. The brand must be confirmed against the pharmacy record before this is treated as a deviation.",
+        "agentReasoning": "Participant reports a shingles vaccination as a single dose. Two products exist: Zostavax, which is live attenuated and prohibited, and Shingrix, which is recombinant and permitted. The single-dose detail points to Zostavax, since Shingrix is a two-dose series — but the participant did not name the brand and may simply not have had the second dose yet. This resolution is an inference from dosing schedule alone. The brand must be confirmed against the pharmacy record before this is treated as a deviation.",
         "toolTrace": [
           {
             "tool": "resolve_drug",
             "input": "shingles jab, single shot",
-            "output": "ambiguous \u00b7 Zostavax (live) 0.61 / Shingrix (recombinant) 0.37"
+            "output": "ambiguous · Zostavax (live) 0.61 / Shingrix (recombinant) 0.37"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=1006296",
-            "output": "ATC J07BK01 \u00b7 Live attenuated viral vaccine"
+            "output": "ATC J07BK01 · Live attenuated viral vaccine"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Live attenuated vaccine \u00b7 R2810-ONC-1540",
-            "output": "HIT \u00b7 rule PR-0034 \u00b7 \u00a75.7.2"
+            "input": "class=Live attenuated vaccine · R2810-ONC-1540",
+            "output": "HIT · rule PR-0034 · §5.7.2"
           },
           {
             "tool": "resolve_date",
             "input": "\"in August\"",
-            "output": "2026-08-01 \u00b7 precision=month"
+            "output": "2026-08-01 · precision=month"
           }
         ],
         "prohibitedHit": {
@@ -141,12 +141,12 @@
           "reportedText": "and there is a little blue pill I take for my stomach, I could not tell you the name"
         },
         "agentConfidence": 0.41,
-        "agentReasoning": "Participant described an unnamed blue tablet taken once daily for a stomach complaint. Color and indication are not enough to identify a product \u2014 famotidine, omeprazole and dicyclomine all ship as blue tablets. No resolution was attempted beyond the failed lookup. This needs the coordinator to ask the participant to bring the bottle to the visit.",
+        "agentReasoning": "Participant described an unnamed blue tablet taken once daily for a stomach complaint. Color and indication are not enough to identify a product — famotidine, omeprazole and dicyclomine all ship as blue tablets. No resolution was attempted beyond the failed lookup. This needs the coordinator to ask the participant to bring the bottle to the visit.",
         "toolTrace": [
           {
             "tool": "resolve_drug",
             "input": "blue pill for stomach",
-            "output": "no match above threshold (best 0.31 \u00b7 famotidine)"
+            "output": "no match above threshold (best 0.31 · famotidine)"
           },
           {
             "tool": "resolve_drug",
@@ -156,7 +156,7 @@
           {
             "tool": "resolve_date",
             "input": "\"a long time now\"",
-            "output": "unresolved \u00b7 precision=unknown"
+            "output": "unresolved · precision=unknown"
           }
         ],
         "prohibitedHit": null,
@@ -202,22 +202,22 @@
           {
             "tool": "resolve_drug",
             "input": "allopurinol",
-            "output": "rxcui=519 \u00b7 Allopurinol \u00b7 confidence 0.99"
+            "output": "rxcui=519 · Allopurinol · confidence 0.99"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=519",
-            "output": "ATC M04AA01 \u00b7 Xanthine oxidase inhibitor"
+            "output": "ATC M04AA01 · Xanthine oxidase inhibitor"
           },
           {
             "tool": "check_prohibited",
-            "input": "rxcui=519 \u00b7 R2810-ONC-1540",
+            "input": "rxcui=519 · R2810-ONC-1540",
             "output": "no hit"
           },
           {
             "tool": "resolve_date",
             "input": "\"in June\"",
-            "output": "2026-06-01 \u00b7 precision=month (dose change, not start)"
+            "output": "2026-06-01 · precision=month (dose change, not start)"
           }
         ],
         "prohibitedHit": null,
@@ -263,16 +263,16 @@
           {
             "tool": "resolve_drug",
             "input": "the reflux one",
-            "output": "rxcui=7646 \u00b7 Omeprazole \u00b7 via log context \u00b7 confidence 0.83"
+            "output": "rxcui=7646 · Omeprazole · via log context · confidence 0.83"
           },
           {
             "tool": "resolve_date",
             "input": "\"back in July\"",
-            "output": "2026-07-01 \u00b7 precision=month"
+            "output": "2026-07-01 · precision=month"
           },
           {
             "tool": "check_prohibited",
-            "input": "rxcui=7646 \u00b7 R2810-ONC-1540",
+            "input": "rxcui=7646 · R2810-ONC-1540",
             "output": "no hit"
           }
         ],
@@ -319,11 +319,11 @@
           {
             "tool": "resolve_drug",
             "input": "the cholesterol tablet",
-            "output": "rxcui=83367 \u00b7 Atorvastatin \u00b7 via log context \u00b7 confidence 0.95"
+            "output": "rxcui=83367 · Atorvastatin · via log context · confidence 0.95"
           },
           {
             "tool": "check_prohibited",
-            "input": "rxcui=83367 \u00b7 R2810-ONC-1540",
+            "input": "rxcui=83367 · R2810-ONC-1540",
             "output": "no hit"
           }
         ],
@@ -351,27 +351,27 @@
           "reportedText": "melatonin, the gummies, on and off for sleep, years now"
         },
         "agentConfidence": 0.63,
-        "agentReasoning": "Participant reports intermittent melatonin gummies for sleep. The 5 mg dose is inferred from the most common gummy strength, not stated \u2014 the participant did not know it. The start date resolved only to a year. Both inferences are worth a second question at the visit.",
+        "agentReasoning": "Participant reports intermittent melatonin gummies for sleep. The 5 mg dose is inferred from the most common gummy strength, not stated — the participant did not know it. The start date resolved only to a year. Both inferences are worth a second question at the visit.",
         "toolTrace": [
           {
             "tool": "resolve_drug",
             "input": "melatonin gummies",
-            "output": "rxcui=6711 \u00b7 Melatonin \u00b7 confidence 0.91"
+            "output": "rxcui=6711 · Melatonin · confidence 0.91"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=6711",
-            "output": "Dietary supplement \u00b7 hormone"
+            "output": "Dietary supplement · hormone"
           },
           {
             "tool": "check_prohibited",
-            "input": "rxcui=6711 \u00b7 R2810-ONC-1540",
+            "input": "rxcui=6711 · R2810-ONC-1540",
             "output": "no hit"
           },
           {
             "tool": "resolve_date",
             "input": "\"years now\"",
-            "output": "2024-01-01 \u00b7 precision=year \u00b7 low certainty"
+            "output": "2024-01-01 · precision=year · low certainty"
           }
         ],
         "prohibitedHit": null,
@@ -439,11 +439,11 @@
           {
             "tool": "resolve_drug",
             "input": "the thyroid one",
-            "output": "rxcui=10582 \u00b7 Levothyroxine \u00b7 via log context"
+            "output": "rxcui=10582 · Levothyroxine · via log context"
           },
           {
             "tool": "check_prohibited",
-            "input": "rxcui=10582 \u00b7 R2810-ONC-1676",
+            "input": "rxcui=10582 · R2810-ONC-1676",
             "output": "no hit"
           }
         ],
@@ -471,22 +471,22 @@
           "reportedText": "I got the flu vaccine last week, the nasal spray one, not the needle"
         },
         "agentConfidence": 0.58,
-        "agentReasoning": "Participant explicitly distinguished the nasal spray from the injection. The intranasal influenza vaccine is live attenuated, unlike the inactivated injectable. RxNorm has no concept for it, so it stays unresolved \u2014 but the prohibited check matches on class, not on a resolved code, so the finding stands.",
+        "agentReasoning": "Participant explicitly distinguished the nasal spray from the injection. The intranasal influenza vaccine is live attenuated, unlike the inactivated injectable. RxNorm has no concept for it, so it stays unresolved — but the prohibited check matches on class, not on a resolved code, so the finding stands.",
         "toolTrace": [
           {
             "tool": "resolve_drug",
             "input": "flu vaccine, nasal spray",
-            "output": "no RxNorm concept \u00b7 class inferred from formulation"
+            "output": "no RxNorm concept · class inferred from formulation"
           },
           {
             "tool": "classify_drug",
             "input": "intranasal influenza vaccine",
-            "output": "ATC J07BB03 \u00b7 Live attenuated viral vaccine"
+            "output": "ATC J07BB03 · Live attenuated viral vaccine"
           },
           {
             "tool": "check_prohibited",
             "input": "class=Live attenuated vaccine",
-            "output": "HIT \u00b7 rule PR-0034"
+            "output": "HIT · rule PR-0034"
           }
         ],
         "prohibitedHit": {
@@ -587,12 +587,12 @@
           {
             "tool": "resolve_drug",
             "input": "acyclovir",
-            "output": "rxcui=281 \u00b7 Acyclovir \u00b7 confidence 0.99"
+            "output": "rxcui=281 · Acyclovir · confidence 0.99"
           },
           {
             "tool": "check_prohibited",
-            "input": "rxcui=281 \u00b7 R2810-ONC-1540",
-            "output": "no hit \u00b7 required prophylaxis under \u00a76.4"
+            "input": "rxcui=281 · R2810-ONC-1540",
+            "output": "no hit · required prophylaxis under §6.4"
           }
         ],
         "prohibitedHit": null,
@@ -649,22 +649,22 @@
           {
             "tool": "resolve_drug",
             "input": "methotrexate",
-            "output": "rxcui=6851 \u00b7 Methotrexate \u00b7 confidence 0.98"
+            "output": "rxcui=6851 · Methotrexate · confidence 0.98"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=6851",
-            "output": "ATC L04AX03 \u00b7 Immunosuppressant; antimetabolite"
+            "output": "ATC L04AX03 · Immunosuppressant; antimetabolite"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Chronic immunosuppressant \u00b7 CEM-2014",
-            "output": "HIT \u00b7 rule PR-0009 \u00b7 \u00a75.7.2"
+            "input": "class=Chronic immunosuppressant · CEM-2014",
+            "output": "HIT · rule PR-0009 · §5.7.2"
           },
           {
             "tool": "resolve_date",
             "input": "\"middle of August\"",
-            "output": "2026-08-15 \u00b7 precision=day"
+            "output": "2026-08-15 · precision=day"
           }
         ],
         "prohibitedHit": {
@@ -716,11 +716,11 @@
           {
             "tool": "resolve_drug",
             "input": "the thyroid tablet",
-            "output": "rxcui=10582 \u00b7 Levothyroxine \u00b7 via log context \u00b7 confidence 0.94"
+            "output": "rxcui=10582 · Levothyroxine · via log context · confidence 0.94"
           },
           {
             "tool": "check_prohibited",
-            "input": "rxcui=10582 \u00b7 CEM-2014",
+            "input": "rxcui=10582 · CEM-2014",
             "output": "no hit"
           }
         ],
@@ -767,11 +767,11 @@
           {
             "tool": "resolve_drug",
             "input": "blood pressure one",
-            "output": "rxcui=17767 \u00b7 Amlodipine \u00b7 via log context"
+            "output": "rxcui=17767 · Amlodipine · via log context"
           },
           {
             "tool": "check_prohibited",
-            "input": "rxcui=17767 \u00b7 CEM-2014",
+            "input": "rxcui=17767 · CEM-2014",
             "output": "no hit"
           }
         ],
@@ -843,16 +843,16 @@
           {
             "tool": "resolve_drug",
             "input": "the nausea tablets",
-            "output": "rxcui=26225 \u00b7 Ondansetron \u00b7 via log context"
+            "output": "rxcui=26225 · Ondansetron · via log context"
           },
           {
             "tool": "resolve_date",
             "input": "\"end of July\"",
-            "output": "2026-07-31 \u00b7 precision=day"
+            "output": "2026-07-31 · precision=day"
           },
           {
             "tool": "check_prohibited",
-            "input": "rxcui=26225 \u00b7 R2810-ONC-1624",
+            "input": "rxcui=26225 · R2810-ONC-1624",
             "output": "no hit"
           }
         ],
@@ -924,16 +924,16 @@
           {
             "tool": "resolve_drug",
             "input": "simvastatin",
-            "output": "rxcui=36567 \u00b7 Simvastatin \u00b7 confidence 0.97"
+            "output": "rxcui=36567 · Simvastatin · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=36567",
-            "output": "ATC C10AA01 \u00b7 Statin"
+            "output": "ATC C10AA01 · Statin"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Statin \u00b7 R2810-ONC-1540",
+            "input": "class=Statin · R2810-ONC-1540",
             "output": "no hit"
           }
         ],
@@ -980,16 +980,16 @@
           {
             "tool": "resolve_drug",
             "input": "ibuprofen",
-            "output": "rxcui=5640 \u00b7 Ibuprofen \u00b7 confidence 0.97"
+            "output": "rxcui=5640 · Ibuprofen · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=5640",
-            "output": "ATC M01AE01 \u00b7 NSAID"
+            "output": "ATC M01AE01 · NSAID"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=NSAID \u00b7 R2810-ONC-1540",
+            "input": "class=NSAID · R2810-ONC-1540",
             "output": "no hit"
           }
         ],
@@ -1027,7 +1027,7 @@
           {
             "tool": "resolve_date",
             "input": "\"since the spring\"",
-            "output": "unresolved \u00b7 precision=unknown"
+            "output": "unresolved · precision=unknown"
           }
         ],
         "prohibitedHit": null,
@@ -1172,16 +1172,16 @@
           {
             "tool": "resolve_drug",
             "input": "sertraline",
-            "output": "rxcui=36437 \u00b7 Sertraline \u00b7 confidence 0.97"
+            "output": "rxcui=36437 · Sertraline · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=36437",
-            "output": "ATC N06AB06 \u00b7 SSRI"
+            "output": "ATC N06AB06 · SSRI"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=SSRI \u00b7 R2810-ONC-1624",
+            "input": "class=SSRI · R2810-ONC-1624",
             "output": "no hit"
           }
         ],
@@ -1228,16 +1228,16 @@
           {
             "tool": "resolve_drug",
             "input": "simvastatin",
-            "output": "rxcui=36567 \u00b7 Simvastatin \u00b7 confidence 0.97"
+            "output": "rxcui=36567 · Simvastatin · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=36567",
-            "output": "ATC C10AA01 \u00b7 Statin"
+            "output": "ATC C10AA01 · Statin"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Statin \u00b7 R2810-ONC-1624",
+            "input": "class=Statin · R2810-ONC-1624",
             "output": "no hit"
           }
         ],
@@ -1270,17 +1270,17 @@
           {
             "tool": "resolve_drug",
             "input": "varicella-zoster virus vaccine, live (oka-merck)",
-            "output": "rxcui=1292422 \u00b7 Varicella-zoster virus vaccine, live (Oka-Merck) \u00b7 confidence 0.97"
+            "output": "rxcui=1292422 · Varicella-zoster virus vaccine, live (Oka-Merck) · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=1292422",
-            "output": "ATC J07BK01 \u00b7 Live attenuated vaccine"
+            "output": "ATC J07BK01 · Live attenuated vaccine"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Live attenuated vaccine \u00b7 R2810-ONC-1624",
-            "output": "HIT \u00b7 rule PR-0034 \u00b7 \u00a77.7.1"
+            "input": "class=Live attenuated vaccine · R2810-ONC-1624",
+            "output": "HIT · rule PR-0034 · §7.7.1"
           }
         ],
         "prohibitedHit": {
@@ -1433,16 +1433,16 @@
           {
             "tool": "resolve_drug",
             "input": "metformin",
-            "output": "rxcui=6809 \u00b7 Metformin \u00b7 confidence 0.97"
+            "output": "rxcui=6809 · Metformin · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=6809",
-            "output": "ATC A10BA02 \u00b7 Biguanide"
+            "output": "ATC A10BA02 · Biguanide"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Biguanide \u00b7 R2810-ONC-1624",
+            "input": "class=Biguanide · R2810-ONC-1624",
             "output": "no hit"
           }
         ],
@@ -1489,16 +1489,16 @@
           {
             "tool": "resolve_drug",
             "input": "amlodipine",
-            "output": "rxcui=17767 \u00b7 Amlodipine \u00b7 confidence 0.97"
+            "output": "rxcui=17767 · Amlodipine · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=17767",
-            "output": "ATC C08CA01 \u00b7 Calcium channel blocker"
+            "output": "ATC C08CA01 · Calcium channel blocker"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Calcium channel blocker \u00b7 R2810-ONC-1624",
+            "input": "class=Calcium channel blocker · R2810-ONC-1624",
             "output": "no hit"
           }
         ],
@@ -1646,16 +1646,16 @@
           {
             "tool": "resolve_drug",
             "input": "codeine",
-            "output": "rxcui=2670 \u00b7 Codeine \u00b7 confidence 0.97"
+            "output": "rxcui=2670 · Codeine · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=2670",
-            "output": "ATC R05DA04 \u00b7 Opioid analgesic"
+            "output": "ATC R05DA04 · Opioid analgesic"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Opioid analgesic \u00b7 R2810-ONC-1624",
+            "input": "class=Opioid analgesic · R2810-ONC-1624",
             "output": "no hit"
           }
         ],
@@ -1782,16 +1782,16 @@
           {
             "tool": "resolve_drug",
             "input": "levofloxacin",
-            "output": "rxcui=82122 \u00b7 Levofloxacin \u00b7 confidence 0.97"
+            "output": "rxcui=82122 · Levofloxacin · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=82122",
-            "output": "ATC J01MA12 \u00b7 Fluoroquinolone antibiotic"
+            "output": "ATC J01MA12 · Fluoroquinolone antibiotic"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Fluoroquinolone antibiotic \u00b7 R2810-ONC-1624",
+            "input": "class=Fluoroquinolone antibiotic · R2810-ONC-1624",
             "output": "no hit"
           }
         ],
@@ -1838,16 +1838,16 @@
           {
             "tool": "resolve_drug",
             "input": "allopurinol",
-            "output": "rxcui=519 \u00b7 Allopurinol \u00b7 confidence 0.97"
+            "output": "rxcui=519 · Allopurinol · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=519",
-            "output": "ATC M04AA01 \u00b7 Xanthine oxidase inhibitor"
+            "output": "ATC M04AA01 · Xanthine oxidase inhibitor"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Xanthine oxidase inhibitor \u00b7 R2810-ONC-1624",
+            "input": "class=Xanthine oxidase inhibitor · R2810-ONC-1624",
             "output": "no hit"
           }
         ],
@@ -1880,17 +1880,17 @@
           {
             "tool": "resolve_drug",
             "input": "cyclosporine",
-            "output": "rxcui=3008 \u00b7 Cyclosporine \u00b7 confidence 0.97"
+            "output": "rxcui=3008 · Cyclosporine · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=3008",
-            "output": "ATC L04AD01 \u00b7 Chronic immunosuppressant"
+            "output": "ATC L04AD01 · Chronic immunosuppressant"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Chronic immunosuppressant \u00b7 R2810-ONC-1624",
-            "output": "HIT \u00b7 rule PR-0009 \u00b7 \u00a77.7.1"
+            "input": "class=Chronic immunosuppressant · R2810-ONC-1624",
+            "output": "HIT · rule PR-0009 · §7.7.1"
           }
         ],
         "prohibitedHit": {
@@ -2045,16 +2045,16 @@
           {
             "tool": "resolve_drug",
             "input": "omeprazole",
-            "output": "rxcui=7646 \u00b7 Omeprazole \u00b7 confidence 0.97"
+            "output": "rxcui=7646 · Omeprazole · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=7646",
-            "output": "ATC A02BC01 \u00b7 Proton pump inhibitor"
+            "output": "ATC A02BC01 · Proton pump inhibitor"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Proton pump inhibitor \u00b7 R2810-ONC-1676",
+            "input": "class=Proton pump inhibitor · R2810-ONC-1676",
             "output": "no hit"
           }
         ],
@@ -2101,16 +2101,16 @@
           {
             "tool": "resolve_drug",
             "input": "atorvastatin",
-            "output": "rxcui=83367 \u00b7 Atorvastatin \u00b7 confidence 0.97"
+            "output": "rxcui=83367 · Atorvastatin · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=83367",
-            "output": "ATC C10AA05 \u00b7 Statin"
+            "output": "ATC C10AA05 · Statin"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Statin \u00b7 R2810-ONC-1676",
+            "input": "class=Statin · R2810-ONC-1676",
             "output": "no hit"
           }
         ],
@@ -2143,17 +2143,17 @@
           {
             "tool": "resolve_drug",
             "input": "methotrexate",
-            "output": "rxcui=6851 \u00b7 Methotrexate \u00b7 confidence 0.97"
+            "output": "rxcui=6851 · Methotrexate · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=6851",
-            "output": "ATC L04AX03 \u00b7 Chronic immunosuppressant"
+            "output": "ATC L04AX03 · Chronic immunosuppressant"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Chronic immunosuppressant \u00b7 R2810-ONC-1676",
-            "output": "HIT \u00b7 rule PR-0009 \u00b7 \u00a78.10.1"
+            "input": "class=Chronic immunosuppressant · R2810-ONC-1676",
+            "output": "HIT · rule PR-0009 · §8.10.1"
           }
         ],
         "prohibitedHit": {
@@ -2308,16 +2308,16 @@
           {
             "tool": "resolve_drug",
             "input": "omeprazole",
-            "output": "rxcui=7646 \u00b7 Omeprazole \u00b7 confidence 0.97"
+            "output": "rxcui=7646 · Omeprazole · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=7646",
-            "output": "ATC A02BC01 \u00b7 Proton pump inhibitor"
+            "output": "ATC A02BC01 · Proton pump inhibitor"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Proton pump inhibitor \u00b7 R2810-ONC-1676",
+            "input": "class=Proton pump inhibitor · R2810-ONC-1676",
             "output": "no hit"
           }
         ],
@@ -2364,16 +2364,16 @@
           {
             "tool": "resolve_drug",
             "input": "lisinopril",
-            "output": "rxcui=29046 \u00b7 Lisinopril \u00b7 confidence 0.97"
+            "output": "rxcui=29046 · Lisinopril · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=29046",
-            "output": "ATC C09AA03 \u00b7 ACE inhibitor"
+            "output": "ATC C09AA03 · ACE inhibitor"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=ACE inhibitor \u00b7 R2810-ONC-1676",
+            "input": "class=ACE inhibitor · R2810-ONC-1676",
             "output": "no hit"
           }
         ],
@@ -2420,22 +2420,22 @@
           {
             "tool": "resolve_drug",
             "input": "codeine",
-            "output": "rxcui=2670 \u00b7 Codeine \u00b7 confidence 0.97"
+            "output": "rxcui=2670 · Codeine · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=2670",
-            "output": "ATC R05DA04 \u00b7 Opioid analgesic"
+            "output": "ATC R05DA04 · Opioid analgesic"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Opioid analgesic \u00b7 R2810-ONC-1676",
+            "input": "class=Opioid analgesic · R2810-ONC-1676",
             "output": "no hit"
           },
           {
             "tool": "resolve_date",
             "input": "\"back in July\"",
-            "output": "2026-07-01 \u00b7 precision=month"
+            "output": "2026-07-01 · precision=month"
           }
         ],
         "prohibitedHit": null,
@@ -2565,16 +2565,16 @@
           {
             "tool": "resolve_drug",
             "input": "levofloxacin",
-            "output": "rxcui=82122 \u00b7 Levofloxacin \u00b7 confidence 0.97"
+            "output": "rxcui=82122 · Levofloxacin · confidence 0.97"
           },
           {
             "tool": "classify_drug",
             "input": "rxcui=82122",
-            "output": "ATC J01MA12 \u00b7 Fluoroquinolone antibiotic"
+            "output": "ATC J01MA12 · Fluoroquinolone antibiotic"
           },
           {
             "tool": "check_prohibited",
-            "input": "class=Fluoroquinolone antibiotic \u00b7 R2810-ONC-1676",
+            "input": "class=Fluoroquinolone antibiotic · R2810-ONC-1676",
             "output": "no hit"
           }
         ],

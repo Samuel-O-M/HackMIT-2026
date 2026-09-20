@@ -21,7 +21,7 @@
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "7 proposed changes staged for review \u00b7 2 prohibited findings",
+      "detail": "7 proposed changes staged for review · 2 prohibited findings",
       "reason": null
     }
   ],
@@ -47,7 +47,7 @@
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "No changes \u2014 participant reports no concomitant medications",
+      "detail": "No changes — participant reports no concomitant medications",
       "reason": null
     }
   ],
@@ -73,7 +73,7 @@
       "actor": "Voice agent",
       "action": "call_ended",
       "changeId": null,
-      "detail": "3 proposed changes staged for review \u00b7 1 prohibited finding",
+      "detail": "3 proposed changes staged for review · 1 prohibited finding",
       "reason": null
     }
   ],
@@ -137,7 +137,7 @@
       "actor": "ayushim",
       "action": "change_accepted",
       "changeId": "CH-091",
-      "detail": "Acyclovir \u00b7 frequency Twice daily \u2192 Three times daily",
+      "detail": "Acyclovir · frequency Twice daily → Three times daily",
       "reason": "Participant clarified at review"
     },
     {
@@ -149,7 +149,7 @@
       "actor": "ayushim",
       "action": "promoted",
       "changeId": null,
-      "detail": "1 change promoted to the medication log \u00b7 signed by Ayushi Mehrotra at 2026-09-17T17:41:00.000Z",
+      "detail": "1 change promoted to the medication log · signed by Ayushi Mehrotra at 2026-09-17T17:41:00.000Z",
       "reason": "I have reviewed these changes against the source and approve their entry into the medication log."
     }
   ],

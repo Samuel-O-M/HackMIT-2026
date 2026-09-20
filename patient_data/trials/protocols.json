@@ -21,6 +21,9 @@
         "matchedOn": "class",
         "label": "Chronic immunosuppressants",
         "className": "Chronic immunosuppressant",
+        "classIds": [
+          "L04"
+        ],
         "protocolSection": "5.7.2",
         "rationale": "Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events.",
         "threshold": null,
@@ -32,6 +35,9 @@
         "matchedOn": "class",
         "label": "Systemic corticosteroids above 10 mg/day prednisone equivalent",
         "className": "Systemic corticosteroid",
+        "classIds": [
+          "H02"
+        ],
         "protocolSection": "5.7.2",
         "rationale": "Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor.",
         "threshold": "> 10 mg/day prednisone equivalent",
@@ -43,6 +49,8 @@
         "matchedOn": "class",
         "label": "Live attenuated vaccines",
         "className": "Live attenuated vaccine",
+        "classIds": null,
+        "autoScreened": false,
         "protocolSection": "5.7.2",
         "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted.",
         "threshold": null,
@@ -54,6 +62,9 @@
         "matchedOn": "class",
         "label": "Other systemic anticancer therapy",
         "className": "Antineoplastic agent",
+        "classIds": [
+          "L01"
+        ],
         "protocolSection": "5.7.2",
         "rationale": "No other systemic anticancer therapy may be given while the participant is on study treatment.",
         "threshold": null,
@@ -85,6 +96,9 @@
         "matchedOn": "class",
         "label": "Chronic immunosuppressants",
         "className": "Chronic immunosuppressant",
+        "classIds": [
+          "L04"
+        ],
         "protocolSection": "7.7.1",
         "rationale": "Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events.",
         "threshold": null,
@@ -96,6 +110,9 @@
         "matchedOn": "class",
         "label": "Systemic corticosteroids above 10 mg/day prednisone equivalent",
         "className": "Systemic corticosteroid",
+        "classIds": [
+          "H02"
+        ],
         "protocolSection": "7.7.1",
         "rationale": "Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor.",
         "threshold": "> 10 mg/day prednisone equivalent",
@@ -107,6 +124,8 @@
         "matchedOn": "class",
         "label": "Live attenuated vaccines",
         "className": "Live attenuated vaccine",
+        "classIds": null,
+        "autoScreened": false,
         "protocolSection": "7.7.1",
         "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted.",
         "threshold": null,
@@ -118,6 +137,9 @@
         "matchedOn": "class",
         "label": "Other systemic anticancer therapy",
         "className": "Antineoplastic agent",
+        "classIds": [
+          "L01"
+        ],
         "protocolSection": "7.7.1",
         "rationale": "No other systemic anticancer therapy may be given while the participant is on study treatment.",
         "threshold": null,
@@ -149,6 +171,9 @@
         "matchedOn": "class",
         "label": "Chronic immunosuppressants",
         "className": "Chronic immunosuppressant",
+        "classIds": [
+          "L04"
+        ],
         "protocolSection": "8.10.1",
         "rationale": "Chronic immunosuppressive therapy is prohibited throughout treatment. Immunosuppression opposes the mechanism of checkpoint blockade and may mask immune-related adverse events.",
         "threshold": null,
@@ -160,6 +185,9 @@
         "matchedOn": "class",
         "label": "Systemic corticosteroids above 10 mg/day prednisone equivalent",
         "className": "Systemic corticosteroid",
+        "classIds": [
+          "H02"
+        ],
         "protocolSection": "8.10.1",
         "rationale": "Corticosteroids above the stated threshold are prohibited. Physiologic replacement doses and short courses for non-oncologic indications may be permitted after discussion with the medical monitor.",
         "threshold": "> 10 mg/day prednisone equivalent",
@@ -171,6 +199,8 @@
         "matchedOn": "class",
         "label": "Live attenuated vaccines",
         "className": "Live attenuated vaccine",
+        "classIds": null,
+        "autoScreened": false,
         "protocolSection": "8.10.1",
         "rationale": "Live attenuated vaccines are prohibited within 4 weeks before the first dose and throughout treatment. Inactivated and recombinant vaccines are permitted.",
         "threshold": null,
@@ -182,6 +212,9 @@
         "matchedOn": "class",
         "label": "Other systemic anticancer therapy",
         "className": "Antineoplastic agent",
+        "classIds": [
+          "L01"
+        ],
         "protocolSection": "8.10.1",
         "rationale": "No other systemic anticancer therapy may be given while the participant is on study treatment.",
         "threshold": null,
